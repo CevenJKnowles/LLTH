@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.55
+version: v1.57
 canonical: true
 scope: llth
 audience:
@@ -73,6 +73,10 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
   Path: `$LLTH_HOME/ADR/ADR-009-export-formats-and-pdf-engine.md`
   Status: amended (v1.3 — export to PDF, DOCX, ODT and HTML with Pandoc and Typst, the browser's print as a fallback; depends on ADR-007 and ADR-008)
 
+- **ADR-010 — Documentation Checks in Continuous Integration**
+  Path: `$LLTH_HOME/ADR/ADR-010-documentation-checks-in-continuous-integration.md`
+  Status: accepted (v1.6 — one workflow and a standard-library script check the manifest, frontmatter, version agreement, identifiers, ADR structure, links, secrets and local paths)
+
 ## Amendment record
 
 | Version | Date | Summary |
@@ -85,3 +89,5 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 | v1.51 | 2026-11-07 | ADR-008 accepted (v1.18). |
 | v1.54 | 2026-11-07 | Added ADR-009 (draft) to the index. |
 | v1.55 | 2026-11-07 | Editorial revision for publication. |
+| v1.56 | 2026-11-07 | Added ADR-010 (draft) to the index. |
+| v1.57 | 2026-11-07 | ADR-010 accepted (v1.6). |
