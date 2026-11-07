@@ -1,0 +1,9 @@
+[project]
+name = "llth"
+version = "0.0.0"
+description = "LLTH: Liberated Local Thinking Harness"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+]
