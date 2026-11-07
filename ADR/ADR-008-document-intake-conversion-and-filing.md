@@ -3,7 +3,7 @@ id: ADR-008
 title: Document Intake, Conversion and Filing
 type: adr
 status: amended
-version: v1.27
+version: v1.28
 canonical: true
 scope: llth
 audience:
@@ -36,7 +36,7 @@ provenance:
 
 ## Status
 
-Amended (v1.27)
+Amended (v1.28)
 
 ---
 
@@ -241,3 +241,4 @@ Not chosen: the designer wants conversion at intake so that the model does not c
 | v1.25 | 2026-11-07 | Amended at the designer's request: OCR with Tesseract (the `tesserocr` wheel, its language data, the doubtful-word review and the scan-in-chat clause) is removed from the default toolkit of the first version and recorded as an anticipated update in the new §4a. §2, §4, §5, §6, §6a, §8, the Consequences, the notes, the Non-goals and Option A are made consistent. One Proposed item in §4a (decline a scan with a plain message). The acceptance of v1.24 is still pending. |
 | v1.26 | 2026-11-07 | The one Proposed item of v1.25 is decided: a scan, photograph or scanned PDF is declined in the first version with the message "Scanned document reading is unavailable in this current version." (designer's wording). No Proposed items remain. The acceptance of v1.24 and v1.25/v1.26 is pending. |
 | v1.27 | 2026-11-07 | Editorial revision for publication. |
+| v1.28 | 2026-11-07 | The amendments v1.19 to v1.27 (file chooser, the choice after a drop, §6a, OCR as an anticipated update in §4a) are accepted by the designer as written. Status stays `amended`. No text of the decisions changed. |

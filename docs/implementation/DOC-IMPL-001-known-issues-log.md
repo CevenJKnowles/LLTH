@@ -3,7 +3,7 @@ id: DOC-IMPL-001
 title: Known Issues Log
 type: implementation
 status: active
-version: v1.23
+version: v1.24
 canonical: true
 scope: llth
 audience:
@@ -85,7 +85,7 @@ A running list of known, non-urgent issues found while building and setting up L
 | PD-018 | Trial install of the `tesserocr` wheel in a scratch virtual environment | Settles which Tesseract version the wheel bundles and whether it includes language data (ADR-008 §4a, `DOC-IMPL-011` §9). Needed only for the OCR update. Installing anything, even into a virtual environment, is the designer's decision. |
 | PD-019 | Trial download of Typst and a trial export of real documents to DOCX, ODT, HTML and PDF | Settles Typst's release files by platform, offline package behaviour, PDF standards and how Pandoc drives it (ADR-009 §1 and Consequences). |
 | PD-021 | Start the build: create the folders of ADR-007 (the root's default location inside `$LLTH_HOME`, its name and the pointer file), then the interface of ADR-006 | Needs the designer's confirmation of the full absolute paths first; the installer needs its own ADR. |
-| PD-022 | Add the ask-first menu (File it, Use it in this chat, Cancel) and `/save` to ADR-006's interface text, and decide whether the ADR-008 amendments are accepted | ADR-008 is `amended` (v1.29) and its review is complete; ADR-006 v1.17 names the commands but has no wording for the menu. |
+| PD-022 | Add the ask-first menu (File it, Use it in this chat, Cancel) and `/save` to ADR-006's interface text | ADR-008 (v1.28) is accepted with its amendments; ADR-006 v1.18 names the commands but has no wording for the menu. |
 
 ---
 
@@ -142,3 +142,4 @@ KI-011, KI-012 and KI-013 were withdrawn by the designer on 2026-10-23: they con
 | v1.21 | 2026-11-07 | PD-020: the chooser command is named `/open` (ADR-008 v1.23). |
 | v1.22 | 2026-11-07 | PD-020 notes that the mockup v7 is built and awaits the designer; PD-022 added (ADR-006 wording for the ask-first menu; acceptance of the ADR-008 amendment). |
 | v1.23 | 2026-11-07 | Editorial revision for publication. |
+| v1.24 | 2026-11-07 | PD-022: the ADR-008 amendments are accepted (v1.28); the ADR-006 wording remains open. |

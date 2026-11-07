@@ -3,7 +3,7 @@ id: DOC-OVW-004
 title: Developer Guide
 type: overview
 status: active
-version: v1.20
+version: v1.21
 canonical: true
 scope: llth
 audience:
@@ -134,7 +134,7 @@ Acer ConceptD 7 (CN715-71): i7-9750H (6 cores / 12 threads), RTX 2060 Mobile 6 G
 | `ADR-005` | Fleet selection: K2 3.7B and K2 MoVA, four experts chosen by the user from a menu, no automatic routing | amended (v1.5) |
 | `ADR-006` | Interface: a local web page (FastAPI and one HTML file), localhost only; the Confirm setting from ADR-007; document intake from ADR-008; the export menu from ADR-009 | amended (v1.18) |
 | `ADR-007` | Storage and memory: one root with `LLTH/` and `user/`, a movable default location, readable settings, expert access by the user's commands or approved proposals, manual, planning and automatic confirmation | amended (v1.13) |
-| `ADR-008` | Document intake: dropping a file onto the window or `/open`; pypdfium2, Pandoc and charset-normalizer, provided inside LLTH's folder; a review before filing; originals kept; OCR for scans is an anticipated update | amended (v1.27) |
+| `ADR-008` | Document intake: dropping a file onto the window or `/open`; pypdfium2, Pandoc and charset-normalizer, provided inside LLTH's folder; a review before filing; originals kept; OCR for scans is an anticipated update | amended (v1.28) |
 | `ADR-009` | Export: PDF, DOCX, ODT and HTML with Pandoc and Typst, the browser's print as a fallback, templates in `user/preferences/templates/` | amended (v1.3) |
 | `ADR-010` | Documentation checks in continuous integration: one workflow and a standard-library script | accepted (v1.6) |
 
@@ -204,6 +204,7 @@ Success is judged by evidence, not by features:
 | v1.18 | 2026-11-07 | `DOC-OVW-001` retired; the folder map says so. |
 | v1.19 | 2026-11-07 | Motivation section moved here from the README. |
 | v1.20 | 2026-11-07 | ADR-010 and the `.github` folder added to the decisions table and the folder map. |
+| v1.21 | 2026-11-07 | ADR-008 shown as amended (v1.28): the amendments are accepted. |
 
 ### History of the README (before this guide existed)
 

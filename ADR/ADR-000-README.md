@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.57
+version: v1.58
 canonical: true
 scope: llth
 audience:
@@ -67,7 +67,7 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-008 — Document Intake, Conversion and Filing**
   Path: `$LLTH_HOME/ADR/ADR-008-document-intake-conversion-and-filing.md`
-  Status: amended (v1.27 — dropping a file onto the window or a file chooser, a layered toolkit of free tools for .md, .docx, .pdf (text layer), .odt, .txt and .tex, OCR for scans an anticipated update, conversion to Markdown with a JSON formatting file, review before filing, originals kept; depends on ADR-007)
+  Status: amended (v1.28 — dropping a file onto the window or a file chooser, a layered toolkit of free tools for .md, .docx, .pdf (text layer), .odt, .txt and .tex, OCR for scans an anticipated update, conversion to Markdown with a JSON formatting file, review before filing, originals kept; depends on ADR-007)
 
 - **ADR-009 — Export, Formats and the PDF Engine**
   Path: `$LLTH_HOME/ADR/ADR-009-export-formats-and-pdf-engine.md`
@@ -91,3 +91,4 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 | v1.55 | 2026-11-07 | Editorial revision for publication. |
 | v1.56 | 2026-11-07 | Added ADR-010 (draft) to the index. |
 | v1.57 | 2026-11-07 | ADR-010 accepted (v1.6). |
+| v1.58 | 2026-11-07 | ADR-008 amendments accepted (v1.28). |
