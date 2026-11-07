@@ -15,3 +15,4 @@ def read_data_root() -> Path:
 
 
 DATA_ROOT = read_data_root()
+EXPERTS_DIR = DATA_ROOT / "LLTH" / "experts"
