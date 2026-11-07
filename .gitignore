@@ -19,3 +19,7 @@ __pycache__/
 # Scratch
 *.tmp
 *.bak
+
+# User data root and its pointer file (ADR-007): memories, notes and documents, never committed
+/data/
+/.llth-root
