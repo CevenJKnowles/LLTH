@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If this work is useful to you, please cite it as below."
+type: software
+title: "LLTH: Liberated Local Thinking Harness"
+abstract: "A free, open-source harness for running open-weight language models privately on a single consumer GPU. Local-only, with no cloud or subscription."
+authors:
+  - family-names: Knowles
+    given-names: Ceven Jupiter
+repository-code: "https://github.com/CevenJKnowles/LLTH"
+license: Apache-2.0
+keywords:
+  - local-llm
+  - llama.cpp
+  - gguf
+  - benchmarks
+  - architecture-decision-records
