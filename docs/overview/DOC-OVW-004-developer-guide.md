@@ -20,7 +20,6 @@ tags:
   - common-tasks
 relationships:
   related:
-    - README
     - DOC-ARCH-001
     - DOC-IMPL-002
     - DOC-IMPL-006

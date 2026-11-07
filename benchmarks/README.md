@@ -19,7 +19,6 @@ tags:
   - reproducibility
 relationships:
   related:
-    - README
     - DOC-IMPL-006
     - ADR-004
 provenance:

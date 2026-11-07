@@ -94,7 +94,7 @@ Hard ceiling: about a 35B-total MoE at 4-bit. Fine-tuning locally is limited to 
 
 ```
 $LLTH_HOME/
-├── README.md                                   id: README   the project front page
+├── README.md                                   the project front page
 ├── LICENSE, LICENSE-DOCS, LICENSE-DATA         Apache-2.0 (code), CC BY-NC 4.0 (documentation), CC BY 4.0 (benchmark data)
 ├── NOTICE                                      copyright, licence summary, third-party credits
 ├── .gitignore                                  keeps models/, llama.cpp/ and docs/local/ out of the repository

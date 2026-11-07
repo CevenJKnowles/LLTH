@@ -1,39 +1,3 @@
----
-id: README
-title: LLTH, Liberated Local Thinking Harness
-type: overview
-status: active
-version: v4.0
-canonical: true
-scope: llth
-audience:
-  - developer
-  - maintainer
-  - operator
-created: "2026-10-23"
-updated: "2026-11-07"
-tags:
-  - llth
-  - overview
-  - purpose
-  - orchestration
-  - open-source
-  - licence
-  - local-llm
-maturity: alpha
-relationships:
-  related:
-    - ADR-001
-    - ADR-002
-    - ADR-004
-    - DOC-ARCH-001
-    - DOC-IMPL-006
-    - DOC-IMPL-010
-    - DOC-OVW-004
-provenance:
-  - human
----
-
 # LLTH: Liberated Local Thinking Harness
 
 LLTH, the **Liberated Local Thinking Harness**, is a free, open-source system for running open-weight language models entirely on the user's own computer, on ordinary consumer hardware. It is private by design: data stays on the machine, there is no cloud service or subscription, and no provider can change, slow down or withdraw it.

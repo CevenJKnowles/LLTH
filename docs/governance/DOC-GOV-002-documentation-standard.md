@@ -25,7 +25,7 @@ provenance:
 
 ## Purpose
 
-This is the documentation standard for this project. Every document gets YAML frontmatter, follows the naming rules below, and starts from a template in this file. The only exceptions are code and files that would break or be incompatible with frontmatter (source code, JSON, YAML config, CSV, lock files, and similar).
+This is the documentation standard for this project. Every document gets YAML frontmatter, follows the naming rules below, and starts from a template in this file. The only exceptions are code and files that would break or be incompatible with frontmatter (source code, JSON, YAML config, CSV, lock files, and similar) and the project's root `README.md`.
 
 ---
 
@@ -35,7 +35,7 @@ Fields appear in exactly this order. Optional fields are omitted entirely when t
 
 | Field | Required | Format and rules |
 |-------|----------|------------------|
-| `id` | yes | `ADR-NNN`, or `DOC-<AREA>-NNN`. The one exception is a project's root `README.md`, whose id is the word `README` |
+| `id` | yes | `ADR-NNN`, or `DOC-<AREA>-NNN` |
 | `title` | yes | Short descriptive title |
 | `type` | yes | One of: `adr`, `architecture`, `governance`, `implementation`, `overview`, `runtime` |
 | `status` | yes | Lifecycle. ADRs: `reserved`, `draft`, `accepted`, `amended`, `superseded`. Other documents: `reserved`, `draft`, `active`, `complete`. `reserved` = id allocated for a planned document, no content yet |
@@ -70,7 +70,7 @@ Formatting rules:
 | Document kind | Id | Filename | Location |
 |---------------|----|----------|----------|
 | ADR | `ADR-NNN` | `ADR-NNN-kebab-case-title.md` | `$LLTH_HOME/ADR/` |
-| Project root README | `README` | `README.md` | the project root, for example `$LLTH_HOME/` |
+| Project root README | none | `README.md` | the project root, for example `$LLTH_HOME/` |
 | ADR index | `ADR-000` | `ADR-000-README.md` | `$LLTH_HOME/ADR/` |
 | Architecture | `DOC-ARCH-NNN` | `DOC-ARCH-NNN-kebab-title.md` | `$LLTH_HOME/docs/architecture/` |
 | Governance | `DOC-GOV-NNN` | `DOC-GOV-NNN-kebab-title.md` | `$LLTH_HOME/docs/governance/` |
@@ -85,7 +85,7 @@ Rules:
 - **Version strings never appear in filenames.**
 - Folders are created when the first document of that area exists.
 - A new `type` or area code requires an amendment to this document.
-- The root `README.md` of a project is exempt from the naming and location rules: it keeps the name `README.md` and stays at the project root. It still carries frontmatter, and its id is `README` (not a `DOC-OVW-NNN` number), which protects the file's identity and keeps it from using up an overview number. `type` is `overview`.
+- The root `README.md` of a project is exempt from the naming, location and frontmatter rules: it keeps the name `README.md`, stays at the project root and carries no frontmatter, so that the repository page opens with its title.
 - `reserved` documents are allocated an id and appear in the relevant index, so numbers are never reused.
 
 ---
@@ -243,4 +243,4 @@ provenance:
 | v1.4 | 2026-10-23 | Added the Exemptions section (the author's tool configuration is outside the standard) and the root `README.md` exemption from naming and location. |
 | v1.5 | 2026-10-23 | The id of a project's root `README.md` is `README`. `DOC-OVW-001` is no longer used by the README and is free for the first overview document. |
 | v1.7 | 2026-10-23 | `provenance` is now a list. Templates updated. |
-| v1.8 | 2026-11-07 | Added the rules for amendment records. Editorial revision for publication. |
+| v1.8 | 2026-11-07 | Added the rules for amendment records. The root `README.md` carries no frontmatter. Editorial revision for publication. |
