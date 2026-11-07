@@ -1,0 +1,83 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1015,
+ "started_at": "2026-11-05T04:47:55",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "ESCALATE",
+ "usage": {
+  "completion_tokens": 5,
+  "prompt_tokens": 216,
+  "total_tokens": 221,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 216,
+  "prompt_ms": 144.068,
+  "prompt_per_token_ms": 0.6669814814814815,
+  "prompt_per_second": 1499.292000999528,
+  "predicted_n": 5,
+  "predicted_ms": 72.713,
+  "predicted_per_token_ms": 18.17825,
+  "predicted_per_second": 55.010795868689236
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 3,
+  "completion_tokens_usage": 5,
+  "prompt_tokens_usage": 216,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.166,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.166,
+  "to_final_answer": 0.221
+ },
+ "peaks": {
+  "gpu_temp_c": 73,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22300
+ },
+ "samples": [
+  {
+   "t_s": 0.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22300
+  }
+ ]
+}

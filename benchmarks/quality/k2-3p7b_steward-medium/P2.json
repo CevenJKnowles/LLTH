@@ -1,0 +1,95 @@
+{
+ "id": "P2",
+ "title": "numpy broadcasting bug",
+ "prompt_text": "numpy 2.x. This code raises an error on the last line:\n\n```python\nimport numpy as np\nx = np.arange(12).reshape(3, 4)\nmeans = x.mean(axis=0)\ncentred = x - means.reshape(3, 1)\n```\n\nTell me the exact exception type and message, why it happens, the minimal fix, and the values in `centred` after the fix.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "numpy 2.x. This code raises an error on the last line:\n\n```python\nimport numpy as np\nx = np.arange(12).reshape(3, 4)\nmeans = x.mean(axis=0)\ncentred = x - means.reshape(3, 1)\n```\n\nTell me the exact exception type and message, why it happens, the minimal fix, and the values in `centred` after the fix."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1007,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1007,
+ "started_at": "2026-11-05T04:51:25",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to answer: In numpy 2.x, code raises error on last line. Actually the error occurs when centering: x - means.reshape(3,1). means shape (4,). reshape(3,1) yields shape (3,1) but broadcasting mismatch: (3,4) - (3,1) is fine actually broadcast to (3,4). Wait error? Let's think. In numpy 2.x, perhaps broadcasting semantics changed? Actually subtracting a 2D array of shape (3,1) from (3,4) is allowed: it broadcasts to (3,4). So why error? Perhaps means.reshape(3,1) returns shape (3,1) but dtype float, okay. Hmm maybe error is \"operands could not be broadcast together with shapes (3,4) (3,1)\"? But that should be allowed. In numpy 1.x it's fine. In numpy 2.x maybe they removed implicit broadcasting of (3,1) to (3,4)? No, that would break many things. Let's recall: In numpy 2.0, there was change to broadcasting of negative strides? Not sure. Actually broadcasting of (3,1) to (3,4) is standard. So maybe the error occurs earlier: x.mean(axis=0) returns shape (4,), then means.reshape(3,1) shape (3,1). Subtract: (3,4) - (3,1) yields (3,4). Should be fine. Let's check known error: \"operands could not be broadcast together with shapes (3, 4) (3, 1)\" occurs when trying to broadcast (3,1) to (3,4) in older versions? Actually broadcasting rules: align trailing dimensions; (3,1) has dimensions 3 and 1; (3,4) has 3 and 4; trailing dimensions 1 and 4: if either is 1, it broadcasts; so okay. So not that.\n\nMaybe the issue is that `means.reshape(3, 1)` is ambiguous because `means` is a view with shape (4,) and reshape to (3,1) is not possible because size mismatch: 4 elements cannot become 3. Wait means has shape (4,) because x.mean(axis=0) gives per-column mean across rows: 3 rows => 4 columns => shape (4,). reshape(3,1) expects 3 elements, but there are 4. Indeed error! The user expects to center across rows? Actually they want to subtract column means from each element. So means shape (4,) corresponds to columns. To subtract column mean, you need means.reshape(1,4). So the error: `ValueError: cannot reshape array of size 4 into shape (3, 1)` perhaps. Indeed that is likely. The user wrote means.reshape(3,1) which mismatches. So exception type: ValueError with message \"cannot reshape array of size 4 into shape (3, 1)\". So answer: ValueError: cannot reshape array of size 4 into shape (3, 1). Why: means has 4 elements (one per column), reshape to (3,1) expects 3 elements. Minimal fix: means.reshape(1,4) or means[:, None] etc. Then compute centred = x - means[:, None]. Then values: compute. Let's compute means: x = arange(12).reshape(3,4) -> rows:\n\nRow0: 0 1 2 3\nRow1: 4 5 6 7\nRow2: 8 9 10 11\n\nMean per column: (0+4+8)/3=4, (1+5+9)/3=5, (2+6+10)/3=6, (3+7+11)/3=7. So means = [4,5,6,7]. Subtract: row0: -4 -3 -4 -4? Wait 0-4=-4,1-5=-4,2-6=-4,3-7=-4 => all -4. Row1: 4-4=0,5-5=0,6-6=0,7-7=0 => all 0. Row2: 8-4=4,9-5=4,10-6=4,11-7=4 => all 4. So centred matrix:\n\n[[-4,-4,-4,-4],\n [0,0,0,0],\n [4,4,4,4]]\n\nThus answer. Provide exact exception type/message, why, minimal fix, values.</ifm|think>**Exception**\n\n```text\nValueError: cannot reshape array of size 4 into shape (3, 1)\n```\n\n**Why it happens**\n\n`x.mean(axis=0)` returns a *per‑column* mean vector.  \nFor a 3 × 4 array this vector has **4** elements:\n\n```python\nmeans = np.array([4, 5, 6, 7])          # shape (4,)\n```\n\n`means.reshape(3, 1)` asks NumPy to interpret those 4 numbers as a 3 × 1\narray, i.e. it tries to fill 3 elements. Because the size 4 ≠ 3, NumPy raises\nthe `ValueError` above.\n\n**Minimal fix**\n\nYou need a 1 × 4 array (or a column‑vector of shape (4,) reshaped to (4,1))\nso that broadcasting can subtract the column means from every element:\n\n```python\ncentred = x - means.reshape(1, 4)   # or means[:, None]\n```\n\n**Resulting `centred` array**\n\n```python\nx = np.arange(12).reshape(3, 4)\nmeans = x.mean(axis=0)                     # [4 5 6 7]\ncentred = x - means.reshape(1, 4)\n\nprint(centred)\n```\n\n```\n[[-4 -4 -4 -4]\n [ 0  0  0  0]\n [ 4  4  4  4]]\n```\n\nSo after the fix, `centred` contains:\n\n```\nrow 0: [-4, -4, -4, -4]\nrow 1: [ 0,  0,  0,  0]\nrow 2: [ 4,  4,  4,  4]\n```",
+ "content": "",
+ "usage": {
+  "completion_tokens": 1374,
+  "prompt_tokens": 140,
+  "total_tokens": 1514,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 140,
+  "prompt_ms": 111.739,
+  "prompt_per_token_ms": 0.7981357142857143,
+  "prompt_per_second": 1252.9197504899812,
+  "predicted_n": 1374,
+  "predicted_ms": 27093.173,
+  "predicted_per_token_ms": 19.73282811361981,
+  "predicted_per_second": 50.67697312529618
+ },
+ "tokens": {
+  "reasoning_tokenized": 1373,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 1374,
+  "prompt_tokens_usage": 140,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.114,
+  "to_first_reasoning": 0.114,
+  "to_first_answer_token": null,
+  "to_final_answer": 27.207
+ },
+ "peaks": {
+  "gpu_temp_c": 79,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22279
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22279
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22334
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22330
+  }
+ ]
+}

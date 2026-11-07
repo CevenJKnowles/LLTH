@@ -1,0 +1,89 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1003,
+ "started_at": "2026-11-05T04:50:12",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce a Substack article, 550-650 words, for readers with some ML experience but no maths background. Title it ourselves. No headings inside the body. No bullet points, no code. Need a small worked example with made-up numbers, a handful of examples with predicted probabilities before and after a few more epochs showing the effect (accuracy improves while loss worsens). Finish with one practical takeaway. No bullet points, no headings inside the body. So just paragraphs. Title at top. Word count 550-650. Let's aim ~600 words. Ensure no bullet points, no headings inside body. Just paragraphs. Title separate line maybe. Then body paragraphs. Need to include one practical takeaway at end. Ensure not exceed 650 words. Count roughly. Let's draft about 6 paragraphs of ~100 words each = 600. Provide example: three examples, predicted probabilities before and after training. Show accuracy improved, loss increased. Explain why: overfitting, probability calibration, decision threshold, class imbalance, etc. Provide actionable advice: use regularization, more data, cross-validation, calibration, monitor both metrics.\n\nLet's write.</ifm|think>**When Accuracy Improves but Validation Loss Rises**\n\nYou have probably seen a training curve where validation accuracy climbs steadily while validation loss climbs just as fast, sometimes even out‑running the accuracy gain. To a beginner this looks contradictory: better predictions should mean a smaller loss. The truth is that accuracy and loss answer different questions, and the divergence tells a story about the model’s behavior on the validation set.\n\nTake a tiny binary‑classification problem with three examples and a simple logistic model. Before any extra epochs the model predicts probabilities 0.60, 0.30, and 0.40 for the three examples, respectively. The labels are 0, 1, and 0. Using the standard 0.5 decision threshold, it makes errors on the second example (predicted 0.30 → 0) and the third (predicted 0.40 → 0), so validation accuracy is 2/3, and the binary cross‑entropy loss is about 0.44.\n\nAfter a few more epochs the model’s probabilities shift to 0.78, 0.65, and 0.52. All three predictions now round up, so validation accuracy jumps to 1/1 = 1.0. The loss, however, has crept up to 0.62 because the model has become confidently wrong on the first example (the true label is 0). The accuracy improved because the model learned to be “sure” about every case, while the loss worsened because it is more wrong about the cases where confidence is misplaced. This is the classic symptom of overfitting to the training data: the model memorizes patterns that don’t generalize, so it starts to produce confident but incorrect probabilities.\n\nWhy does accuracy improve while loss worsens? Accuracy counts only whether the prediction crosses the threshold, not how close the predicted probability is to the true probability. When the training set contains an asymmetric or noisy label pattern, a model can learn a threshold that maximizes correct classifications while simultaneously becoming overconfident on the validation examples. The rising loss signals that the probabilities are mis‑calibrated: they are too high (or too low) relative to the true probabilities, even though the rounded decision is often right.\n\nA model that keeps improving validation accuracy while its loss climbs is also a warning that the validation split is not being used as a genuine test. If you are only tuning hyperparameters or early‑stopping on accuracy, you may be rewarding the model for exploiting quirks of the validation data. The model’s confidence on the validation set becomes a misleading signal, and you risk deploying a system that performs poorly in real‑world, more diverse data.\n\nWhat should you do about it? Start by checking the calibration of the predicted probabilities on the validation set—plot reliability diagrams or use simple calibration metrics. If the probabilities are badly off, apply regularisation (weight decay, dropout, data augmentation) or collect more diverse validation data to prevent the model from exploiting spurious patterns. Cross‑validation rather than a single split gives a more reliable estimate of how the model will behave on unseen data. Finally, monitor both validation accuracy and loss over time; a sustained increase in loss while accuracy stays high is a red flag that the model has stopped generalising.\n\nThe practical takeaway: never trust validation accuracy in isolation when loss is rising. Align your training objective with your real deployment goal—whether that is calibrated probabilities or robust classifications—by regularising, gathering better data, and continuously checking both metrics throughout training.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 940,
+  "prompt_tokens": 166,
+  "total_tokens": 1106,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 166,
+  "prompt_ms": 119.202,
+  "prompt_per_token_ms": 0.7180843373493976,
+  "prompt_per_second": 1392.5940839918794,
+  "predicted_n": 940,
+  "predicted_ms": 16894.976,
+  "predicted_per_token_ms": 17.992519701810437,
+  "predicted_per_second": 55.578652494090555
+ },
+ "tokens": {
+  "reasoning_tokenized": 939,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 940,
+  "prompt_tokens_usage": 166,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.122,
+  "to_first_reasoning": 0.122,
+  "to_first_answer_token": null,
+  "to_final_answer": 17.017
+ },
+ "peaks": {
+  "gpu_temp_c": 66,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22300
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22311
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22300
+  }
+ ]
+}

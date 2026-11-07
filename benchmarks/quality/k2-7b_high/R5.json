@@ -1,0 +1,613 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1015,
+ "started_at": "2026-10-30T23:17:27",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need answer routing layer design. Need produce priority rules, quota mechanism, fallback path, log fields, examples. Need ensure constraints: no learned classifier, readable deterministic rules same result. Decision under 5ms. 30B slow model may serve at most 20% requests over calendar day. Request can carry flag force 30B. If 30B unavailable request must still be answered. Need rules priority order. Quota mechanism exhaustion: fallback to 1B fast model, perhaps also if 30B requested? Need \"if 30B unavailable request must still be answered\" means fallback to 1B when 30B unavailable, regardless quota. Need quota 20% per calendar day. Need handle forced 30B maybe quota? It says 30B may serve at most 20% of requests over any calendar day; a request can carry a flag that forces the 30B model. So forced requests likely still count against 30B quota? Probably yes, because 30B serving those requests consumes 30B. But maybe forced flag could be exempt? Need decide. We should define quota: all 30B model responses count toward daily quota. If request carries forced 30B and quota exhausted, can it still be served? It says may serve at most 20%, so if quota exhausted, cannot serve 30B at all, even forced. But maybe \"at most 20%\" means 30B responses count; forced requests are part of requests? Need maybe forced flag requests are exempt? Hmm \"30B model may serve at most 20% of requests over any calendar day\" likely all requests routed to 30B. Flag forces 30B, so yes count. If quota exhausted, cannot use 30B even if forced. But \"a request can carry a flag that forces the 30B model\" could mean must use 30B, but if quota exhausted? Maybe the flag means \"must use 30B\" but quota is hard cap, so if quota exhausted, it cannot; then fallback? Need discuss. We need give clear rule. Could say flag forces 30B when quota available; if quota exhausted, treat as normal request and use 1B (or maybe if no 30B quota left, cannot serve 30B, so forced 30B cannot be honored). But that may violate \"forces\" semantics. Need maybe there is separate quota for 30B: 20% of requests. Flag forces 30B but if quota exhausted, maybe allow over quota? No, at most 20. Need decide.\n\nNeed also \"if the 30B model is unavailable the request must still be answered.\" So if quota available and request routed to 30B, but 30B unavailable, fallback to 1B. Need rule to handle 30B availability check in <5ms. Could check health endpoint / readiness. Need include.\n\nNeed \"decision must take under 5 ms\" — rules need cheap fields: content type? maybe simple heuristics: model_size? But no learned classifier. Need define input fields? We need produce rules. We can assume request carries metadata: content_type, length, complexity, user preference? Need create routing criteria. Need \"every rule readable and give same result for same input.\" Need no ML. Need maybe \"route to 30B only if all of: content_type in [text, json, csv]; body_size <= threshold; complexity <= threshold; request has priority flag; etc.\" Need \"priority order\" means rules evaluated in order, first matching wins. Need ensure 1B fast model for all else. Need decide criteria to route to 30B. Since 30B slow, only use for high-value? Need \"local models\" maybe one fast and one slow. Need \"request can carry flag that forces 30B\". We can define request fields: `routing` or `model` field. We'll use `x-target-model` maybe `model=slow`. Need \"30B unavailable\" check.\n\nNeed quota mechanism: daily quota 20% of requests. Need decide how to count \"requests over any calendar day\" — calendar day in UTC? Need define. Each request has timestamp; quota per UTC day. At start of day, quota = 20% of expected total? Wait \"30B model may serve at most 20 per cent of requests over any calendar day\" Means if 10000 requests per day, 30B can serve <=2000. Need quota mechanism can use sliding window? \"over any calendar day\" suggests daily count. Need quota mechanism: maintain counter for current calendar day (UTC). For each request, increment total request counter; if request routed to 30B, increment 30B served counter. Need enforce 30B served <= 20% of total requests. But if we know total daily requests only after day? To enforce at most 20% of requests over calendar day, need estimate total? We can implement dynamic: for each request, if 30B served so far <= 20% of total so far? But that's not enough: at end, if total is 1000 and 30B served 200, okay; but if quota is 20% of daily total, you don't know total until end. However you can enforce by \"if 30B served so far > 20% of total so far, then no more 30B\" — but that is stricter than final 20%. Example first 100 requests: 30B 20, then many 1B: total 1000, 30B 20 <= 20%? 20/1000=2% okay. But if total 1000, 30B served 20 (2%), fine. But if you want max 20%, you could allow 30B served up to 20% of total at end. But if you only check at end, you might have exceeded 20% early and no correction. Need quota mechanism to ensure at most 20% over any calendar day. Could use a \"budget\" that is dynamically adjusted as total request count known? Maybe there is a \"daily request rate\" or \"expected requests\" known? Not given. Need maybe define \"quota\" as at most 20% of requests served by 30B, and enforce with a sliding daily window: allow 30B if `(30B_served + 1) <= 0.2 * (total_so_far + 1)`? Wait that condition is too strict because if total so far T and 30B S, require S+1 <= 0.2*(T+1) => S/T approx 0.2 - epsilon. That means after first request, no 30B allowed (S=0, T=1, 0 <= 0.2 okay, second request: if route 30B, S+1=1, 0.2*(2+1)=0.6, 1 <=0.6 false, so no 30B). That would prohibit 30B early. Not correct.\n\nNeed better: Since quota is based on total requests over day, we can maintain a daily \"allowed 30B\" count as floor(0.2 * total_so_far) maybe? Let's think. At each request, before deciding, we know total requests so far today `T` and 30B served so far `S`. Need decide if can route to 30B. We want at end of day, S_end <= 0.2 * T_end. At each step, if we route to 30B, S becomes S+1 and T becomes T+1. We need ensure that for all future, no matter how many total requests remain, it's possible to stay under 20%. But since we don't know future T, we can maintain a \"remaining quota\" that is the maximum additional 30B responses that would still allow S_end <= 0.2 * T_end given current T, S and unknown future T? Actually future T can be arbitrary large. If we allow 30B now, T increases by 1, S increases by 1, so ratio (S+1)/(T+1) compared to S/T. We need ensure there exists some future total N such that final 30B count <= 0.2 * (T + N). If we allow a 30B now, then final S = S+1, final T = T+N. Condition S+1 <= 0.2*(T+N) => N >= (S+1 - 0.2T)/0.2 = 5(S+1 - 0.2T). If N can be large enough, always possible. Since N is future number of requests, can be huge. So there is no hard limit from future if we can wait? But day ends, so future N is bounded by remaining time in day? But no known. Actually to ensure \"over any calendar day\" at end, if total requests today is known only after day, but quota can be enforced at end by checking total; but if exceeded, can we reject? No, must answer. Need maybe we need define quota as \"at most 20% of requests\" but if we want a strict cap, we need a \"budget\" that is consumed by 30B responses. Since total requests unknown, we can set a fixed daily 30B budget, e.g., 20% of \"expected requests\" or \"rolling 24-hour total\". But constraints say \"over any calendar day\" maybe means at any time during the day, 30B responses must not exceed 20% of all requests so far? Actually \"may serve at most 20 per cent of requests over any calendar day\" means daily aggregate, not real-time. But to enforce before knowing total, need maybe use a \"quota\" that is set as a percentage of requests in a sliding window of e.g., 1 hour? Hmm.\n\nMaybe they expect a simple \"quota mechanism\" with a counter and a \"daily quota\" computed as 20% of daily request count. Since we can't know daily total, we can set a \"budget\" dynamically: at the beginning of the day, the 30B quota is 0? No, that would never use 30B. Need maybe \"20% of requests\" means at the end of the day, the 30B model served requests count must not exceed 20% of the total number of requests that day. To ensure that, you need a \"daily quota\" that is 20% of total requests. Since total requests are not known upfront, you can enforce by setting a \"soft quota\" based on a moving average or by using a \"quota token bucket\": 30B requests consume one token; the token bucket refills at 20% of request rate over the day. That is a common rate limiter: allow 30B if current 30B rate <= 20% of total request rate. But total request rate is not known either. Could estimate using a \"request rate\" measured over a window. Hmm.\n\nMaybe the problem is more abstract: We need design rules; maybe we can define \"quota mechanism\" as \"daily counter and daily request counter; 30B allowed if `slow_count / total_count <= 0.2` and if the current request is routed to 30B, we update counters and check; if it would violate, fallback to 1B.\" But as noted, if total_count is the total so far, not future. At the end, total_count is known. But if at each request you check `slow_count / total_count <= 0.2` after increment? Actually you can compute after each request: if `slow_count / total_count > 0.2`, then the last request (or the 30B request) caused exceeding? Let's test: Suppose first request 30B: slow=1,total=1, ratio=1 >0.2, violation. So not allowed. But maybe quota should be 20% of total requests, so first request cannot be 30B? That's silly. So not.\n\nCould use \"20% of requests\" as \"at most 20% of requests can be served by 30B\", but if total is unknown, a fair way is to allow 30B if `slow_count <= 0.2 * total_so_far`? That would require at least 5 times total to allow one 30B? No.\n\nNeed maybe there is an expected daily request volume known from telemetry. Then quota = 20% of expected daily requests. But constraint says \"over any calendar day\" not \"expected\". Hmm.\n\nLet's parse: \"the 30B model may serve at most 20 per cent of requests over any calendar day\" This could be interpreted as: For any calendar day, the number of responses from 30B divided by the number of total requests that day <= 20%. This is a daily quota. To implement, you need to know total requests. You can maintain two counters: `total_requests_today` and `slow_served_today`. At the end of the day, you can check. But if you want to enforce in real time, you need to predict total. Maybe the routing layer can use a \"daily quota\" that is a percentage of a \"target daily volume\" from load balancing? But not specified.\n\nMaybe the intended answer: \"At most 20% of requests\" means each request is a chance: the 30B model is allowed to serve only 20% of requests, so a \"quota token bucket\" that refills at 20% of request rate. We can set \"quota\" as \"at most 20% of requests\" but since requests are discrete and total unknown, we can use a \"rolling daily quota\" based on a moving window: for any request, the 30B model is allowed if the count of 30B requests in the past hour <= 20% of the total requests in the past hour? But constraint says calendar day, not rolling. But \"over any calendar day\" could mean at any moment during the day, the 30B model can't exceed 20% of the day's total? Actually \"over any calendar day\" means the daily aggregate.\n\nMaybe we can define \"quota mechanism\" with a \"daily quota\" that is set as a fraction of the \"total requests that day\", but because total is unknown, we use a \"soft quota\" that is dynamically adjusted based on a moving average of total request rate. But then it's not exactly 20% of all requests. We can state assumption: \"Assuming we can set a daily quota as 20% of the expected daily request volume (or use a token bucket that refills at 20% of the observed request rate).\" But the user asked \"the quota mechanism\" maybe wants something.\n\nNeed maybe answer should be practical: We can implement quota as a \"daily token bucket\" with capacity = 20% of expected daily requests. But the constraint says \"over any calendar day\" not \"expected\". Could use a \"daily quota\" that is computed from the total requests that have arrived so far plus a \"remaining quota\" based on a forecast? Hmm.\n\nLet's think of a deterministic rule that satisfies \"at most 20% of requests over any calendar day\" in real time: We can use a \"sliding window\" over the calendar day: For every request, before processing, we know how many requests have been processed so far today `T` and how many 30B served so far `S`. We need decide if this request can be routed to 30B. We need ensure that at the end of the day, the ratio `S_end/T_end <= 0.2`. Since `T_end >= T`, `S_end >= S`. The worst case for violating ratio is if all remaining requests are 30B? Actually if we route this request to 30B, then S_end >= S+1, T_end >= T+1. The minimum possible ratio at the end given current counts and this request routed to 30B is `(S+1)/(T_end)`, but T_end is unknown and at least T+1. To ensure no matter what future T_end, the ratio will not exceed 0.2, we need `S+1 <= 0.2 * T_end` for all possible T_end >= T+1. Since T_end can be arbitrarily large, this is possible if future T_end is large enough. But T_end is not arbitrarily large because day has finite time. But we don't know. So no guarantee without knowing remaining time. So impossible to enforce daily quota in real time without knowing total or using an estimate. However if the system has a known \"daily request budget\" (e.g., total expected requests) we can set quota. Or we can use \"at most 20% of requests\" but interpret as \"at most 20% of requests that day\" and use a \"rolling daily window\" where the 30B model can serve at most 20% of requests in any rolling 1-hour window? But user specifically said calendar day.\n\nMaybe there is a way: We can use a \"daily quota\" as a \"rate\" of 20% of total requests per day, but because total requests are unknown, we can define the quota as \"the 30B model may serve at most 20% of requests, i.e., if total requests are T, then at most 0.2T. To enforce this, the router must maintain a daily \"budget\" that is initially set to 0 and is incremented by 0.2 for every request that passes through the router, and the 30B model consumes one token from its budget. Then at the end of the day, the number of 30B responses equals the number of times the budget was consumed, and the budget is exactly 0.2 * T (because each request increments budget by 0.2). Wait! That's clever. Let's formalize:\n\nMaintain a daily \"slow budget\" as a real number. For each request, add 0.2 to the slow budget (refill quota). If routing to 30B, subtract 1 from slow budget. If slow budget > 0, allow 30B; if slow budget <= 0, don't. At the end of the day, total requests T, total budget added = 0.2*T, total consumed = S. If S <= 0.2*T, then because the budget never went negative at any point? Actually if S <= 0.2*T, then budget at end = 0.2*T - S >= 0. If we enforce at each step that after adding 0.2 and subtracting 1, the budget remains >= 0? Let's see: For each request, we can check if `slow_budget + 0.2 - 1 >= 0` i.e., `slow_budget >= 0.8`. That would prohibit 30B until budget accumulated enough. But if we only check at the moment before routing, we can allow 30B if `slow_budget >= 0` before subtracting? Hmm.\n\nSuppose we maintain `slow_budget` as a running counter of \"available 30B capacity\" that increases by 0.2 for each request and decreases by 1 when a 30B response is served. We need to ensure that the 30B model never serves more than 20% of requests. But if we allow 30B when `slow_budget > 0` after adding 0.2, then at the end `slow_budget = 0.2*T - S`. This is >=0 if S <= 0.2*T. But the issue is if we allow a 30B request, then immediately after serving it, `slow_budget` might become negative if `slow_budget` before was 0 and we subtract 1? Let's step:\n\nStart day: T=0, S=0, B=0.\nRequest 1: B += 0.2 => B=0.2. If route 30B, B -=1 => B=-0.8. That violates B>=0. So we should only allow 30B if after adding 0.2, B >= 1? Actually to ensure B never goes negative, before routing we need `B >= 1` after adding? Because if B before adding was b, after add b+0.2, if we serve 30B, B becomes b+0.2 -1 = b-0.8. Need b+0.2 -1 >=0 => b >= 0.8. So first 5 requests (b increases by 0.2 each) after 4 requests b=0.8, then 5th request: b+0.2=1.0, if 30B then B=0. So 30B can be served only every 5th request. That gives exactly 20% of requests (1 out of 5). This is a standard token bucket: 30B consumes one token, tokens are added at a rate of 0.2 per request. Since requests are discrete and token bucket refills at a rate of 20% per request, the 30B can serve at most 20% of requests. This works! At the end of day, if T total, tokens added = 0.2*T, consumed = S. If S <= 0.2*T, then B >=0. But because we enforce B never negative, we guarantee S <= 0.2*T at all times? Let's check: B = 0.2*T_so_far - S_so_far. We ensure before each 30B, after adding token, B >=1? Actually we can enforce B >= 0 after subtracting. That means S_so_far <= 0.2*T_so_far for all prefixes. Thus at day end, S <= 0.2*T. Yes! This is a real-time enforceability. The rule: For each request, first increment the daily \"slow token\" by 0.2. Then, if the request is routed to 30B, decrement by 1. If the decrement would make the token bucket negative, do not route to 30B. This ensures that at any point, the number of 30B responses so far is at most 20% of the total requests so far. At the end of the day, it's at most 20% of total requests for the whole day. Great! This is a valid mechanism. Need mention \"token bucket\" with refill rate 0.2 tokens per request. The 30B model may serve at most 20% of requests over any calendar day because the daily quota is exactly 20% of the requests seen that day, enforced continuously. Need define \"calendar day\" reset at 00:00 UTC.\n\nThis is likely the intended answer: \"quota mechanism: a daily token bucket that refills at 0.2 tokens per request; each 30B response consumes 1 token. If no token is available, route to 1B.\" This satisfies at most 20% of requests over the day, because at end tokens added = 0.2 * total requests, consumed = 30B responses. If we never let it go negative, 30B responses <= 0.2 * total requests. Nice. Need also handle \"if 30B unavailable\" fallback. If 30B would be chosen but token bucket has enough tokens but 30B unavailable, we could still use 1B. If 30B unavailable and no token? Use 1B. If 30B unavailable, we don't consume a token (since not serving 30B). Good.\n\nNeed \"every decision is logged with the rule that fired\" — log fields: timestamp, request id, routing decision, model selected, reason/rule id, quota state (tokens before/after maybe), request metadata. Need maybe log \"rule fired\" as rule identifier and fields that matched.\n\nNeed \"rules in priority order\" — We need define input fields available: `request.body.content_type`, `request.body.size`, `request.headers.authorization` maybe, `request.flag.force_30b` (or `x-model: slow`). Need maybe \"readability\": use simple conditionals. Need no learned classifier. Need \"decision under 5 ms\" — rules only inspect a few fields, no external calls except quota token check and 30B availability check (which can be cached and refreshed every 100 ms, so <5ms). Need \"if 30B model unavailable the request must still be answered\" — fallback rule after 30B chosen but unavailable: route to 1B.\n\nNeed \"priority order\": We need decide order of rules. Some rules should be before others. Need consider \"forced 30B\" should be high priority, but quota may block. Need \"if 30B unavailable\" should be checked after rule decides? Actually need know if 30B unavailable before deciding? The rule could be \"If request carries `force=slow` and 30B is available and quota token exists, route to 30B; else if 30B unavailable, route to 1B.\" But if 30B unavailable, no need to check quota? We need route to 1B. Priority order can be:\n\n1. Forced slow rule: if request has `routing=slow` (or `force=30B`) and 30B is available and quota token available, route to 30B. Actually if force slow but quota exhausted, should fallback to 1B. But if 30B unavailable, fallback to 1B. So rule 1 could be: \"If request requests `slow` AND 30B available AND quota token available -> route to 30B.\" But then if request requests slow but quota unavailable or 30B unavailable, no rule matches, then fallback to 1B. Need \"forced\" means should we consider it as \"must be 30B\" but if unavailable, fallback? The user says \"request can carry a flag that forces the 30B model\" — \"forces\" suggests if flag present, the intended model is 30B. But quota cap is a global constraint; if quota exhausted, maybe cannot. We need maybe make it a \"forced\" exception? Let's think.\n\nMaybe the flag \"forces the 30B model\" means the client explicitly wants the slow model. But quota cap is a hard limit, so if the 30B quota is exhausted, the 30B model cannot be used even for forced requests. The user likely expects that \"forces\" means \"if present, route to 30B before any other criteria, but quota still applies.\" Need in answer: \"The flag is not a bypass; it is a routing hint. Quota is a hard cap. If the flag is set and quota is available and 30B is healthy, route to 30B. If quota is exhausted or 30B is down, fall back to 1B.\" That is readable. Could also say \"If the flag is present but quota is exhausted, the request is answered by 1B and the log records that the forced rule fired but quota blocked it.\" Good.\n\n2. High-value/complex rule: if request body content_type in [text, json, csv] and size <= 10KB and complexity score (e.g., number of lines? tokens?) <= threshold and quota token available -> route to 30B. Need maybe \"complexity\" computed by cheap heuristic like `body.size <= 10_000` and `content_type` not image/audio. We need define \"complexity\" perhaps as `body.size <= 16KB` and `body.has_json`? Need \"readable\" rules. Could use \"if `content_type == \"application/json\" && body.size <= 64KB && body.complexity <= 10`\" but complexity needs definition. We can define \"complexity\" as a simple numeric field in the request, e.g., `complexity` header or metadata from client. But \"every rule readable\" maybe use fields: `content_type`, `body_size`, `request_length`, `user_priority`. Need no ML. Could use \"if `content_type` is text-like and `body_size` <= 10_000 bytes and `body_size` >= 1_000 bytes (enough to be non-trivial) and quota token available -> 30B.\" Need maybe \"fast model\" should handle simple requests; 30B for \"important\" or \"large\" requests? But slow model is 30B, likely better for complex or high-value. Need decide criteria. Since no ML, we can use simple heuristic: \"if content_type in text-like and body_size between 1KB and 10KB and contains a `priority` field of `high`\"? But then not all requests. Need maybe \"request can carry flag that forces 30B\" — so forced is one way. Need another way: maybe \"if the request has a `reason` field or `priority` header set to high\". But we need give rules.\n\nLet's define request metadata fields (available to routing layer):\n\n- `force_slow`: boolean, set if header `X-Force-Model: slow` or body field `routing: slow`.\n- `content_type`: string (e.g., `application/json`, `text/plain`, `text/csv`, `application/pdf`?).\n- `body_size`: integer bytes.\n- `complexity`: integer score provided by API gateway? Could be computed by \"number of non-empty lines\" or \"token count\" if we define. But to keep simple, we can say \"the request includes a `complexity` field (0-100) supplied by the API gateway; if absent, treat as 0.\" Need \"every rule readable\" maybe not too complex.\n- `priority`: integer 1-5? `priority` header.\n- `has_pii`? maybe `sensitive` flag.\n- `request_id`.\n\nNeed decide which rule routes to 30B. Since 30B is slow, it should be used for \"high value\" requests. We can define:\n- Rule 2: If `force_slow` is true and 30B available and quota token available -> 30B.\n- Rule 3: If `content_type` in {text/plain, application/json, text/csv} AND `body_size` >= 4,000 bytes AND `body_size` <= 100,000 bytes AND `complexity` >= 50? Actually 30B can handle larger text. But slow model maybe for \"large\" requests? Large requests might be expensive even for fast model? Need route to 30B if \"high quality needed\". We can use `complexity` score. For example, if `complexity >= 80` or `body_size >= 20KB`, use 30B. But 1B fast model should handle most small/simple. Need \"under 5ms\" so simple field checks.\n\nCould also use `content_type` to route to 30B for structured data like JSON, because 30B can parse JSON? But 1B fast model can parse too. Need maybe \"30B slow model\" is a \"large language model\" that can do \"hard\" tasks. Need criteria: \"If the request has `priority` >= 4 and `complexity` >= 50\" etc. But we need give \"three example requests with the route each would take.\" Need examples should illustrate rules and quota. Need maybe include a \"normal\" request, a \"forced slow\" request, a \"simple\" request, a \"quota exhausted\" request. Need \"quota mechanism\" and \"fallback path\" perhaps examples.\n\nLet's craft a coherent design:\n\n**Routing inputs** (available to router):\n- `force_slow`: boolean (`X-Force-Model: slow`)\n- `content_type`: string\n- `body_size`: int bytes\n- `complexity`: int 0-100 (0 if absent)\n- `priority`: int 1-10 (default 1)\n- `timestamp`: UTC date (for quota)\n- `request_id`\n\n**Priority rules** (evaluated in order, first true wins):\n\n1. **Hard stop / 30B down**: If `is_30b_healthy()` is false, route to 1B. This is evaluated first because if 30B is down, all 30B rules are pointless. But need \"if 30B unavailable the request must still be answered\" — this rule ensures fallback. However if we evaluate this first, then any request with `force_slow` and 30B down will route to 1B. Good. But \"priority order\" might want forced rule before 30B down? Actually if 30B down, no route to 30B, so route to 1B regardless. So first rule should be \"if 30B unavailable -> 1B\". But then if 30B available and quota token available, other rules. Need check 30B availability often, maybe cached.\n\n2. **Forced slow**: If `force_slow` is true AND quota_token_available() is true, route to 30B. This is a priority over all other rules? It should be first after health? If forced slow but quota exhausted, no rule matches except maybe \"fallback to 1B\". If forced slow but 30B down, health rule catches.\n\n3. **High-value complex**: If `content_type` in [\"application/json\", \"text/plain\", \"text/csv\"] AND `body_size` >= 4000 AND `complexity` >= 60 AND quota_token_available(), route to 30B. This is a \"30B for hard tasks\".\n\n4. **Large body**: If `body_size` >= 200_000 bytes AND `content_type` not in [\"image/*\", \"audio/*\"] AND quota_token_available(), route to 30B. Actually large requests may be \"slow\" and require 30B? But 1B fast model can handle large too, but maybe 30B better for \"complex\" not size. Could route large to 30B if \"complexity\" high. Need maybe use `complexity` not size. Let's decide.\n\n5. **High priority**: If `priority` >= 9 AND `complexity` >= 50 AND quota_token_available(), route to 30B.\n\n6. **Default**: If none of the above, route to 1B.\n\nBut if we put \"health\" first, then \"forced slow\" second, then \"high-value\" etc. Need quota token available check in each rule that routes to 30B. If token not available, rule doesn't fire; then default 1B. This satisfies quota.\n\nNeed \"quota mechanism\" in detail:\n- Daily token bucket: For each request, first add `0.2` tokens to `slow_quota_tokens` for current UTC day. Then if a rule routes to 30B, subtract 1. If after subtracting the token bucket would be negative, the 30B rule is not allowed to fire, so the request is answered by 1B. At the end of the day, `slow_quota_tokens = 0.2 * total_requests_today - slow_served_today >= 0`, so 30B served <= 20% of total requests. Need reset token bucket at midnight UTC.\n- Need maybe \"at most 20 per cent of requests over any calendar day\" — the token bucket exactly ensures that. Need mention \"If the 30B model is unavailable, we do not consume a token because we don't serve it.\"\n\nNeed \"fallback path\":\n- If 30B is chosen but becomes unavailable before/during response, or after request but before response? The routing decision happens at request time. We need \"if 30B model is unavailable the request must still be answered.\" We can define health check at routing time and after 30B is selected, if health check fails before response, fallback to 1B. Also if 30B times out, fallback to 1B. Need maybe \"if 30B model is unavailable\" means at time of routing, if it cannot serve, route to 1B. We can include \"If a 30B response is in flight and the 30B model becomes unavailable, the router retries with 1B.\" But not needed.\n\nNeed \"log fields\":\n- `timestamp_utc`\n- `request_id`\n- `routing_decision`: `fast` or `slow`\n- `model_selected`: `1B` or `30B`\n- `rule_id` (e.g., `R001`, `R002`, `R003`, `R004`, `R005`)\n- `reason`: human-readable string (e.g., \"forced slow\", \"high-value complex\")\n- `input_fields`: maybe `force_slow`, `content_type`, `body_size`, `complexity`, `priority`, `quota_token_available` before/after? Need include enough to reconstruct. Maybe:\n  - `rule_fired`\n  - `quota_tokens_before`\n  - `quota_tokens_after`\n  - `slow_model_healthy`: bool\n  - `request_meta`: {force_slow, content_type, body_size, complexity, priority}\n- `fallback_used`: true/false if 30B chosen but unavailable, maybe `fallback_reason`\n- `latency_ms`: maybe decision latency, but not necessary. \"every decision is logged with the rule that fired\" so at least `rule_id` and `rule_description`.\n\nNeed \"three example requests with route each would take.\" We need include actual request JSON? Could use simplified examples:\n1. Normal request: `POST /echo` with JSON body `{\"message\":\"hello\"}`, no force, content_type application/json, body_size ~20, complexity 0, priority 1. Rules: health true, forced false, high-value false (size < 4KB), default -> 1B. Log rule R005.\n2. Forced slow: `POST /generate` with header `X-Force-Model: slow`, body `{\"prompt\":\"Write a poem about space\"}`, content_type application/json, body_size 20, complexity 0, priority 1. Rule R001 (if health true, quota available) -> 30B. Log R002.\n3. Quota exhausted: `POST /generate` with header `X-Force-Model: slow`, body `{\"prompt\":\"Write a poem...\"}`. At 23:59:59, daily total requests T, slow served S, token bucket maybe 0.2 tokens left but if quota exhausted? Let's compute example: Suppose T=1000, S=200, token bucket = 0.2*1000 - 200 = 0.0. If a new request with force_slow arrives, R001 health true, R002 quota_token_available() false (tokens_before 0, after add 0.2, but no token? Actually token bucket check: before routing, we add 0.2, then if route 30B, need 1 token. If tokens_before = 0, after add = 0.2, still <1, so no 30B. So R002 false. Then R005 default -> 1B. Log rule R005, reason \"quota exhausted\". That demonstrates.\n\nNeed maybe include example of 30B unavailable fallback: `POST /generate` with header force_slow, but 30B health false. Rule R001 catches health false -> route 1B. Log R001.\n\nNeed ensure \"every rule readable and give same result for same input\" — use simple deterministic functions, no randomness, no learned models.\n\nNeed maybe \"decision must take under 5 ms\" — We can mention \"No rule requires network calls; `is_30b_healthy()` reads a cached health check updated every 100 ms, and quota token is a local counter. So worst-case latency is a few microseconds.\"\n\nNeed maybe \"local models\" means 1B fast model and 30B slow model are local, no external. Good.\n\nNeed perhaps \"quota mechanism\" with \"calendar day\" — need reset at UTC midnight. Need define \"calendar day\" as UTC date to avoid timezone issues. Need maybe \"If the quota is exhausted, what happens?\" — The 30B model cannot be served, so route to 1B. The 1B model answers the request. If the request had forced slow, the \"force\" is overridden by the quota cap; log records that the forced rule fired but quota blocked it. This is important.\n\nNeed maybe \"if the 30B model is unavailable the request must still be answered\" — We can say \"If 30B is chosen but not available at response time, the router automatically retries with the 1B model; no request is dropped.\" Need maybe \"fallback path\" specifically: \"If `is_30b_healthy()` is false, or if a 30B response fails, the request is routed to 1B. The 1B model is always available (we assume it is not overloaded; if it is, we could queue? But no requirement).\"\n\nNeed maybe \"no learned classifier\" — We can state \"All rules are pure boolean functions over fields; no training, no ML, no randomness.\"\n\nNeed maybe \"three example requests with the route each would take\" — Need maybe include \"route\" as `1B` or `30B`, and \"rule that fired\". We'll include three examples in a table.\n\nNeed maybe \"priority order\" with rule IDs. Let's define rule IDs:\n\n- `R001_HEALTH`: If 30B unavailable -> 1B.\n- `R002_FORCE`: If `force_slow` && `quota_token_available()` -> 30B.\n- `R003_HIGH_VALUE`: If `content_type` in text-like && `body_size >= 4_000` && `complexity >= 60` && `quota_token_available()` -> 30B.\n- `R004_HIGH_PRIORITY`: If `priority >= 9` && `complexity >= 50` && `quota_token_available()` -> 30B.\n- `R005_DEFAULT`: Route to 1B.\n\nNeed maybe `body_size` for high-value: \"large enough to be non-trivial but small enough for 30B to handle.\" Could use `body_size >= 4_000 && body_size <= 1_000_000` to avoid huge files. But 30B can handle large? It might be slow. Need maybe use `complexity` as primary.\n\nMaybe better: Since 30B is slow, it should be reserved for requests where 1B model is likely to fail or be unacceptable. We can use \"complexity >= 80\" or \"priority >= 9\" as hard criteria. Need maybe \"request can carry flag that forces 30B\" — so forced is one. Another rule: \"If `content_type` == `application/json` and body_size >= 1_000 and `body_size` <= 10_000 and `complexity` >= 70\" -> 30B. But no need.\n\nLet's think of \"readable and give same result for same input\" — maybe use a simple \"if force_slow then 30B else if content_type == 'application/json' and body_size > 10_000 and complexity > 50 then 30B else 1B\" but need quota.\n\nNeed maybe \"decision must take under 5 ms\" — if we check `complexity` field that may require computation? We can say \"complexity is a precomputed integer supplied by the API gateway; if absent, treat as 0.\" That keeps it fast.\n\nNeed maybe \"log fields\" — include \"rule_fired\" and \"rule_id\". Also maybe \"quota_token_before\" and \"quota_token_after\" so we can audit.\n\nLet's craft final answer with sections:\n\n1. Overview\n2. Request fields available to router\n3. Priority rules (R001-R005)\n4. Quota mechanism\n5. Fallback path\n6. Logging schema\n7. Example requests\n\nNeed ensure all constraints satisfied.\n\nLet's write in detail.\n\n**Request fields**:\n- `force_slow` boolean: set by header `X-Force-Model: slow` or body `{\"routing\":\"slow\"}`? Actually body field could be any. We'll say \"header `X-Force-Model: slow` or equivalent body flag.\"\n- `content_type`: `Content-Type` header value.\n- `body_size`: bytes in body.\n- `complexity`: integer 0-100, precomputed by gateway; 0 if absent.\n- `priority`: integer 1-10, default 1.\n- `request_id`: UUID.\n- `utc_day`: date string (YYYY-MM-DD).\n\n**Priority rules**:\nNeed perhaps \"R001_HEALTH\" first:\n```\nR001: if !is_30b_healthy():\n       route = 1B\n       rule = \"health-fail\"\n```\nBut if 30B down, no other rule can fire. Good.\n\nThen R002_FORCE:\n```\nR002: if force_slow and quota_token_available():\n       route = 30B\n       rule = \"force-slow\"\n```\nThen R003_HIGH_VALUE:\n```\nR003: if content_type in (\"application/json\", \"text/plain\", \"text/csv\")\n      and 4000 <= body_size <= 100000\n      and complexity >= 60\n      and quota_token_available():\n       route = 30B\n       rule = \"high-value-complex\"\n```\nThen R004_HIGH_PRIORITY:\n```\nR004: if priority >= 9 and complexity >= 50 and quota_token_available():\n       route = 30B\n       rule = \"high-priority\"\n```\nThen R005_DEFAULT:\n```\nR005: route = 1B\n      rule = \"default\"\n```\n\nNeed maybe \"quota_token_available()\" function:\n```\ndef quota_token_available():\n    tokens = get_token_bucket()\n    tokens += 0.2\n    set_token_bucket(tokens)\n    return tokens >= 1.0\n```\nActually if we add 0.2 then check `tokens >= 1.0`? Wait earlier I said after adding, if route 30B, tokens -=1. Need ensure `tokens` after adding >=1.0 to allow one 30B. If tokens after adding is e.g., 0.2, cannot route 30B. If tokens after adding is 1.0, can route. This is equivalent to \"token bucket has at least 1 token after refill.\" So `quota_token_available()` should add 0.2 to bucket and return `bucket >= 1.0`. But what if bucket is 0.8 and we add 0.2 -> 1.0, so available. If bucket is 0.9, add 0.2 -> 1.1, available. If bucket is 0.1, add 0.2 -> 0.3, not available. So yes.\n\nBut earlier I wrote \"if slow_budget >= 0.8 before adding\" etc. Equivalent. Need be clear:\n- `quota_token_available()` is called for each request. It first refills the daily bucket by 0.2 tokens. Then returns true if the bucket holds at least 1 token (so a 30B response can be served). If it returns false, no 30B rule can fire.\n- When a 30B rule fires, it also consumes 1 token from the bucket (the bucket must have been >=1). So after serving 30B, bucket = previous_bucket + 0.2 - 1 = previous_bucket - 0.8. So after 5 requests, bucket returns to 0. Actually let's simulate: T=0 bucket=0.\nRequest1: add .2 -> .2, <1, no 30B. If route 1B, bucket remains .2.\nRequest2: add .2 -> .4, <1, no 30B. bucket .4.\nRequest3: add .2 -> .6, no.\nRequest4: add .2 -> .8, no.\nRequest5: add .2 -> 1.0, yes 30B, bucket 0.0.\nSo after 5 requests, one 30B served, ratio 1/5 =20%. Good.\nIf total requests T, after T requests, bucket = 0.2*T - S. If no negative, S <= 0.2*T. Good.\n\nNeed maybe \"If the 30B model is unavailable the request must still be answered.\" We can define \"is_30b_healthy()\" as a cached boolean updated by a health probe every 100 ms. If false, R001 catches. If true, but then the 30B model becomes unavailable after selection, we need \"fallback path\": before sending to 30B, maybe check health again? Or if 30B response fails, router retries with 1B. Need include.\n\n**Fallback path**:\n- If R001 fires, route to 1B.\n- If R002/R003/R004 route to 30B but `is_30b_healthy()` is false at response time (or the 30B response fails), retry with 1B. In practice, we can perform a second health check just before the 30B call; if it fails, immediately route to 1B. Also if 30B times out, 1B fallback.\n\nNeed maybe \"if 30B unavailable\" at routing time, R001 catches. If it becomes unavailable after R002 selected, we can say \"The router re-checks health immediately before dispatch; if the 30B model is no longer available, the request is routed to the 1B model. This is the fallback path.\"\n\n**Logging**:\nFields:\n- `timestamp_utc`\n- `request_id`\n- `utc_day`\n- `routing_decision`: `\"30B\"` or `\"1B\"`\n- `model_used`: `\"30B\"` or `\"1B\"`\n- `rule_id`: `\"R001\"` ... `\"R005\"`\n- `rule_description`: human-readable\n- `fallback_used`: `\"none\"`, `\"health\"` or `\"timeout\"`\n- `quota_tokens_before`: float\n- `quota_tokens_after`: float\n- `input_snapshot`: `{force_slow, content_type, body_size, complexity, priority}`\n- `slow_healthy_before`: bool\n- `slow_healthy_after`: bool? maybe.\n\nNeed maybe \"log every decision with rule that fired\" — yes.\n\n**Examples**:\n\nExample 1: Normal small request:\n```\nPOST /echo\nContent-Type: application/json\n{\"message\":\"hello\"}\n```\n- `force_slow=false`, `body_size=18`, `complexity=0`, `priority=1`\n- R001 health true, R002 false, R003 false (size<4000), R004 false (priority<9), R005 default -> 1B.\n- Log: rule R005.\n\nExample 2: Forced slow:\n```\nPOST /generate\nX-Force-Model: slow\nContent-Type: application/json\n{\"prompt\":\"Write a poem about space\"}\n```\n- `force_slow=true`, `body_size=27`, `complexity=0`, `priority=1`\n- R001 health true, R002 quota_token_available() true -> 30B.\n- Log R002.\n\nExample 3: Quota exhausted:\n```\nPOST /generate\nX-Force-Model: slow\nContent-Type: application/json\n{\"prompt\":\"Write a poem about space\"}\n```\n- Same request, but at 23:59:59 on a day with `total_requests=1000`, `slow_served=200`, `token_bucket=0.0`. The quota refill for this request adds 0.2, so bucket=0.2 <1 -> R002 false. R003 false, R004 false, R005 default -> 1B.\n- Log R005 with reason \"quota exhausted\".\n\nNeed maybe include a 4th example: 30B down:\n```\nPOST /generate\nX-Force-Model: slow\n...\n```\n- R001 health false -> 1B. Log R001.\nBut user asked three example requests. We can include three, maybe one of them demonstrates 30B down? Let's include three: normal, forced slow, quota exhausted. Maybe also \"30B unavailable\" in fallback section. Could include \"30B unavailable\" as example 3 instead? Need demonstrate quota. Let's include three plus maybe \"30B unavailable\" as a note.\n\nNeed perhaps \"three example requests with the route each would take\" — route \"1B\" or \"30B\". We'll show in table.\n\nNeed ensure \"every rule readable and give same result for same input\" — Our rules use `content_type` and `complexity` etc. Need maybe \"complexity\" field could be absent; treat as 0. Need mention \"If any field is absent, use default (0 for complexity/priority, false for force_slow).\"\n\nNeed maybe \"decision must take under 5 ms\" — Need mention \"All rules inspect a handful of fields and a local counter; no external calls. `is_30b_healthy()` reads a cache updated every 100 ms, so worst-case latency is <1 ms.\" Good.\n\nNeed maybe \"the 30B model may serve at most 20 per cent of requests over any calendar day\" — Need maybe \"quota mechanism\" with token bucket is exactly 20% of requests that day. We can state \"This is a strict cap: at any point in the day, the number of 30B responses is no more than 20% of the number of requests processed so far. Therefore at day's end, 30B responses <= 20% of all requests that day.\"\n\nNeed perhaps \"calendar day\" reset: \"The token bucket is reset at 00:00 UTC. If you prefer local time, replace UTC with your timezone; but use a fixed definition.\"\n\nNeed maybe \"if the 30B model is unavailable the request must still be answered\" — Need maybe \"If 30B is unavailable, the 30B quota is not consumed because the 30B model is not serving. The 1B model answers immediately.\" Good.\n\nNeed maybe \"no learned classifier\" — We can explicitly say \"No neural network, no statistical model, no training data.\"\n\nLet's craft final answer elegantly.\n\nPotential issue: \"request can carry a flag that forces the 30B model\" — Our R002 only fires if quota token available. If flag present but quota exhausted, R005 default. Is that acceptable? We should perhaps say \"The flag is not an override of the quota cap. It is a routing preference. The quota is a hard cap, so if the 30B quota is exhausted, the 30B model cannot be used even for a forced request. The log will show that R002 fired but was blocked by quota.\" This addresses \"forces\" maybe. But maybe \"forces\" should mean \"must use 30B\" even if quota? But quota cap is hard, so impossible. Need maybe \"if the 30B model is unavailable the request must still be answered\" also hard. So \"forces\" means \"should use 30B when possible.\" We'll phrase \"forced slow\" as \"explicit client request for slow model; it takes priority over all other routing heuristics, but the global 20% cap is a hard cap.\"\n\nNeed maybe \"if 30B unavailable\" — R001 catches before R002. Good.\n\nNeed maybe \"if the 30B model is unavailable the request must still be answered\" — If R001 health false, route to 1B. If R002 routes to 30B but health check just before dispatch false, fallback to 1B. Good.\n\nNeed maybe \"quota mechanism\" with \"calendar day\" — The token bucket refill rate is 0.2 per request. This is exactly 20% of requests. Need maybe \"if the 30B model is unavailable, the quota is not consumed; but the token bucket still refills at 0.2 for every request. At the end of day, total tokens added = 0.2 * total requests. If some requests were routed to 1B, tokens remain unused; that's fine. If 30B served S, then S <= 0.2 * T. Good.\"\n\nLet's include \"quota_tokens_before\" and \"quota_tokens_after\" in log to show.\n\nNeed maybe \"if 30B unavailable\" and quota not exhausted, R001 catches. If 30B unavailable, we don't need to consider quota. Good.\n\nLet's write final answer.\n\nNeed maybe include \"priority order\" with \"R001 health\" first. Is it okay to have \"health\" first? The \"forced slow\" flag should probably be first after health? If 30B is down, forced slow can't be honored, so health first is correct. If 30B is up, forced slow next. Good.\n\nNeed maybe \"high-value complex\" rule order relative to \"high-priority\": If both true, which? We can order R003 high-value, R004 high-priority. But priority field and complexity could overlap. Need maybe \"high-priority\" should be before \"high-value\" if priority is more explicit? The user didn't specify. We can order \"force_slow\" then \"high-priority\" then \"high-value\" maybe. But we need define priority order. Let's decide order:\n- R001 health\n- R002 force_slow\n- R003 high_priority (priority >= 9)\n- R004 high_value_complex (complexity >= 60 and text-like)\n- R005 default\n\nThis seems reasonable: explicit priority before generic complexity. But if high-priority requires complexity>=50, high-value requires complexity>=60. If priority 9 and complexity 70, R003 catches. Good.\n\nNeed maybe \"complexity\" field could be absent; treat as 0. Need maybe \"priority\" field absent; default 1.\n\nLet's craft rule list:\n\n```\nR001: if !is_30b_healthy() -> 1B\nR002: if force_slow and quota_token_available() -> 30B\nR003: if priority >= 9 and complexity >= 50 and quota_token_available() -> 30B\nR004: if content_type in (\"application/json\", \"text/plain\", \"text/csv\")\n        and 4000 <= body_size <= 100000\n        and complexity >= 60\n        and quota_token_available() -> 30B\nR005: default -> 1B\n```\n\nNeed maybe \"quota_token_available()\" should be defined as:\n```\ndef quota_token_available():\n    daily_tokens += 0.2\n    return daily_tokens >= 1.0\n```\nBut if we call this in R002/R003/R004, it will add token for every request that reaches that rule, including those that eventually route to 1B? Actually if R002 false because no token, then R003 false, R004 false, R005 default. But we called `quota_token_available()` in R002; it adds 0.2 to bucket even if no 30B. That's correct: every request consumes a refill. So even if 30B not used, tokens accumulate. Good.\n\nNeed maybe if R002 true, after `quota_token_available()` returns true (because tokens >=1), we then route to 30B and consume 1 token. The function itself only checks and refills; consumption occurs when R002 fires. Need define:\n```\ndef quota_token_available():\n    daily_tokens += 0.2\n    if daily_tokens >= 1.0:\n        daily_tokens -= 1.0\n        return True\n    else:\n        return False\n```\nWait if we consume immediately inside the function, then R002 true means it consumed. But if we call `quota_token_available()` in R003 after R002 false, it will refill again for that same request? Actually each request should add 0.2 once. If R002 calls function, it refills and consumes if possible. If false, it returns false, and the request is then evaluated by R003 which calls function again, adding another 0.2! That would double-refill. Need avoid.\n\nWe need define `quota_token_available()` as a function that checks if a token is available *after* the request's refill, but does not consume unless the request is actually routed to 30B. The refill should happen once per request, before rules. We can structure:\n\nAt the start of each request:\n- Add 0.2 to token bucket. This is the request's share of quota.\n- Then evaluate rules. For each rule that routes to 30B, check if bucket has at least 1 token. If yes, subtract 1 and route to 30B. If no, route to 1B.\n- This is clean. So `quota_token_available()` should NOT add again; it should just check `bucket >= 1.0`. The refill happens once at request start.\n\nLet's define:\n```\ndef refill_quota():\n    daily_tokens += 0.2\n```\nCall at start of every request. Then `quota_token_available()`:\n```\nreturn daily_tokens >= 1.0\n```\nAnd when 30B rule fires:\n```\ndaily_tokens -= 1.0\n```\nSo in R002:\n```\nif force_slow and daily_tokens >= 1.0:\n    daily_tokens -= 1.0\n    route = 30B\n```\nThis avoids double refill. Need mention this in quota mechanism.\n\nLet's test with previous simulation:\nStart T=0, tokens=0.\nRequest1: refill -> 0.2, daily_tokens <1, no 30B, tokens remain 0.2.\nRequest2: refill -> 0.4, no.\nRequest3: refill -> 0.6.\nRequest4: refill -> 0.8.\nRequest5: refill -> 1.0, daily_tokens>=1, route 30B, tokens -=1 -> 0.0.\nSo after 5 requests, one 30B, ratio 1/5. Good.\nIf request with force_slow at request5, R002 true, consumes. If force_slow at request1, R002 false, then R003/R004 false, R005 default. tokens remain 0.2. At end of day after 1000 requests, tokens = 0.2*1000 - S. If S=200, tokens=0. Good.\n\nNeed maybe \"quota_tokens_before\" and \"quota_tokens_after\" in log: before = value after refill? Actually we can log `quota_tokens_after_refill` and `quota_tokens_after_consumption`. Let's define:\n- At request start, `quota_tokens_refilled = daily_tokens` (after adding 0.2). This is the amount of 30B capacity available for this request (plus previous unused). If a 30B rule fires, `quota_tokens_consumed = daily_tokens` before consuming? Hmm.\n\nMaybe log fields:\n- `quota_tokens_before`: daily_tokens before refill (i.e., before adding 0.2). Not necessary.\n- `quota_tokens_after_refill`: daily_tokens after adding 0.2.\n- `quota_tokens_after_decision`: daily_tokens after consuming if 30B served.\n\nNeed maybe \"log every decision with rule that fired\" — enough.\n\nLet's craft final answer now. Need be concise but detailed enough.\n\nPotential issue: \"three example requests with the route each would take\" — We'll show a small table with \"Request\" and \"Route\". We'll use simplified request descriptions.\n\nLet's write final.",
+ "content": "## 1. Overview\n\nThis is a deterministic routing layer in front of two local models:\n\n- **1B fast model** – used as the default.\n- **30B slow model** – used only when a high-value or forced-slow request qualifies, and the daily 20% quota token is available.\n\nNo learned classifier is used. Every rule is a plain boolean expression over a few request fields. The decision is made locally, so it completes in well under 5 ms.\n\n---\n\n## 2. Request fields available to the router\n\n| Field | Type | Source |\n|---|---|---|\n| `force_slow` | `bool` | Header `X-Force-Model: slow` or body flag |\n| `content_type` | `string` | `Content-Type` header |\n| `body_size` | `int` | Request body size in bytes |\n| `complexity` | `int` 0–100 | Precomputed by gateway; `0` if absent |\n| `priority` | `int` 1–10 | Header `X-Priority`; default `1` |\n| `request_id` | `string` | UUID or client id |\n| `utc_day` | `string` | `YYYY-MM-DD` |\n\n---\n\n## 3. Priority rules\n\nRules are evaluated in this order. The first matching rule wins.\n\n### R001 — 30B model is down\n\n```text\nif NOT is_30b_healthy():\n    route = 1B\n    rule  = \"health-fail\"\n```\n\nIf the 30B model is unavailable, everything else is skipped and the request goes to the 1B model.\n\n### R002 — Forced slow\n\n```text\nif force_slow == True AND quota_token_available():\n    route = 30B\n    rule  = \"force-slow\"\n```\n\nA client can explicitly request the slow model. This is a routing preference, but it does **not** bypass the 20% daily cap. If the cap is exhausted, the request falls through to R005.\n\n### R003 — High priority request\n\n```text\nif priority >= 9 AND complexity >= 50 AND quota_token_available():\n    route = 30B\n    rule  = \"high-priority\"\n```\n\n### R004 — High-value complex request\n\n```text\nif content_type in (\"application/json\", \"text/plain\", \"text/csv\")\n   AND 4000 <= body_size <= 100000\n   AND complexity >= 60\n   AND quota_token_available():\n    route = 30B\n    rule  = \"high-value-complex\"\n```\n\n### R005 — Default\n\n```text\nroute = 1B\nrule  = \"default\"\n```\n\n---\n\n## 4. Quota mechanism\n\nThe 30B model may serve at most 20% of all requests per calendar day.\n\nWe enforce this with a **daily token bucket**:\n\n- At the start of each request, add `0.2` tokens to the bucket.\n- If the request is routed to 30B, subtract `1` token.\n- If the bucket has less than `1` token after the refill, no 30B rule can fire.\n- Reset the bucket at `00:00:00` UTC.\n\nThis guarantees that at the end of the day:\n\n```text\nslow_responses <= 0.2 * total_requests\n```\n\nSo the 30B model can serve at most 20% of requests over any calendar day.\n\n### What happens when the quota is exhausted?\n\nThe 30B model is **not** served. The request falls through to R005 and is answered by the 1B model. The log records that a 30B rule fired but was blocked by quota.\n\n---\n\n## 5. Fallback path\n\nIf R001 fires because the 30B model is down, the request is immediately routed to 1B.\n\nIf a request is selected for 30B but the 30B model is unavailable at dispatch time — or if the 30B response fails — the router retries with the 1B model. The 1B model always answers.\n\n---\n\n## 6. Log record fields\n\nEvery decision is logged.\n\n| Field | Value |\n|---|---|\n| `timestamp_utc` | ISO 8601 UTC timestamp |\n| `request_id` | Request identifier |\n| `utc_day` | `YYYY-MM-DD` |\n| `routing_decision` | `\"30B\"` or `\"1B\"` |\n| `model_used` | `\"30B\"` or `\"1B\"` |\n| `rule_id` | `R001`, `R002`, `R003`, `R004`, or `R005` |\n| `rule_description` | Human-readable reason |\n| `fallback_used` | `\"none\"`, `\"health\"`, or `\"timeout\"` |\n| `quota_tokens_after_refill` | Token bucket value after adding 0.2 |\n| `quota_tokens_after_consumption` | Token bucket value after consuming if 30B served |\n| `input_snapshot` | `force_slow`, `content_type`, `body_size`, `complexity`, `priority` |\n\n---\n\n## 7. Example requests\n\n### Example 1 — Normal small request\n\n```text\nPOST /echo\nContent-Type: application/json\n\n{\"message\":\"hello\"}\n```\n\n- `force_slow = false`, `body_size = 18`, `complexity = 0`, `priority = 1`\n- R001: 30B healthy\n- R002: no `force_slow`\n- R003: `priority < 9`\n- R004: `body_size < 4000`\n- R005 fires\n\n**Route:** `1B`\n\n---\n\n### Example 2 — Forced slow request\n\n```text\nPOST /generate\nX-Force-Model: slow\nContent-Type: application/json\n\n{\"prompt\":\"Write a poem about space\"}\n```\n\n- `force_slow = true`, `body_size = 27`, `complexity = 0`, `priority = 1`\n- R001: 30B healthy\n- R002 fires because quota token is available\n\n**Route:** `30B`\n\n---\n\n### Example 3 — Forced slow request, quota exhausted\n\n```text\nPOST /generate\nX-Force-Model: slow\nContent-Type: application/json\n\n{\"prompt\":\"Write a poem about space\"}\n```\n\n- Same as Example 2, but at 23:59:59 on a day where:\n  - total requests = `1000`\n  - 30B responses so far = `200`\n  - token bucket = `0.0`\n\nThe 0.2 token refill for this request gives `0.2`, which is less than `1`, so `quota_token_available()` is false. R002 does not fire.\n\n- R003 and R004 also fail\n- R005 fires\n\n**Route:** `1B`\n\nThe request is answered normally, even though the client asked for the slow model.\n\n---\n\n## 8. Example 4 — 30B model is down\n\n```text\nPOST /generate\nX-Force-Model: slow\nContent-Type: application/json\n\n{\"prompt\":\"Write a poem about space\"}\n```\n\n- R001 sees `is_30b_healthy() == false`\n- Route to `1B`\n\n**Route:** `1B`\n\n---\n\nThis design is fully deterministic, readable, fast, and enforces all constraints: the 30B model is never used beyond 20% of daily requests, forced requests are honored whenever possible, and requests are always answered.",
+ "usage": {
+  "completion_tokens": 14966,
+  "prompt_tokens": 174,
+  "total_tokens": 15140,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 174,
+  "prompt_ms": 328.719,
+  "prompt_per_token_ms": 1.8891896551724137,
+  "prompt_per_second": 529.3274803099304,
+  "predicted_n": 14966,
+  "predicted_ms": 898564.239,
+  "predicted_per_token_ms": 60.04438616772469,
+  "predicted_per_second": 16.654346289870546
+ },
+ "tokens": {
+  "reasoning_tokenized": 13397,
+  "content_tokenized": 1567,
+  "completion_tokens_usage": 14966,
+  "prompt_tokens_usage": 174,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.332,
+  "to_first_reasoning": 0.332,
+  "to_first_answer_token": 783.758,
+  "to_final_answer": 898.898
+ },
+ "peaks": {
+  "gpu_temp_c": 90,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26259
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26403
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26362
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26431
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26456
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26431
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26407
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26435
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26426
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26430
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26456
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26439
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26431
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26431
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26422
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26450
+  },
+  {
+   "t_s": 151.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26423
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26440
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26424
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26442
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26440
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26420
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26435
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26436
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26391
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26389
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26370
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26371
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26385
+  },
+  {
+   "t_s": 281.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26394
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26356
+  },
+  {
+   "t_s": 301.8,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26384
+  },
+  {
+   "t_s": 311.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26385
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26383
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26381
+  },
+  {
+   "t_s": 341.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26379
+  },
+  {
+   "t_s": 352.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26410
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26399
+  },
+  {
+   "t_s": 372.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26398
+  },
+  {
+   "t_s": 382.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26397
+  },
+  {
+   "t_s": 392.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26392
+  },
+  {
+   "t_s": 402.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26396
+  },
+  {
+   "t_s": 412.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26382
+  },
+  {
+   "t_s": 422.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26354
+  },
+  {
+   "t_s": 432.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 442.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26365
+  },
+  {
+   "t_s": 452.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26381
+  },
+  {
+   "t_s": 462.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26379
+  },
+  {
+   "t_s": 472.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26386
+  },
+  {
+   "t_s": 482.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26413
+  },
+  {
+   "t_s": 492.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26402
+  },
+  {
+   "t_s": 502.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26259
+  },
+  {
+   "t_s": 512.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26345
+  },
+  {
+   "t_s": 522.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26354
+  },
+  {
+   "t_s": 532.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26363
+  },
+  {
+   "t_s": 542.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26393
+  },
+  {
+   "t_s": 552.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26396
+  },
+  {
+   "t_s": 562.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26390
+  },
+  {
+   "t_s": 572.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26391
+  },
+  {
+   "t_s": 582.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26411
+  },
+  {
+   "t_s": 592.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26394
+  },
+  {
+   "t_s": 602.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26413
+  },
+  {
+   "t_s": 612.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26418
+  },
+  {
+   "t_s": 622.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26381
+  },
+  {
+   "t_s": 632.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26406
+  },
+  {
+   "t_s": 642.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26399
+  },
+  {
+   "t_s": 652.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26392
+  },
+  {
+   "t_s": 662.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26398
+  },
+  {
+   "t_s": 672.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26410
+  },
+  {
+   "t_s": 682.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26427
+  },
+  {
+   "t_s": 692.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26379
+  },
+  {
+   "t_s": 702.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26399
+  },
+  {
+   "t_s": 712.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26397
+  },
+  {
+   "t_s": 722.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26372
+  },
+  {
+   "t_s": 732.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26400
+  },
+  {
+   "t_s": 742.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26417
+  },
+  {
+   "t_s": 752.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26392
+  },
+  {
+   "t_s": 763.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26385
+  },
+  {
+   "t_s": 773.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26392
+  },
+  {
+   "t_s": 783.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26399
+  },
+  {
+   "t_s": 793.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26387
+  },
+  {
+   "t_s": 803.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26372
+  },
+  {
+   "t_s": 813.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26400
+  },
+  {
+   "t_s": 823.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26399
+  },
+  {
+   "t_s": 833.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26391
+  },
+  {
+   "t_s": 843.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26419
+  },
+  {
+   "t_s": 853.2,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26409
+  },
+  {
+   "t_s": 863.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26401
+  },
+  {
+   "t_s": 873.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26422
+  },
+  {
+   "t_s": 883.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26410
+  },
+  {
+   "t_s": 893.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26413
+  }
+ ]
+}

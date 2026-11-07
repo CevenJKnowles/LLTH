@@ -1,0 +1,163 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1003,
+ "started_at": "2026-10-30T15:24:26",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to write a Substack article, 550-650 words, for readers who have trained a model or two but no maths background. Title it ourselves. Topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.\n\nSo we need a title, then a body of 550-650 words, no bullet points, no headings inside body. Must include a small worked example with made-up numbers, a handful of examples with predicted probabilities before and after a few more epochs. Must finish with one practical takeaway.\n\nWe need to ensure word count 550-650. Let's aim for ~600 words.\n\nWe need to avoid bullet points and headings inside body. So just paragraphs.\n\nWe need to include a small worked example: maybe 5 examples, show predicted probabilities before and after more epochs. Show that accuracy improves but loss worsens due to confidence miscalibration.\n\nExplain why: loss (like cross-entropy) penalizes confident wrong predictions heavily; accuracy only cares about correct/incorrect. Model may become more confident in some predictions, sometimes wrong, leading to higher loss while still getting more right.\n\nWhat pattern tells you: model may be overfitting confidence, not calibrated, possibly training data distribution shift, or optimization focusing on margin.\n\nWhat to do: monitor loss, use calibration techniques, regularization, early stopping, etc.\n\nFinish with one practical takeaway: \"Keep an eye on validation loss alongside accuracy; if they diverge, treat it as a warning sign and act.\"\n\nWord count: Let's write ~610 words.\n\nLet's produce final answer.\n",
+ "content": "**When Accuracy Climbs but Loss Stumbles: Reading the Hidden Story in Your Validation Metrics**\n\nYou’ve probably seen the headline numbers scroll by on a training dashboard: validation accuracy nudging upward, while the loss curve stubbornly climbs. At first glance it feels like a glitch—how can the model be getting better at classifying yet getting “worse” at what the loss is supposed to measure? The answer lies in what each metric actually rewards, and the tension between them becomes crystal‑clear once you look at the probabilities the model assigns to a few concrete examples.\n\nImagine a binary classifier that must decide whether a short text snippet is positive or negative. After a handful of epochs, the model’s validation accuracy sits at 78 % and its cross‑entropy loss at 0.62. You let it train for three more epochs. Accuracy ticks up to 81 %, but loss has risen to 0.71. To see why, peek at the model’s confidence on five validation points—three it gets right, two it gets wrong—before and after those extra epochs.\n\n| Example | True label | Predicted prob. (before) | Correct? (before) | Predicted prob. (after) | Correct? (after) |\n|---------|------------|----------------------------|--------------------|-----------------------|-----------------|\n| A       | Positive  | 0.73                     | Yes                | 0.94                  | Yes              |\n| B       | Negative  | 0.68 (for Positive)        | No                 | 0.86 (for Positive)   | No               |\n| C       | Positive  | 0.61                     | Yes                | 0.78                  | Yes              |\n| D       | Negative  | 0.55 (for Positive)     | No                 | 0.48 (for Positive)   | No               |\n| E       | Positive  | 0.66                     | Yes                | 0.92                  | Yes              |\n\nThe picture that emerges is simple. On the examples the model already handled correctly (A, C, E), it has become markedly more confident—its predicted probability for the right class has leapt from the 0.6–0.7 range to the high 0.8–0.9 range. Those extra bits of confidence are rewarded by the loss function, nudging it downward. On the two examples it still gets wrong (B and D), confidence has also increased, but now it’s confidence in the wrong direction: the model now says “positive” with a probability of 0.86 instead of a more tentative 0.68. Because the loss (cross‑entropy) multiplies the confidence by the penalty for being wrong, a single confidently wrong prediction can add more to the total loss than the modest gains from the correctly‑handled cases. The net effect is a rising loss even as the count of correct predictions climbs.\n\nWhat does this pattern tell you about the model? First, it suggests the model is becoming less calibrated—it is more certain of its answers, regardless of whether those answers are right. Second, it hints that the training objective (minimizing loss) is no longer aligned with the metric you care about (accuracy). The optimizer is happy to push probabilities toward the extremes, even when that makes the occasional mistake costlier in loss terms. In practice this often shows up when a model has seen enough data to memorize the easy patterns, and the remaining errors are stubborn outliers that the model tries to “force” into the right class, inflating confidence without improving correctness.\n\nSo what can you do when you spot accuracy and loss moving in opposite directions? A few practical levers come to mind. One is to treat the divergence itself as an early‑stopping signal: if validation loss starts rising while accuracy still improves, you may be entering the regime where the model is over‑confident and the extra epochs are buying little real benefit. Another is to regularize confidence directly—techniques such as label smoothing, temperature scaling, or adding a penalty term that discourages extreme probabilities can keep the loss from ballooning. Finally, keep an eye on calibration curves (the plot of predicted probability versus observed frequency) if you have the tools; a widening gap is a visual cue that the model’s certainty is outpacing its correctness.\n\nThe practical takeaway is simple but powerful: never let accuracy be the sole gauge of progress. When you see it climb while loss climbs with it, pause, inspect the underlying probabilities, and remember that a model that is “sure” about its mistakes is a warning sign, not a triumph. Adjust your training schedule or confidence‑control techniques before the gap widens, and you’ll keep both metrics— and the model’s real performance— on the same upward track.",
+ "usage": {
+  "completion_tokens": 1357,
+  "prompt_tokens": 124,
+  "total_tokens": 1481,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 124,
+  "prompt_ms": 2196.031,
+  "prompt_per_token_ms": 17.709927419354837,
+  "prompt_per_second": 56.465505268368254,
+  "predicted_n": 1357,
+  "predicted_ms": 140635.328,
+  "predicted_per_token_ms": 103.71336873156343,
+  "predicted_per_second": 9.641958526949928
+ },
+ "tokens": {
+  "reasoning_tokenized": 381,
+  "content_tokenized": 973,
+  "completion_tokens_usage": 1357,
+  "prompt_tokens_usage": 124,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.199,
+  "to_first_reasoning": 2.199,
+  "to_first_answer_token": 40.555,
+  "to_final_answer": 142.835
+ },
+ "peaks": {
+  "gpu_temp_c": 75,
+  "gpu_mem_mib": 4727,
+  "min_mem_available_mib": 26308
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26511
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26728
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26663
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26686
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26661
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26674
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26709
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26629
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26691
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26697
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26695
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26701
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26695
+  }
+ ]
+}

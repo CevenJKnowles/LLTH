@@ -1,0 +1,107 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1015,
+ "started_at": "2026-11-05T04:55:09",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to provide a plan: routing layer front of two local models, 1B fast, 30B slow. Need per request decision. No learned classifier; all rules readable and deterministic. Constraints: decision <5ms, logging rule, 30B quota <=20% per day, flag can force 30B, if 30B unavailable request still answered. Need rules in priority order, quota mechanism, exhaustion behavior, fallback path, log record fields, three example requests with route.\n\nWe need to describe design: priority rules (e.g., flag force 30B, quota check, cost estimate, language model, latency, token length, prompt size, domain, etc). Need quota mechanism: token bucket per day, token = 20% of max requests, allocate tokens before sending to 30B; if token missing, fall back to 1B or maybe queue? But must answer under 5ms; need fallback immediate (maybe 1B) and if 30B forced but unavailable, use 1B.\n\nDecision <5ms: simple deterministic checks, no heavy compute; use cheap metadata.\n\nNeed logging: fields: request_id, timestamp, rule, model_chosen, quota_state, outcome, maybe model_latency, token count.\n\nExhaustion: when quota tokens are zero, forced flag still cannot route to 30B; route to 1B with warning log, maybe record \"quota_exhausted\".\n\nFallback path: if 30B unreachable, use 1B; also maybe async prefill? But must answer <5ms? Actually model inference time not considered in decision; decision time <5ms. So fallback immediate.\n\nNeed example requests: request A has flag force 30B and quota available => route to 30B. Request B has large prompt, quota exhausted => route to 1B with warning. Request C has short prompt, normal => route to 1B maybe.\n\nProvide priority order list. Also mention quota token bucket per day resetting at midnight UTC; tokens = ceil(0.2 * max_requests) maybe. If daily max known as 1000 requests, quota 200 tokens.\n\nExplain decision process steps: 1. If flag force30B, then try quota; if available -> 30B else fallback. 2. else if token count>0 and cost>threshold? Actually we want 30B only under quota and cost. We can have rule: if token left and prompt_length <= X and estimated cost <= Y then 30B else 1B.\n\nBut must keep same result for same input: deterministic.\n\nNeed to ensure no learned classifier.\n\nWrite final answer with sections.\n\nLet's craft final answer.</ifm|think>**Routing Layer – “Fast‑First, Quota‑Aware, Fallback‑Safe”**  \n*Two local inference endpoints are front‑ended by a deterministic, rule‑based router that runs in < 5 ms per request.*\n\n---\n\n## 1. Decision flow (priority‑ordered rules)\n\n| Priority | Rule (readable, deterministic) | What the router does |\n|----------|--------------------------------|-----------------------|\n| **R1** | **Force‑30B flag** – the request header contains `X-Use‑Slow‑Model: \"30B\"` | → **R2** (try to honour the flag). |\n| **R2** | **Quota check** – a daily token bucket for the 30 B model is non‑empty (`quota_tokens > 0`) **and** the request is cheap enough (`estimated_cost ≤ daily_quota_cost`). | If both true → **R3**.  Otherwise → **R5**. |\n| **R3** | **Cost‑budget rule** – `estimated_cost ≤ max_cost_per_30B_request` (e.g., 2 USD). | → **30 B model**. |\n| **R4** | **Prompt‑size rule** – `prompt_length ≤ 2 k tokens` **and** `input_bytes ≤ 8 KB`. | → **30 B model**. |\n| **R5** | **Fast‑fallback rule** – no quota left, or cost too high. | → **1 B model**. |\n| **R6** | **Unavailable‑30B rule** – 30 B endpoint reports `502/503` (or connection timeout) **or** the quota bucket is empty while the force‑flag is set. | → **1 B model** (same request is still answered). |\n\n*Only one rule matches; the first match in the table wins.  The same input always follows the same path.*\n\n---\n\n## 2. Quota mechanism (30 B daily 20 % cap)\n\n| Component | Description |\n|-----------|-------------|\n| **Daily token bucket** | `tokens = floor(0.2 × daily_request_limit)`. Example: if the service is allowed 1 000 requests/day, `tokens = 200`. |\n| **Token acquisition** | When a request reaches **R2**, the router atomically **decrements** `tokens` (if `tokens > 0`). The decrement is done in a fast mutex or a tiny Redis‑lite counter (< 0.1 ms). |\n| **Token refill** | At 00:00 UTC the bucket is reset to the daily capacity. |\n| **Exhaustion behaviour** | If `tokens` is `0` at the moment the request is evaluated, **R5/R6** fire: the router chooses the 1 B model and logs `quota_exhausted: true`. |\n| **Force‑flag with empty quota** | Even if `X-Use‑Slow‑Model` is present, the router cannot satisfy the flag (quota is a hard cap). It proceeds to **R6** → 1 B model, and the log marks `force_30b_fails_quota`. |\n\nThe router never **queues** or **delays**; the decision itself is a set of cheap integer/string checks, guaranteeing < 5 ms.\n\n---\n\n## 3. Fallback path when the 30 B model is unavailable\n\n1. **Router receives a non‑200 response** (`502`/`503`) **or** the model‑health endpoint reports `down`.\n2. The router **does not abort**; it immediately routes the request to the **1 B model** (fast‑path).\n3. The log record includes `model_fallback: \"unavailable_30b\"` and a `fallback_reason`.\n4. If the request had the force‑flag, the log also contains `force_30b_fails_unavailable`.\n\nBecause the 1 B model always runs, the client always receives an answer.\n\n---\n\n## 4. Log record – fields\n\n| Field | Type | Meaning |\n|-------|------|---------|\n| `request_id` | string | Unique identifier from the client (UUID). |\n| `timestamp` | RFC‑3339 | UTC time when the router made the decision. |\n| `rule_fired` | string | The name of the first rule that matched (`R1`…`R6`). |\n| `model_chosen` | enum (`1B` / `30B`) | Model that will actually answer. |\n| `quota_state` | enum (`full` / `partial` / `exhausted`) | Bucket status before decrement. |\n| `force_30b_flag` | bool | Was `X-Use-Slow-Model` present? |\n| `model_fallback` | string or null | Reason for falling back, e.g. `\"unavailable_30b\"` or `null`. |\n| `estimated_cost_usd` | decimal | Router’s cost estimate for the chosen model. |\n| `tokens_consumed` | int | Number of 30 B tokens (0 if 1 B chosen). |\n| `outcome` | enum (`success` / `error`) | Final status returned to client. |\n\nThe log is written synchronously (or in a single‑flight async flush) so that **every decision** is traceable.\n\n---\n\n## 5. Example requests\n\n| # | Request details | Decision trace |\n|---|-----------------|----------------|\n| **A** | Header `X-Use-Slow-Model: \"30B\"`<br>Prompt = 150 tokens (≈2 KB)<br>Estimated cost = 0.9 USD | **R1** (force flag) → **R2** (quota >0) → **R3** (cost ≤ max) → **30 B model** (tokens‑decrement). |\n| **B** | No force flag<br>Prompt = 12 000 tokens (≈30 KB)<br>Estimated cost = 2.5 USD<br>Quota for the day is **exhausted** | **R1** fails → **R2** fails (quota empty) → **R5** (fast‑fallback) → **1 B model** (log `quota_exhausted:true`). |\n| **C** | No force flag<br>Prompt = 80 tokens (≈3 KB)<br>Estimated cost = 0.1 USD<br>Quota = 30 tokens left | **R1** fails → **R2** passes (quota>0) → **R3** passes → **30 B model** (decrement to 29). |\n\n---\n\n### TL;DR\n\n* A deterministic rule engine (R1‑R6) decides in < 5 ms.  \n* A daily 20 % token bucket caps 30 B usage; when it is empty the router falls back to the 1 B model.  \n* The force‑flag is honoured only when quota permits; otherwise the request still gets answered by the 1 B model.  \n* Every decision is logged with the rule that fired, quota state, fallback reason, cost estimate, and token consumption.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 2078,
+  "prompt_tokens": 216,
+  "total_tokens": 2294,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 216,
+  "prompt_ms": 192.772,
+  "prompt_per_token_ms": 0.8924629629629629,
+  "prompt_per_second": 1120.4946776502811,
+  "predicted_n": 2078,
+  "predicted_ms": 49125.31,
+  "predicted_per_token_ms": 23.652051035146844,
+  "predicted_per_second": 42.27963141606639
+ },
+ "tokens": {
+  "reasoning_tokenized": 2077,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 2078,
+  "prompt_tokens_usage": 216,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.196,
+  "to_first_reasoning": 0.196,
+  "to_first_answer_token": null,
+  "to_final_answer": 49.322
+ },
+ "peaks": {
+  "gpu_temp_c": 87,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22247
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22247
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22282
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22284
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22289
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22343
+  }
+ ]
+}

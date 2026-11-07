@@ -1,0 +1,90 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1006,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1006,
+ "started_at": "2026-10-30T20:07:14",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\n# Pivot the data: index=month, columns=city, values=sales, fill with sum (default aggfunc)\npivot_df = df.pivot_table(index=\"month\", columns=\"city\", values=\"sales\", aggfunc=\"sum\", fill_value=0)\n\n# Add a 'total' column as the row sum\npivot_df[\"total\"] = pivot_df.sum(axis=1)\n\n# Reset index to make 'month' a regular column (optional, but common for display)\nresult = pivot_df.reset_index()\n\nprint(result)\n```\n\nOutput:\n\n```\n   month    A     B     C  total\n0      1   10.  20.0   0.0   30.0\n1      2   30.   0.0  40.0   70.0\n2      3   60.  50.0   0.0  110.0\n```",
+ "usage": {
+  "completion_tokens": 306,
+  "prompt_tokens": 173,
+  "total_tokens": 479,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 173,
+  "prompt_ms": 1620.819,
+  "prompt_per_token_ms": 9.368895953757225,
+  "prompt_per_second": 106.7361623969117,
+  "predicted_n": 306,
+  "predicted_ms": 18989.798,
+  "predicted_per_token_ms": 62.261632786885244,
+  "predicted_per_second": 16.061255627890304
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 305,
+  "completion_tokens_usage": 306,
+  "prompt_tokens_usage": 173,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.623,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.623,
+  "to_final_answer": 20.613
+ },
+ "peaks": {
+  "gpu_temp_c": 56,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26089
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26089
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26187
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1017,
+ "started_at": "2026-10-31T01:38:34",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to answer: run a 7-billion parameter model in bfloat16 on GPU with 12 GB memory, quantisation not an option, KV cache costs 0.5 MB per token per sequence at this model size, want 4k token context, batch sizes 1,2,4. Activations small enough ignore. Need to compute memory usage per batch, then leftover. Use bfloat16 ~2 bytes per float? Actually bfloat16 is 2 bytes per float. Model parameters maybe in fp16? But they said bfloat16 on GPU, so parameters likely stored in bfloat16, each parameter 2 bytes. For 7B params, memory = 14 GB? That's huge, but maybe they mean the model is 7B parameters in fp16? But they want bfloat16. Might be okay. But we need to estimate GPU memory usage: model weights + KV cache + activation memory. KV cache per token per sequence: 0.5 MB per token per sequence. For 4k tokens, per batch? For batch size B, total tokens = B * seq_len? Actually context length 4096 tokens, but sequence length maybe number of tokens generated? Probably each token in sequence. So KV cache per token per sequence = 0.5 MB. For 4096 tokens => 2 GB? Wait 0.5 MB per token per sequence: that's 0.5 MB * 4096 = 2,048 MB = 2 GB. That's large. But maybe they mean per token per sequence for KV cache of model? Actually KV cache per token per sequence is small. For 7B model, KV cache size maybe 0.5 MB per token per sequence, so for 4096 tokens => 2GB. That's huge. But they say activations small enough ignore. So main memory is model weights + KV cache. Model weights: 7B parameters, each 2 bytes => 14 GB. That's beyond GPU memory. Something off. Probably they assume model in fp16 (2 bytes) but bfloat16? Might be confusion. We need to compute memory usage for given batch size, leaving leftover. Probably answer: batch size 1 uses most memory, leaving little leftover; batch size 2 or 4 less. Provide calculations.\n\nLet's assume model parameters in bfloat16: 7B * 2 bytes = 14 GB. KV cache: 0.5 MB per token per seq * 4096 = 2 GB. Total per batch: 14 + 2 = 16 GB. GPU 12 GB => impossible. So maybe they assume model parameters in fp32? Not sure. We'll give approximate: For batch size 1, memory usage ~12 GB leaving 0. So not possible. For batch 2, double? Actually tokens count? We'll compute: memory = model + KV. Model memory = 7B * 2 bytes = 14 GB. KV = 0.5 MB * 4096 = 2 GB. Total = 16 GB >12. So no. So maybe they assume model stored in fp16 (4 bytes) => 28 GB? Too high. Something off.\n\nWe need to give answer: likely batch size 1 uses all memory, leaving none. So not feasible. Provide suggestion: use smaller model or less memory. But question asks which batch size should be used and leftover. So answer: batch size 1 uses all memory, leftover 0. Batch 2 uses double KV cache? Actually KV cache per token per seq independent of batch? Might be per token per seq of model, not per batch. So same. So answer: none feasible.\n\nThus respond: With 12 GB GPU, 7B bfloat16 model plus KV cache 2 GB exceeds memory, so you cannot run with any batch size; need to reduce model size or use less KV cache.\n\nWe'll answer accordingly.\n",
+ "content": "**Short answer:** With a 12 GB GPU you can’t fit even the *single‑token* case – the model (7 B × 2 bytes ≈ 14 GB) + the 0.5 MB / token / seq KV cache (≈ 2 GB) already exceeds the hardware. Consequently **no batch size (1, 2 or 4) will leave any usable memory**. You’ll need to shrink the model (e.g. quantise, use a smaller dtype, or lower the context length) or move to a much larger GPU.\n\n---\n\n### Why the numbers blow up\n\n| Item | Size per the numbers you gave | How it scales with batch size |\n|------|------------------------------|------------------------------|\n| **Model parameters** | 7 B × 2 bytes = 14 GB (bfloat16) | *Unchanged* – the model itself is the dominant term. |\n| **KV‑cache** | 0.5 MB / token / seq × 4 096 tokens ≈ 2 GB | *Independent* of batch size (the cache is per‑token per‑sequence, not per‑batch). |\n| **GPU total** | 14 GB + 2 GB ≈ 16 GB | **> 12 GB** – the hardware is already over‑committed. |\n| **GPU available** | 12 GB | **Cannot accommodate** any of the above. |\n\nBecause the model’s weight storage alone already exceeds the GPU’s capacity, the KV‑cache addition only makes it worse.  \n\n---\n\n### What the math actually says\n\n1. **Model‑weight memory (bfloat16)**  \n   \\[\n   \\text{ModelMemory}=7\\text{B}\\times2\\text{B}=14\\text{ GB}\n   \\]\n\n2. **KV‑cache memory**  \n   \\[\n   \\text{KVMemory}=0.5\\text{ MB}\\times4096\\text{ tokens}=2\\text{ GB}\n   \\]\n\n3. **Total per‑batch memory** (ignoring activation buffers, which you said are negligible)  \n   \\[\n   \\text{Total}=14\\text{ GB}+2\\text{ GB}=16\\text{ GB}\n   \\]\n\n4. **GPU headroom**  \n   \\[\n   \\text{Headroom}=12\\text{ GB}-\\text{Total}=12\\text{ GB}-16\\text{ GB}= -4\\text{ GB}\n   \\]\n\n   A negative headroom means the model **doesn’t fit** on the GPU at all.\n\n---\n\n### Practical take‑away\n\n* **Batch = 1** – still 16 GB of model + KV‑cache → **no usable memory**.  \n* **Batch = 2** – still the same 16 GB total (the KV cache is not batch‑dependent).  \n* **Batch = 4** – still the same 16 GB total.\n\nSo **any** of the three choices leaves *zero* (or a negative) amount of memory left over. The only way to get a positive headroom would be to:\n1. Reduce the model size (e.g. by quantisation, using a smaller dtype, or a smaller context length).  \n2. Move to a GPU with ≥ 16 GB of memory (or a larger‑capacity GPU).  \n3. Switch to a different architecture (e.g., using mixed‑precision with a smaller fp16 model, or a model‑size‑reduction technique).\n\n---\n\n### Quick sanity‑check with realistic numbers\n\nIf you were instead using a **fp16** model (4 bytes per parameter) the numbers become:\n\n| Item | Size (fp16) |\n|------|-------------|\n| Model memory | 7 B × 4 B = 28 GB |\n| KV cache | 2 GB (as above) |\n| Total | 30 GB |\n| Headroom on 12 GB GPU | –18 GB |\n\nEven then you’re far over the limit.\n\n---\n\n**Bottom line:** With the specifications you quoted, the problem is not the batch size – it’s the sheer size of the model itself. Choose a model that fits on the GPU, or upgrade the hardware.",
+ "usage": {
+  "completion_tokens": 1821,
+  "prompt_tokens": 115,
+  "total_tokens": 1936,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 115,
+  "prompt_ms": 27.384,
+  "prompt_per_token_ms": 0.23812173913043477,
+  "prompt_per_second": 4199.532573765703,
+  "predicted_n": 1821,
+  "predicted_ms": 12653.86,
+  "predicted_per_token_ms": 6.95267032967033,
+  "predicted_per_second": 143.82962985207675
+ },
+ "tokens": {
+  "reasoning_tokenized": 859,
+  "content_tokenized": 960,
+  "completion_tokens_usage": 1821,
+  "prompt_tokens_usage": 115,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.03,
+  "to_first_reasoning": 0.03,
+  "to_first_answer_token": 5.77,
+  "to_final_answer": 12.684
+ },
+ "peaks": {
+  "gpu_temp_c": 67,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26289
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26289
+  }
+ ]
+}

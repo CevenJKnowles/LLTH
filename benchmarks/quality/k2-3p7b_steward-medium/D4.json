@@ -1,0 +1,89 @@
+{
+ "id": "D4",
+ "title": "Group totals that do not add up (looks easy, is hard)",
+ "prompt_text": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1019,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1019,
+ "started_at": "2026-11-05T04:56:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to answer. The script prints groupby sum sum: groups: a: 1+4=5, b:2, None group? Grouping key None included as group. Actually df has k values: a,b,None,a. groupby(\"k\") includes key None with v=3. Sum of each group: a:5, b:2, None:3 => total 10? Wait column total: 1+2+3+4=10. Group sum sum = 5+2+3=10. Actually they are equal. But question says they differ. Let's compute: df[\"v\"].sum() = 10. groupby sum sum = (a:1+4=5)+(b:2)+(None:3) = 10. So same. However maybe pandas 2.x groupby includes NaN key as separate group, sum includes NaN group value 3. So still 10. So no difference.\n\nBut perhaps they refer to behavior where groupby excludes NaN by default? In pandas, groupby excludes NaN keys. Let's check: df.groupby(\"k\") includes None? In pandas, groupby drops NaN keys? Actually groupby(\"k\") includes NaN as group, but you need to include dropna=False. By default dropna=True, so NaN keys are dropped. Wait let's recall: DataFrame.groupby(\"k\") default dropna=True, so rows with NaN key are ignored. So groups: a:1+4=5, b:2. Sum sum =7. Column total =10. So difference. Yes. So printed numbers: 7 and 10. So need to give change: df.groupby(\"k\", dropna=False)[\"v\"].sum().sum() to include None group, giving 10.\n\nThus answer: 7 and 10, explanation: default dropna=True excludes rows with None key; groupby sum excludes them; column sum includes all. Change dropna=False. Provide code.</ifm|think>The two outputs are  \n\n```\n7\n10\n```\n\n**Why they differ**\n\n`df.groupby(\"k\")` drops rows whose key is `NaN` by default (`dropna=True`).  \nWith `dropna=True`, the row with `k = None` (whose `v` is `3`) is ignored, so the group‑by sum only adds the values for the groups `a` and `b`:\n\n```\na → 1 + 4 = 5\nb → 2\ntotal = 5 + 2 = 7\n```\n\n`df[\"v\"].sum()` does not drop anything; it adds **all** values in the column:\n\n```\n1 + 2 + 3 + 4 = 10\n```\n\nHence the group‑by total (`7`) is smaller than the column total (`10`).\n\n**Fix**\n\nTell the groupby to keep the `NaN` key as its own group:\n\n```python\nprint(df.groupby(\"k\", dropna=False)[\"v\"].sum().sum())\n```\n\nNow the `None` group (`v = 3`) is included, and the two numbers become equal (`10`).",
+ "content": "",
+ "usage": {
+  "completion_tokens": 636,
+  "prompt_tokens": 152,
+  "total_tokens": 788,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 152,
+  "prompt_ms": 142.561,
+  "prompt_per_token_ms": 0.9379013157894738,
+  "prompt_per_second": 1066.210253856244,
+  "predicted_n": 636,
+  "predicted_ms": 14108.682,
+  "predicted_per_token_ms": 22.218396850393702,
+  "predicted_per_second": 45.00774771165726
+ },
+ "tokens": {
+  "reasoning_tokenized": 635,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 636,
+  "prompt_tokens_usage": 152,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.145,
+  "to_first_reasoning": 0.145,
+  "to_first_answer_token": null,
+  "to_final_answer": 14.254
+ },
+ "peaks": {
+  "gpu_temp_c": 89,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22305
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22352
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22305
+  }
+ ]
+}

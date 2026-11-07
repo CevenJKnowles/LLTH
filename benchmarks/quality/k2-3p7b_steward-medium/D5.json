@@ -1,0 +1,89 @@
+{
+ "id": "D5",
+ "title": "Train/test split with hidden structure (ambiguous)",
+ "prompt_text": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1020,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1020,
+ "started_at": "2026-11-05T04:57:10",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants code to split a DataFrame with 12k rows into train/test for a classifier. They didn't specify random split or time-based split. Usually for time series, we might split by time: first 80% train, last 20% test. Or random split using train_test_split. Provide both options. Use sklearn.model_selection.train_test_split or manual slice. Use pandas. Provide code.\n\nThe request is straightforward, no disallowed content. Provide code.</ifm|think>```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# Load the data (assumes it is already in a DataFrame called `df`)\n# df = pd.read_csv(\"sensor_data.csv\")\n\n# ------------------------------------------------------------------\n# Option 1: Random split (stratified to preserve class balance)\n# ------------------------------------------------------------------\nX = df.drop(columns=[\"failure_next_24h\"])          # numeric features\ny = df[\"failure_next_24h\"]                         # binary target\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y,\n    test_size=0.20,          # 80 % train / 20 % test\n    stratify=y,             # keeps class proportions similar\n    random_state=42         # reproducible split\n)\n\nprint(f\"Train shape: {X_train.shape}\")\nprint(f\"Test  shape: {X_test.shape}\")\n\n# ------------------------------------------------------------------\n# Option 2: Time‑ordered split (train on the earliest 80 % of time,\n# test on the most recent 20 %)\n# ------------------------------------------------------------------\n# Sort by timestamp first\ndf = df.sort_values(\"timestamp\").reset_index(drop=True)\n\nsplit_idx = int(len(df) * 0.8)   # first 80 % of rows\ntrain_df = df.iloc[:split_idx]\ntest_df  = df.iloc[split_idx:]\n\nX_train_t = train_df.drop(columns=[\"failure_next_24h\"])\ny_train_t = train_df[\"failure_next_24h\"]\nX_test_t  = test_df.drop(columns=[\"failure_next_24h\"])\ny_test_t  = test_df[\"failure_next_24h\"]\n\nprint(f\"Time‑ordered Train shape: {X_train_t.shape}\")\nprint(f\"Time‑ordered Test  shape: {X_test_t.shape}\")\n```\n\n**Explanation**\n\n* **Random split** (`Option 1`) is useful when the ordering of rows has no predictive value, e.g., you want a stratified 80/20 split while preserving the proportion of failures in each set.\n* **Time‑ordered split** (`Option 2`) is safer for truly time‑dependent data because the test set contains only future observations; this avoids any leakage from later data influencing the training process.\n\nBoth snippets return four separate objects (`X_train`, `X_test`, `y_train`, `y_test`) that you can feed directly into any scikit‑learn estimator. Adjust `test_size`, `random_state`, or the split fraction as needed for your project.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 615,
+  "prompt_tokens": 122,
+  "total_tokens": 737,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 122,
+  "prompt_ms": 117.682,
+  "prompt_per_token_ms": 0.9646065573770491,
+  "prompt_per_second": 1036.6921024455737,
+  "predicted_n": 615,
+  "predicted_ms": 13646.921,
+  "predicted_per_token_ms": 22.226255700325733,
+  "predicted_per_second": 44.99183368907903
+ },
+ "tokens": {
+  "reasoning_tokenized": 614,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 615,
+  "prompt_tokens_usage": 122,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.12,
+  "to_first_reasoning": 0.12,
+  "to_first_answer_token": null,
+  "to_final_answer": 13.767
+ },
+ "peaks": {
+  "gpu_temp_c": 89,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22291
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22291
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22315
+  }
+ ]
+}

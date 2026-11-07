@@ -1,0 +1,259 @@
+{
+ "id": "W5",
+ "title": "Full cover letter from a fact list",
+ "prompt_text": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1005,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1005,
+ "started_at": "2026-10-30T22:43:00",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to write a complete cover letter 120 to 200 words from facts, using placeholders for names. Must be a cover letter presumably addressed to employer. Must mention the career break honestly in a single sentence. Must not claim professional PyTorch experience. No superlatives or intensifiers. No bullet points. No invented names for employer, applicant, retailer or projects. Use placeholders in square brackets for names.\n\nWe need to be careful not to use any superlatives or intensifiers like best, most, passionate, extremely, etc. Also avoid other intensifiers? The prompt says \"no superlatives or intensifiers (such as best, most, passionate, extremely)\". So we should avoid words like \"excellent\", \"great\", \"very\", \"highly\", \"outstanding\", \"amazing\". Use neutral language.\n\nWe must include that the applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1.\n\nWe need to mention these facts. Mention the career break honestly in a single sentence. So we need a sentence that says something like: \"In 2024 I took an eight-month career break to care for my family.\" That's the single sentence mention of the career break.\n\nWe need to not claim professional PyTorch experience. So we can say: \"I have used PyTorch in personal projects, where I applied it to model training.\" That's okay. But we must not claim professional experience. So we can say: \"I have used PyTorch in personal projects, which involved implementing neural network components.\" That's okay.\n\nWe must not use bullet points. So it's a paragraph or maybe two paragraphs.\n\nWe need to use placeholders for names: applicant, employer, retailer, projects. So we can write: \"Dear [Employer Name]\" or \"Dear [Hiring Manager]\" or \"Dear [Company]\". We can write \"Dear [Company Name] Hiring Team\". And we can sign with \"[Applicant Name]\". And we can refer to the retailer as \"[Retailer Name]\" or \"[Retailer]\". The prompt says \"no invented names for the employer, the applicant, the retailer or the projects\". So we should not invent names for those. Use placeholders in square brackets for names. So we can write: \"I worked at [Retailer Name]\" or \"I worked at a retailer ([Retailer Name])\". Or \"I worked at [Retailer]\".\n\nWe need to be careful not to use any superlatives or intensifiers. Let's list some common ones: best, most, passionate, extremely, very, great, excellent, outstanding, amazing, incredible, superb, phenomenal, wonderful, etc. Also avoid \"highly\" maybe. Also avoid \"strong\" maybe? It's not a superlative but might be considered intensifier. Safer to avoid any adverbs of degree. Also avoid \"so\" maybe. Let's just keep it simple and plain.\n\nWe need to write a cover letter, presumably with a greeting, body, closing. Should be 120-200 words. Let's aim for about 150 words.\n\nWe need to mention the demand-forecasting model improved stock accuracy by 11 per cent. Use \"by 11 per cent\". Use \"by 11 percent\" maybe. Use \"by 11 percent\". The prompt says \"by 11 per cent\". So we can write \"by 11 per cent\". That's fine.\n\nWe need to mention the Python course: \"designed and taught a six-week internal Python course to twelve colleagues\". Use that.\n\nWe need to mention PyTorch and German. \"The role asks for PyTorch and German at B2 level. I have used PyTorch only in personal projects and speak German at C1.\" So we can say: \"I have used PyTorch in personal projects, where I built and trained models. I speak German at C1 level, which exceeds the required B2 level.\" But careful: \"exceeds\" might be okay? It's not a superlative. It's fine. But maybe we can say \"I speak German at C1 level, which is higher than the required B2 level.\" That's okay.\n\nWe need to mention the career break in a single sentence. So we need a sentence that mentions the career break. It should be honest. Something like: \"In 2024 I took an eight-month career break to care for my family.\" That's a single sentence. That covers it.\n\nWe need to ensure we don't use any superlatives. Let's avoid words like \"significant\", \"notable\"? \"significant\" is not a superlative but might be considered intensifier? It's not a superlative, it's just a descriptor. Probably okay. But to be safe, we can avoid \"significant\". Use neutral language.\n\nWe need to avoid bullet points. So it's just paragraphs.\n\nWe need to sign with [Applicant Name] and maybe [Applicant Email] and [Applicant Phone] but placeholders are okay. The prompt only says use placeholders in square brackets for names. So we can put [Applicant Name] at the end. Possibly also [Company Name] at the top. So something like:\n\nDear [Company Name] Hiring Team,\n\nI am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company. I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent. During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\n\nIn 2024 I took an eight-month career break to care for my family. I have used PyTorch in personal projects, where I implemented neural networks and trained models. I speak German at C1 level, which is higher than the required B2 level. I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\n\nThank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\n\nSincerely,\n[Applicant Name]\n\nWord count? Let's count. Let's count manually.\n\nParagraph 1: \"I am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company.\" (18 words?) Let's count precisely later.\n\nBetter to write the whole thing and then count.\n\nWe need to ensure it's between 120 and 200 words. Let's aim for about 150.\n\nAlso need to avoid superlatives. The phrase \"I am excited\" is okay? \"Excited\" is an emotion, not a superlative. It's fine. \"I am excited to bring my experience\" is okay.\n\nCheck for any intensifiers: \"very\", \"extremely\", \"highly\", \"great\", \"excellent\", \"best\", \"most\". None.\n\nCheck \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" That's fine.\n\nCheck \"I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent.\" That's fine.\n\nCheck \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\" That's fine.\n\nCheck \"In 2024 I took an eight-month career break to care for my family.\" That's the single sentence mention of career break.\n\nCheck \"I have used PyTorch in personal projects, where I implemented neural networks and trained models.\" That's okay.\n\nCheck \"I speak German at C1 level, which is higher than the required B2 level.\" That's okay.\n\nCheck \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" Good.\n\nNow count words.\n\nLet's write the full letter with placeholders.\n\nWe need to include a greeting. \"Dear [Company Name] Hiring Team,\" is a greeting.\n\nThen body paragraphs.\n\nThen closing.\n\nWe need to ensure we use placeholders for employer, applicant, retailer, projects. So we need placeholders for the company name (employer), applicant name, retailer name, and maybe project names. We didn't mention specific projects, but we could mention \"my demand-forecasting model\" which is a project. Could use placeholder for that? The prompt says \"no invented names for the employer, the applicant, the retailer or the projects.\" So we could refer to the demand-forecasting model as \"[Project Name]\" or something. But we can also just say \"my demand-forecasting model\" without naming it. That's fine. But to be safe, maybe we can put placeholder for the project: \"my demand-forecasting model ([Project Name])\". But the prompt says \"no invented names for the employer, the applicant, the retailer or the projects.\" So we shouldn't invent names for projects. Using a placeholder is not inventing a name. So we can use [Project Name] placeholder. But maybe it's not necessary. However, we could include a placeholder for the retailer: [Retailer Name] is okay. The applicant: [Applicant Name] is okay. The employer: [Company Name] is okay.\n\nWe need to mention the role: Junior Machine Learning Engineer. That's fine.\n\nNow word count. Let's draft the letter and then count.\n\nDraft:\n\nDear [Company Name] Hiring Team,\n\nI am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company. I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent. During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\n\nIn 2024 I took an eight-month career break to care for my family. I have used PyTorch in personal projects, where I implemented neural networks and trained models. I speak German at C1 level, which is higher than the required B2 level. I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\n\nThank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\n\nSincerely,\n[Applicant Name]\n\nNow count words.\n\nLet's count manually.\n\nParagraph 1: \"Dear [Company Name] Hiring Team,\" - that's 5 words? Let's count: \"Dear\" (1) \"[Company\" (2) \"Name]\" (3) \"Hiring\" (4) \"Team,\" (5). So 5 words.\n\nParagraph 2: \"I am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company.\" Count: I(1) am(2) writing(3) to(4) apply(5) for(6) the(7) Junior(8) Machine(9) Learning(10) Engineer(11) role(12) at(13) your(14) renewable-energy(15) company(16). That's 16 words. So total 5+16=21.\n\n\"I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent.\" Count: I(1) have(2) two(3) years(4) of(5) experience(6) as(7) a(8) data(9) scientist(10) at(11) [Retailer(12) Name],(13) where(14) my(15) demand-forecasting(16) model(17) improved(18) stock(19) accuracy(20) by(21) 11(22) per(23) cent(24). That's 24 words. Total 21+24=45.\n\n\"During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\" Count: During(1) my(2) time(3) there,(4) I(5) designed(6) and(7) taught(8) a(9) six-week(10) internal(11) Python(12) course(13) to(14) twelve(15) colleagues,(16) which(17) gave(18) me(19) experience(20) in(21) building(22) training(23) materials(24) and(25) delivering(26) technical(27) content(28). That's 28 words. Total 45+28=73.\n\nParagraph 3: \"In 2024 I took an eight-month career break to care for my family.\" Count: In(1) 2024(2) I(3) took(4) an(5) eight-month(6) career(7) break(8) to(9) care(10) for(11) my(12) family(13). That's 13 words. Total 73+13=86.\n\n\"I have used PyTorch in personal projects, where I implemented neural networks and trained models.\" Count: I(1) have(2) used(3) PyTorch(4) in(5) personal(6) projects,(7) where(8) I(9) implemented(10) neural(11) networks(12) and(13) trained(14) models(15). That's 15 words. Total 86+15=101.\n\n\"I speak German at C1 level, which is higher than the required B2 level.\" Count: I(1) speak(2) German(3) at(4) C1(5) level,(6) which(7) is(8) higher(9) than(10) the(11) required(12) B2(13) level(14). That's 14 words. Total 101+14=115.\n\n\"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" Count: I(1) am(2) excited(3) to(4) bring(5) my(6) experience(7) in(8) data(9) science,(10) Python,(11) and(12) machine(13) learning(14) to(15) your(16) team(17) and(18) contribute(19) to(20) your(21) renewable-energy(22) mission(23). That's 23 words. Total 115+23=138.\n\nParagraph 4: \"Thank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\" Count: Thank(1) you(2) for(3) considering(4) my(5) application(6). I(7) look(8) forward(9) to(10) the(11) opportunity(12) to(13) discuss(14) how(15) I(16) can(17) support(18) your(19) team(20). That's 20 words. Total 138+20=158.\n\nClosing: \"Sincerely,\" (1) \"[Applicant Name]\" (maybe 2 words). So total 158+2=160.\n\nThus total words about 160, within 120-200.\n\nNow check for any superlatives or intensifiers. Let's scan:\n\n- \"I am excited\" - excited is an emotion, not a superlative. It's fine. It's not a superlative like \"most excited\". It's just \"excited\". So okay.\n- \"higher than the required B2 level\" - \"higher\" is comparative, not superlative. It's fine. The rule says \"no superlatives or intensifiers (such as best, most, passionate, extremely)\". \"Higher\" is a comparative, not a superlative. Should be okay. But maybe to be safe, we could say \"which meets the required B2 level\" or \"which exceeds the required B2 level\". \"Exceeds\" is fine. \"Higher than\" is also fine. It's not a superlative. So okay.\n- \"I am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company.\" That's fine.\n- \"I have two years of experience\" - fine.\n- \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\" That's fine.\n- \"I have used PyTorch in personal projects, where I implemented neural networks and trained models.\" That's fine.\n- \"I speak German at C1 level, which is higher than the required B2 level.\" Fine.\n- \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" Fine.\n\nCheck for any \"very\", \"extremely\", \"highly\", \"great\", \"excellent\", \"best\", \"most\". None.\n\nCheck for \"significant\" - not used. Good.\n\nCheck for \"notable\" - not used.\n\nCheck for \"so\" - not used.\n\nCheck for \"outstanding\" - not used.\n\nCheck for \"amazing\" - not used.\n\nCheck for \"phenomenal\" - not used.\n\nCheck for \"superb\" - not used.\n\nCheck for \"wonderful\" - not used.\n\nCheck for \"incredible\" - not used.\n\nCheck for \"excellent\" - not used.\n\nCheck for \"great\" - not used.\n\nCheck for \"very\" - not used.\n\nCheck for \"extremely\" - not used.\n\nCheck for \"highly\" - not used.\n\nCheck for \"most\" - not used.\n\nCheck for \"best\" - not used.\n\nCheck for \"passionate\" - not used.\n\nThus we comply.\n\nCheck that we mention the career break honestly in a single sentence: \"In 2024 I took an eight-month career break to care for my family.\" That's a single sentence. Good.\n\nWe mention that we used PyTorch only in personal projects: \"I have used PyTorch in personal projects\". That's okay.\n\nWe mention German at C1, which exceeds B2.\n\nWe mention the demand-forecasting model improved stock accuracy by 11 per cent. Good.\n\nWe mention the Python course.\n\nWe mention the two years at the retailer.\n\nWe use placeholders for employer, applicant, retailer. No invented names for projects. We didn't name the model, but we could have used placeholder for the project. The prompt says \"no invented names for the employer, the applicant, the retailer or the projects.\" It doesn't forbid us from not naming projects. So it's fine.\n\nWe used \"demand-forecasting model\" which is a project, but we didn't give it a name. That's okay.\n\nWe used \"six-week internal Python course\" which is a project, but we didn't give it a name. That's okay.\n\nWe used \"PyTorch in personal projects\" - not naming them. That's fine.\n\nThus we comply.\n\nOne more check: The prompt says \"Write a complete cover letter of 120 to 200 words from these facts, and these facts only.\" So we should only use these facts. Did we include any extra facts not in the list? Let's check:\n\n- We wrote \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" That's okay. It's using the facts we have. It's not inventing new facts. It's just summarizing.\n\n- We wrote \"I have used PyTorch in personal projects, where I implemented neural networks and trained models.\" That's using the fact that they used PyTorch only in personal projects. We added detail about implementing neural networks and training models. Is that beyond the given facts? The facts say \"used PyTorch only in personal projects\". We added \"where I implemented neural networks and trained models.\" That's a plausible detail but is it invented? The prompt says \"from these facts, and these facts only\". So we must not add extra details not in the facts. The fact is \"They have used PyTorch only in personal projects\". It doesn't say they implemented neural networks and trained models. But that is a reasonable inference but still an addition. To be safe, we should only mention what is given: \"I have used PyTorch only in personal projects.\" We could add \"I have applied PyTorch in my personal projects.\" That's basically the same. We shouldn't add specifics like \"implemented neural networks and trained models\". That might be considered extra detail. Let's adjust.\n\n- Also we wrote \"I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent.\" That's directly from facts.\n\n- \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues, which gave me experience in building training materials and delivering technical content.\" The fact is \"designed and taught a six-week internal Python course to twelve colleagues\". The part \"which gave me experience in building training materials and delivering technical content\" is an inference but maybe okay. It's not a new fact, it's a conclusion. But the rule says \"from these facts, and these facts only\". It might be safer to stick to the facts exactly. We can say \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues.\" That's the fact. We can add \"which gave me experience\" but that's a conclusion. It's okay.\n\n- \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" That's a conclusion but it's a cover letter, we can express interest. It's okay.\n\n- \"Thank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\" That's standard.\n\nWe need to be careful not to add extra facts. The fact about PyTorch is \"used PyTorch only in personal projects\". So we can say \"I have used PyTorch in personal projects.\" That's enough. We shouldn't add \"implemented neural networks\". So we should modify.\n\nSimilarly, the German fact: \"I speak German at C1 level, which is higher than the required B2 level.\" That's okay. We can say \"I speak German at C1 level, which exceeds the required B2 level.\" That's fine.\n\nWe can also say \"I am applying for the Junior Machine Learning Engineer role at your renewable-energy company.\" That's the role.\n\nWe can say \"I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent.\" That's given.\n\nWe can say \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues.\" That's given.\n\nWe can say \"In 2024 I took an eight-month career break to care for my family.\" That's given.\n\nWe can say \"I have used PyTorch in personal projects.\" That's given.\n\nWe can say \"I speak German at C1 level, which is higher than the required B2 level.\" That's given.\n\nWe can say \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" That's a conclusion but it's okay.\n\nWe can say \"Thank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\" That's standard.\n\nThus we should modify the sentence about PyTorch to not add specifics. Let's revise the letter accordingly.\n\nRevised letter:\n\nDear [Company Name] Hiring Team,\n\nI am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company. I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent. During my time there, I designed and taught a six-week internal Python course to twelve colleagues.\n\nIn 2024 I took an eight-month career break to care for my family. I have used PyTorch in personal projects. I speak German at C1 level, which is higher than the required B2 level. I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\n\nThank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\n\nSincerely,\n[Applicant Name]\n\nNow count words.\n\nParagraph 1: \"Dear [Company Name] Hiring Team,\" = 5 words.\n\nParagraph 2: \"I am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company.\" = 16 words. Total 21.\n\n\"I have two years of experience as a data scientist at [Retailer Name], where my demand-forecasting model improved stock accuracy by 11 per cent.\" = 24 words. Total 45.\n\n\"During my time there, I designed and taught a six-week internal Python course to twelve colleagues.\" = Let's count: During(1) my(2) time(3) there,(4) I(5) designed(6) and(7) taught(8) a(9) six-week(10) internal(11) Python(12) course(13) to(14) twelve(15) colleagues(16). That's 16 words. Total 45+16=61.\n\nParagraph 3: \"In 2024 I took an eight-month career break to care for my family.\" = 13 words. Total 61+13=74.\n\n\"I have used PyTorch in personal projects.\" = 8 words. Total 74+8=82.\n\n\"I speak German at C1 level, which is higher than the required B2 level.\" = 14 words. Total 82+14=96.\n\n\"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" = Let's count: I(1) am(2) excited(3) to(4) bring(5) my(6) experience(7) in(8) data(9) science,(10) Python,(11) and(12) machine(13) learning(14) to(15) your(16) team(17) and(18) contribute(19) to(20) your(21) renewable-energy(22) mission(23). That's 23 words. Total 96+23=119.\n\nParagraph 4: \"Thank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\" = 20 words. Total 119+20=139.\n\nClosing: \"Sincerely,\" (1) \"[Applicant Name]\" (maybe 2). So total 139+2=141.\n\nThus 141 words, within 120-200.\n\nNow check for any superlatives. \"I am excited\" is okay. \"higher than\" is comparative, okay. No intensifiers.\n\nCheck if we mention the career break in a single sentence: \"In 2024 I took an eight-month career break to care for my family.\" That's a single sentence. Good.\n\nCheck if we claim professional PyTorch experience: we say \"I have used PyTorch in personal projects.\" That's honest.\n\nCheck if we mention German at C1, which is higher than B2. Good.\n\nCheck if we mention the demand-forecasting model improved stock accuracy by 11 per cent. Good.\n\nCheck if we mention the Python course. Good.\n\nCheck if we mention the two years at the retailer. Good.\n\nCheck placeholders: [Company Name], [Retailer Name], [Applicant Name]. Good.\n\nThus the letter satisfies the requirements.\n\nOne more nuance: The prompt says \"Write a complete cover letter of 120 to 200 words from these facts, and these facts only.\" So we should not add any extra facts beyond those given. We added \"I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable-energy mission.\" This is a conclusion but not a new fact. It's a standard cover letter phrase. It's okay.\n\nWe also added \"Thank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\" That's also standard.\n\nWe also added \"I am writing to apply for the Junior Machine Learning Engineer role at your renewable-energy company.\" That's the purpose.\n\nWe also added \"During my time there, I designed and taught a six-week internal Python course to twelve colleagues.\" That's a fact.\n\nWe also added \"I have two years of experience as a data scientist at [Retailer Name]\" That's a fact.\n\nThus we are good.\n\nCheck for any superlatives: \"I am excited\" is fine. \"higher than\" is comparative, not superlative. The rule says \"no superlatives or intensifiers (such as best, most, passionate, extremely)\". It doesn't mention \"higher\". So it's okay.\n\nCheck for \"very\", \"extremely\", \"highly\". Not used.\n\nCheck for \"great\", \"excellent\". Not used.\n\nCheck for \"best\". Not used.\n\nCheck for \"most\". Not used.\n\nCheck for \"passionate\". Not used.\n\nThus we comply.\n\nOne more nuance: The prompt says \"no bullet points\". We didn't use any bullet points. Good.\n\nCheck \"no invented names for the employer, the applicant, the retailer or the projects.\" We used placeholders. Good.\n\nThus final answer: The letter as above.\n\nNow we can output the final letter.",
+ "content": "Dear [Company Name] Hiring Team,\n\nI am writing to apply for the Junior Machine Learning Engineer role at your renewable‑energy company. I have two years of experience as a data scientist at [Retailer Name], where my demand‑forecasting model improved stock accuracy by 11 per cent. During my time there, I designed and taught a six‑week internal Python course to twelve colleagues.\n\nIn 2024 I took an eight‑month career break to care for my family. I have used PyTorch in personal projects. I speak German at C1 level, which is higher than the required B2 level. I am excited to bring my experience in data science, Python, and machine learning to your team and contribute to your renewable‑energy mission.\n\nThank you for considering my application. I look forward to the opportunity to discuss how I can support your team.\n\nSincerely,\n[Applicant Name]",
+ "usage": {
+  "completion_tokens": 6456,
+  "prompt_tokens": 199,
+  "total_tokens": 6655,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 199,
+  "prompt_ms": 418.663,
+  "prompt_per_token_ms": 2.1038341708542716,
+  "prompt_per_second": 475.3226341950447,
+  "predicted_n": 6456,
+  "predicted_ms": 302546.566,
+  "predicted_per_token_ms": 46.87011092176607,
+  "predicted_per_second": 21.335558639260842
+ },
+ "tokens": {
+  "reasoning_tokenized": 6273,
+  "content_tokenized": 181,
+  "completion_tokens_usage": 6456,
+  "prompt_tokens_usage": 199,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.422,
+  "to_first_reasoning": 0.422,
+  "to_first_answer_token": 292.925,
+  "to_final_answer": 302.97
+ },
+ "peaks": {
+  "gpu_temp_c": 90,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26394
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26448
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26394
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26432
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26485
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26481
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26462
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26447
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26442
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26446
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26437
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26464
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26453
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26457
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26421
+  },
+  {
+   "t_s": 141.5,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26428
+  },
+  {
+   "t_s": 151.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26432
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26441
+  },
+  {
+   "t_s": 171.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26492
+  },
+  {
+   "t_s": 181.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26501
+  },
+  {
+   "t_s": 191.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26460
+  },
+  {
+   "t_s": 201.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26449
+  },
+  {
+   "t_s": 211.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26448
+  },
+  {
+   "t_s": 221.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26433
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26439
+  },
+  {
+   "t_s": 241.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26426
+  },
+  {
+   "t_s": 251.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26478
+  },
+  {
+   "t_s": 261.8,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26467
+  },
+  {
+   "t_s": 271.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26490
+  },
+  {
+   "t_s": 281.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26456
+  },
+  {
+   "t_s": 291.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26459
+  },
+  {
+   "t_s": 301.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26440
+  }
+ ]
+}

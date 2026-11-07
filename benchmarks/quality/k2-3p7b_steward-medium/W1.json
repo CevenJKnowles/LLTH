@@ -1,0 +1,83 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1001,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1001,
+ "started_at": "2026-11-05T04:49:59",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants the first three sentences of a README for gridhop, a CLI tool that converts CSV timetables into ICS calendar files. Sentence one: what it does. Sentence two: who it is for. Sentence three: how to install (`pip install gridhop`). Plain wording, no marketing language.\n\nWe need to produce exactly three sentences, each as described. Probably something like:\n\n\"gridhop converts CSV timetables into ICS calendar files. It is intended for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.\"\n\nMake sure it's plain wording. Provide exactly three sentences.</ifm|think>gridhop converts CSV timetables into ICS calendar files. It is meant for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 172,
+  "prompt_tokens": 129,
+  "total_tokens": 301,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 129,
+  "prompt_ms": 396.767,
+  "prompt_per_token_ms": 3.0757131782945737,
+  "prompt_per_second": 325.12784581379,
+  "predicted_n": 172,
+  "predicted_ms": 2897.693,
+  "predicted_per_token_ms": 16.945573099415206,
+  "predicted_per_second": 59.01246267289184
+ },
+ "tokens": {
+  "reasoning_tokenized": 171,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 172,
+  "prompt_tokens_usage": 129,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.399,
+  "to_first_reasoning": 0.399,
+  "to_first_answer_token": null,
+  "to_final_answer": 3.297
+ },
+ "peaks": {
+  "gpu_temp_c": 55,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22326
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 55,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22326
+  }
+ ]
+}

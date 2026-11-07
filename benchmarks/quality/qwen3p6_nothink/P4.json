@@ -1,0 +1,96 @@
+{
+ "id": "P4",
+ "title": "PyTorch MLP on a sign-product task",
+ "prompt_text": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1009,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1009,
+ "started_at": "2026-10-30T20:09:19",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nimport torch\nimport torch.nn as nn\n\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\n\nclass Network(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.layers = nn.Sequential(\n            nn.Linear(2, 16),\n            nn.ReLU(),\n            nn.Linear(16, 16),\n            nn.ReLU(),\n            nn.Linear(16, 1),\n        )\n\n    def forward(self, x):\n        return self.layers(x)\n\n\nmodel = Network()\ntotal_params = sum(p.numel() for p in model.parameters() if p.requires_grad)\nprint(f\"Total trainable parameters: {total_params}\")\n\ncriterion = nn.BCEWithLogitsLoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\nfor epoch in range(500):\n    optimizer.zero_grad()\n    outputs = model(X)\n    loss = criterion(outputs, y)\n    loss.backward()\n    optimizer.step()\n\nwith torch.no_grad():\n    logits = model(X)\n    predictions = (logits > 0).float()\n    accuracy = (predictions == y).float().mean()\n\nprint(f\"Final training accuracy: {accuracy.item():.4f}\")\n```",
+ "usage": {
+  "completion_tokens": 317,
+  "prompt_tokens": 190,
+  "total_tokens": 507,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 190,
+  "prompt_ms": 1468.005,
+  "prompt_per_token_ms": 7.726342105263159,
+  "prompt_per_second": 129.42735208667546,
+  "predicted_n": 317,
+  "predicted_ms": 24382.188,
+  "predicted_per_token_ms": 77.15882278481013,
+  "predicted_per_second": 12.960280677025379
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 316,
+  "completion_tokens_usage": 317,
+  "prompt_tokens_usage": 190,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.471,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.471,
+  "to_final_answer": 25.853
+ },
+ "peaks": {
+  "gpu_temp_c": 70,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26194
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26217
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26194
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26197
+  }
+ ]
+}

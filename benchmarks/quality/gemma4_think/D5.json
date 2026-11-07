@@ -1,0 +1,154 @@
+{
+ "id": "D5",
+ "title": "Train/test split with hidden structure (ambiguous)",
+ "prompt_text": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1020,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1020,
+ "started_at": "2026-10-30T22:09:36",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Data: 12,000 rows.\n*   Structure: `machine_id`, `timestamp`, 12 numeric features, `failure_next_24h` (binary label).\n*   Context: Irregularly sampled sensor readings, 40 machines, 6 months of time-series data.\n*   Goal: Split into train and test for a classifier.\n*   Constraints: Use only `scikit-learn` and `pandas`.\n\n    *   *Random Splitting (Standard `train_test_split`):* **Bad.** This leads to \"data leakage.\" If a machine's reading at 10:00 is in the training set and the reading at 10:01 is in the test set, the model will essentially \"cheat\" by seeing the same machine's patterns, leading to overfitting and over-optimistic metrics.\n    *   *Temporal Splitting:* **Better.** We should split by time. However, simple time splitting might still leak information if multiple sensors from the same machine overlap across the split.\n    *   *Group Splitting (by Machine ID):* **Good.** This prevents the model from learning specific machine idiosyncrasies that it won't see in the test set (if we want to generalize to *new* machines).\n    *   *The \"Golden Standard\" for Time-Series/Sensor Data:* **Grouped Temporal Splitting.**\n        *   Option A: Split by *Time* (Train on first 5 months, test on last month). This is usually best for predicting future events.\n        *   Option B: Split by *Machine ID* (Train on 30 machines, test on 10). This tests how well the model generalizes to *unseen machines*.\n\n    *Decision:* Since the user has \"sensor readings\" over \"six months\" and wants to predict \"failure within 24h,\" the goal is likely predictive maintenance. The most critical issue is preventing temporal leakage. The most robust way is to split by **time**, ensuring no data from the \"future\" is in the training set.\n\n    *Wait, a refinement:* If we split purely by time, we might end up with a test set that contains fragments of machines that were seen in the training set. This is okay for performance estimation *on existing machines*, but if we want to test \"generalization to new machines,\" we split by `machine_id`.\n\n    *Common Industry Practice:*\n    1.  **Chronological Split:** Split by timestamp. This mimics real-world deployment.\n    2.  **Grouped Split:** Split by `machine_id`. This tests the model's ability to work on a machine it has never seen before.\n\n    *Recommendation:* I will provide the **Chronological Split** because, in sensor data, the most common error is using future data to predict the past. I'll also mention the **Group-based Split** as an alternative for testing machine generalization.\n\n    *   **Method 1: Temporal Split (Recommended for Time-Series)**\n        1. Sort by `timestamp`.\n        2. Find the cutoff point (e.g., 80% mark).\n        3. Slice the dataframe.\n        *Wait, standard `train_test_split` doesn't do this automatically without a shuffle=False flag.*\n\n    *   **Method 2: Grouped Split (Leave-One-Machine-Out or similar)**\n        1. Group by `machine_id`.\n        2. Use `GroupShuffleSplit` or manually split machine IDs.\n\n    *   *Input setup:* Mock some data to make the code runnable and testable.\n    *   *Implementation 1 (Temporal):*\n        ```python\n        df = df.sort_values('timestamp')\n        split_idx = int(len(df) * 0.8)\n        train = df.iloc[:split_idx]\n        test = df.iloc[split_idx:]\n        ```\n    *   *Implementation 2 (Group-based - Leave-one-out/Group Split):*\n        ```python\n        from sklearn.model_selection import GroupShuffleSplit\n        gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)\n        train_idx, test_idx = next(gss.split(X, y, groups=df['machine_id']))\n        ```\n\n    *   Explain *why* we don't use standard `train_test_split(shuffle=True)`.\n    *   Explain \"Data Leakage\" (Temporal and Machine-level).\n    *   Provide the code for the **Temporal Split** (most common for sensor data).\n    *   Provide the code for the **Group Split** (if the goal is to predict on *new* machines).\n\n    *   Check: Does the user want `machine_id` to be a feature? Usually, no, because it's an identifier. It should be used as a grouping variable.\n    *   Check: The problem is \"failure_next_24h\". This is a time-series problem. A chronological split is absolutely mandatory.\n\n    *   *Scenario A: The Time-Series Approach (The \"Real-World\" Split).* Split based on time so you train on the past and test on the future.\n    *   *Scenario B: The Machine-Generalization Approach (The \"Robustness\" Split).* Split based on machine ID so you test how the model handles machines it has never seen.\n\n    *Self-Correction during drafting:* I should show how to handle the `machine_id` so it isn't accidentally used as a training feature, as that's a common mistake.\n\n    *   Sorting.\n    *   Splitting.\n    *   Handling the `machine_id` (dropping it from $X$ but keeping it for the split logic).\n\n(This matches the provided good response).",
+ "content": "In sensor data and predictive maintenance, **standard random splitting is a mistake.** If you use a random split, a sensor reading from 10:00 AM will be in your training set and a reading from 10:01 AM from the same machine will be in your test set. This leads to \"data leakage,\" where your model \"cheats\" by memorizing specific machine signatures rather than learning the patterns of failure.\n\nYou have two ways to split this, depending on your goal.\n\n### Option 1: The Temporal Split (Recommended)\n**Use this if:** You want to predict the future. You train on the first 5 months and test on the last month. This is how the model will actually work in production.\n\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# 1. Ensure timestamp is datetime and sorted\ndf['timestamp'] = pd.to_datetime(df['timestamp'])\ndf = df.sort_values('timestamp').reset_index(drop=True)\n\n# 2. Define features and label\n# We drop machine_id because it's an identifier, not a predictor\nX = df.drop(columns=['failure_next_24h', 'machine_id', 'timestamp'])\ny = df['failure_next_24h']\n\n# 3. Split chronologically (No shuffling!)\n# We take the first 80% of time for training, last 20% for testing\nsplit_idx = int(len(df) * 0.8)\n\nX_train = X.iloc[:split_idx]\nX_test = X.iloc[split_idx:]\ny_train = y.iloc[:split_idx]\ny_test = y.iloc[split_idx:]\n\nprint(f\"Train size: {len(X_train)}, Test size: {len(X_test)}\")\n```\n\n---\n\n### Option 2: The Group Split (Machine-based)\n**Use this if:** You want to see if your model can predict failures on **entirely new machines** it has never seen before. This tests the model's ability to generalize across different hardware.\n\n```python\nimport pandas as pd\nfrom sklearn.model_selection import GroupShuffleSplit\n\n# 1. Define features and label\nX = df.drop(columns=['failure_next_24h', 'machine_id', 'timestamp'])\ny = df['failure_next_24h']\ngroups = df['machine_id'] # We use machine_id to ensure all data for one machine stays together\n\n# 2. Use GroupShuffleSplit\n# This ensures a machine's data is NEVER split between train and test\ngss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)\n\ntrain_idx, test_idx = next(gss.split(X, y, groups=groups))\n\nX_train, X_test = X.iloc[train_idx], X.iloc[test_idx]\ny_train, y_test = y.iloc[train_idx], y.iloc[test_idx]\n\nprint(f\"Unique machines in Train: {df.iloc[train_idx]['machine_id'].nunique()}\")\nprint(f\"Unique machines in Test: {df.iloc[test_idx]['machine_id'].nunique()}\")\n```\n\n### Which one should you choose?\n\n| Feature | **Temporal Split** (Option 1) | **Group Split** (Option 2) |\n| :--- | :--- | :--- |\n| **Goal** | Simulate real-world deployment. | Test generalization to new machines. |\n| **Risk** | May overfit to specific machine IDs. | May be too difficult if machines vary wildly. |\n| **Use Case** | \"Will machine #5 fail tomorrow?\" | \"Will this *new* machine I just bought fail?\" |\n\n**Pro-Tip:** For high-stakes industrial applications, the best approach is actually a **combination**: Sort by time (to prevent leakage), then perform a Group Split on the remaining data to ensure you aren't evaluating on the same machines used for training.",
+ "usage": {
+  "completion_tokens": 2206,
+  "prompt_tokens": 94,
+  "total_tokens": 2300,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 94,
+  "prompt_ms": 1479.965,
+  "prompt_per_token_ms": 15.744308510638296,
+  "prompt_per_second": 63.51501555780035,
+  "predicted_n": 2206,
+  "predicted_ms": 127403.377,
+  "predicted_per_token_ms": 57.77930929705215,
+  "predicted_per_second": 17.3072335437388
+ },
+ "tokens": {
+  "reasoning_tokenized": 1287,
+  "content_tokenized": 914,
+  "completion_tokens_usage": 2206,
+  "prompt_tokens_usage": 94,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.629,
+  "to_first_reasoning": 1.629,
+  "to_first_answer_token": 76.785,
+  "to_final_answer": 128.888
+ },
+ "peaks": {
+  "gpu_temp_c": 79,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26193
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26193
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26281
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26313
+  }
+ ]
+}

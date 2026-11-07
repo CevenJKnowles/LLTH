@@ -1,0 +1,83 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1006,
+ "started_at": "2026-11-05T04:46:40",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\npivoted = df.pivot_table(\n    values=\"sales\",\n    index=\"month\",\n    columns=\"city\",\n    aggfunc=\"sum\",\n    fill_value=0,\n    observed=True,\n)\npivoted[\"total\"] = pivoted.sum(axis=1)\n\nprint(pivoted)\n```\n\nOutput:\n\n```\n       A  B  C  total\nmonth                        \n1      10   20   0     30\n2      30   40   0     70\n3      60   50   0     110\n```",
+ "usage": {
+  "completion_tokens": 200,
+  "prompt_tokens": 199,
+  "total_tokens": 399,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 199,
+  "prompt_ms": 133.535,
+  "prompt_per_token_ms": 0.6710301507537688,
+  "prompt_per_second": 1490.2460029205827,
+  "predicted_n": 200,
+  "predicted_ms": 3358.432,
+  "predicted_per_token_ms": 16.876542713567837,
+  "predicted_per_second": 59.25384226924947
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 198,
+  "completion_tokens_usage": 200,
+  "prompt_tokens_usage": 199,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.153,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.153,
+  "to_final_answer": 3.495
+ },
+ "peaks": {
+  "gpu_temp_c": 54,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22296
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22296
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "id": "W5",
+ "title": "Full cover letter from a fact list",
+ "prompt_text": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1005,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1005,
+ "started_at": "2026-10-31T01:09:37",
+ "status": "error",
+ "error": "ConnectionRefusedError(111, 'Connection refused')",
+ "finish_reason": null,
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "",
+ "usage": null,
+ "timings": null,
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 0,
+  "completion_tokens_usage": null,
+  "prompt_tokens_usage": null,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": null,
+  "to_first_reasoning": null,
+  "to_first_answer_token": null,
+  "to_final_answer": 0.0
+ },
+ "peaks": {
+  "gpu_temp_c": 54,
+  "gpu_mem_mib": 179,
+  "min_mem_available_mib": 26403
+ },
+ "samples": [
+  {
+   "t_s": 0.0,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 179,
+   "mem_available_mib": 26403
+  }
+ ]
+}

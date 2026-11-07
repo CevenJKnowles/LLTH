@@ -1,0 +1,32 @@
+[2026-10-30 20:43:43] run start: gemma4_think, 2 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:44:24] W1: complete finish=stop reasoning_tok=851 answer_tok=45 total_tok=901 time=41.2s peak_temp=62 min_ram=26227
+[2026-10-30 20:47:06] P2: complete finish=stop reasoning_tok=2680 answer_tok=521 total_tok=3206 time=161.2s peak_temp=74 min_ram=26229
+[2026-10-30 20:47:06] run finished
+[2026-10-30 20:52:05] run start: gemma4_think, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:52:05] W1: result exists, skipped
+[2026-10-30 20:57:06] W2: complete finish=stop reasoning_tok=5811 answer_tok=70 total_tok=5886 time=300.9s peak_temp=77 min_ram=26245
+[2026-10-30 21:00:52] W3: complete finish=stop reasoning_tok=3192 answer_tok=751 total_tok=3948 time=226.4s peak_temp=79 min_ram=26279
+[2026-10-30 21:03:57] W4: complete finish=stop reasoning_tok=3097 answer_tok=68 total_tok=3170 time=184.7s peak_temp=82 min_ram=26272
+[2026-10-30 21:22:51] W5: complete finish=stop reasoning_tok=18656 answer_tok=170 total_tok=18831 time=1134.0s peak_temp=81 min_ram=26263
+[2026-10-30 21:22:51] run finished
+[2026-10-30 21:29:06] run start: gemma4_think, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 21:30:13] P1: complete finish=stop reasoning_tok=850 answer_tok=574 total_tok=1429 time=66.5s peak_temp=66 min_ram=26171
+[2026-10-30 21:30:13] P2: result exists, skipped
+[2026-10-30 21:31:32] P3: complete finish=stop reasoning_tok=1050 answer_tok=503 total_tok=1558 time=79.0s peak_temp=72 min_ram=26178
+[2026-10-30 21:33:14] P4: complete finish=stop reasoning_tok=1370 answer_tok=520 total_tok=1895 time=102.8s peak_temp=77 min_ram=26260
+[2026-10-30 21:34:17] P5: complete finish=stop reasoning_tok=622 answer_tok=482 total_tok=1109 time=62.2s peak_temp=77 min_ram=26265
+[2026-10-30 21:34:17] run finished
+[2026-10-30 21:37:40] run start: gemma4_think, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 21:39:08] R1: complete finish=stop reasoning_tok=1141 answer_tok=696 total_tok=1842 time=87.3s peak_temp=70 min_ram=26239
+[2026-10-30 21:42:44] R2: complete finish=stop reasoning_tok=3485 answer_tok=470 total_tok=3960 time=215.9s peak_temp=76 min_ram=26196
+[2026-10-30 21:45:38] R3: complete finish=stop reasoning_tok=1708 answer_tok=1332 total_tok=3045 time=174.7s peak_temp=80 min_ram=26268
+[2026-10-30 21:47:42] R4: complete finish=stop reasoning_tok=1212 answer_tok=919 total_tok=2136 time=123.7s peak_temp=80 min_ram=26304
+[2026-10-30 21:51:17] R5: complete finish=stop reasoning_tok=2732 answer_tok=970 total_tok=3707 time=214.6s peak_temp=78 min_ram=26275
+[2026-10-30 21:51:17] run finished
+[2026-10-30 21:55:06] run start: gemma4_think, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 21:55:45] D1: complete finish=stop reasoning_tok=794 answer_tok=43 total_tok=842 time=39.4s peak_temp=63 min_ram=26235
+[2026-10-30 21:58:11] D2: complete finish=stop reasoning_tok=2162 answer_tok=678 total_tok=2845 time=146.3s peak_temp=75 min_ram=26265
+[2026-10-30 22:08:18] D3: complete finish=stop reasoning_tok=10324 answer_tok=64 total_tok=10393 time=606.4s peak_temp=79 min_ram=26252
+[2026-10-30 22:09:36] D4: complete finish=stop reasoning_tok=1056 answer_tok=258 total_tok=1319 time=77.9s peak_temp=83 min_ram=26279
+[2026-10-30 22:11:45] D5: complete finish=stop reasoning_tok=1287 answer_tok=914 total_tok=2206 time=128.9s peak_temp=79 min_ram=26193
+[2026-10-30 22:11:45] run finished

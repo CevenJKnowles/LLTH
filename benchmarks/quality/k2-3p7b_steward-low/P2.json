@@ -1,0 +1,83 @@
+{
+ "id": "P2",
+ "title": "numpy broadcasting bug",
+ "prompt_text": "numpy 2.x. This code raises an error on the last line:\n\n```python\nimport numpy as np\nx = np.arange(12).reshape(3, 4)\nmeans = x.mean(axis=0)\ncentred = x - means.reshape(3, 1)\n```\n\nTell me the exact exception type and message, why it happens, the minimal fix, and the values in `centred` after the fix.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "numpy 2.x. This code raises an error on the last line:\n\n```python\nimport numpy as np\nx = np.arange(12).reshape(3, 4)\nmeans = x.mean(axis=0)\ncentred = x - means.reshape(3, 1)\n```\n\nTell me the exact exception type and message, why it happens, the minimal fix, and the values in `centred` after the fix."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1007,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1007,
+ "started_at": "2026-11-05T04:46:44",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "ESCALATE",
+ "usage": {
+  "completion_tokens": 5,
+  "prompt_tokens": 140,
+  "total_tokens": 145,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 140,
+  "prompt_ms": 102.373,
+  "prompt_per_token_ms": 0.7312357142857143,
+  "prompt_per_second": 1367.5480839674522,
+  "predicted_n": 5,
+  "predicted_ms": 68.43,
+  "predicted_per_token_ms": 17.1075,
+  "predicted_per_second": 58.45389449072044
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 3,
+  "completion_tokens_usage": 5,
+  "prompt_tokens_usage": 140,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.122,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.122,
+  "to_final_answer": 0.173
+ },
+ "peaks": {
+  "gpu_temp_c": 55,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22282
+ },
+ "samples": [
+  {
+   "t_s": 0.2,
+   "gpu_temp_c": 55,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22282
+  }
+ ]
+}

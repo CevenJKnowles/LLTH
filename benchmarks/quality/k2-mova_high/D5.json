@@ -1,0 +1,217 @@
+{
+ "id": "D5",
+ "title": "Train/test split with hidden structure (ambiguous)",
+ "prompt_text": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1020,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1020,
+ "started_at": "2026-10-30T17:13:41",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants a code snippet to split a DataFrame (12,000 rows, irregularly sampled sensor readings, 40 machines, 6 months) into train and test for a classifier. Use scikit-learn and pandas only.\n\nKey considerations:\n1. The data is time series, so random splitting may cause data leakage if the same machine appears in both train and test with similar timestamps. A proper approach for time-series or panel data is to split by time (e.g., train on first 80% of time, test on last 20%) or by machine (but the task is to predict failure_next_24h, so temporal split is more appropriate for evaluating future prediction).\n2. The user asks for \"split it into train and test for a classifier\" with scikit-learn and pandas only. So provide a clean, standard approach: use `train_test_split` with `shuffle=False` after sorting by timestamp, or split by timestamp threshold.\n3. Also important: group by machine? Since it's 40 machines and 12k rows, the model should probably see all machines in both train and test, but temporal split prevents leakage of future info. Actually, if we do random shuffle, a machine's future failures might be in train while its past is in test, which is okay for some classifiers but can cause optimistic results if the classifier memorizes machine-specific patterns. However, for a generic answer, the best practice is to do a temporal split (train on earlier time, test on later time) to simulate the prediction task \"will this machine fail in the next 24h\" at inference time.\n\nLet me write code that:\n- Sorts by timestamp\n- Splits based on timestamp (e.g., train on first 80%, test on last 20%) using `train_test_split` with `shuffle=False` on the sorted data, or a quantile cutoff.\n- Alternatively, use `GroupShuffleSplit` by `machine_id` if they want to test generalization to new machines, but that might not be what they want for predicting failures in next 24h. I think temporal split is more appropriate for the label `failure_next_24h`.\n\nLet me provide a clear, commented code block. I'll include:\n1. Import pandas and sklearn.model_selection.train_test_split\n2. Sort by timestamp\n3. Split with shuffle=False (or by quantile)\n4. Verify no leakage: check if any machine_id appears only in train or only in test (optional print)\n5. X and y separation\n\nAlso, since it's \"irregularly sampled\" and \"sensor readings\", we might want to ensure we're not mixing future data into train. So temporal split is key.\n\nI should also mention that if they want to evaluate on unseen machines, they should use `GroupShuffleSplit` by `machine_id`. I'll provide both options briefly, but the main answer should be the temporal split because the label is `failure_next_24h` which is inherently temporal.\n\nLet me write the code:\n\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# Assuming df is your DataFrame\ndf = df.sort_values(\"timestamp\").reset_index(drop=True)\n\n# Define features and target\nfeatures = [col for col in df.columns if col not in [\"machine_id\", \"timestamp\", \"failure_next_24h\"]]\nX = df[features]\ny = df[\"failure_next_24h\"]\n\n# Temporal split: 80% train (oldest), 20% test (newest)\n# This prevents future data leakage, which is critical for the `failure_next_24h` label.\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, shuffle=False\n)\n\n# Also carry machine_id and timestamp into the splits if needed for later use\ntrain_idx, test_idx = train_test_split(\n    df.index, test_size=0.2, shuffle=False\n)\nX_train = df.loc[train_idx, features]\nX_test = df.loc[test_idx, features]\ny_train = df.loc[train_idx, \"failure_next_24h\"]\ny_test = df.loc[test_idx, \"failure_next_24h\"]\n```\n\nWait, simpler: just use the index from the sorted df.\n\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# 1. Sort by timestamp so time-ordered rows stay ordered\ndf = df.sort_values(\"timestamp\").reset_index(drop=True)\n\n# 2. Define feature columns (exclude id, time, target)\nfeature_cols = [c for c in df.columns if c not in [\"machine_id\", \"timestamp\", \"failure_next_24h\"]]\nX = df[feature_cols]\ny = df[\"failure_next_24h\"]\n\n# 3. Temporal train/test split (80/20)\n#    shuffle=False ensures the split is by time: train=earliest, test=latest.\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, shuffle=False, random_state=42\n)\n\n# 4. Sanity check: same machines in both, no time leakage\nprint(\"Train time range:\", df.loc[X_train.index, \"timestamp\"].min(), \"->\", df.loc[X_train.index, \"timestamp\"].max())\nprint(\"Test time range: \", df.loc[X_test.index, \"timestamp\"].min(), \"->\", df.loc[X_test.index, \"timestamp\"].max())\nprint(\"Machines in train:\", X_train[\"machine_id\"].nunique() if \"machine_id\" in X_train else \"N/A\")\n```\n\nWait, X_train won't have machine_id since we excluded it. Let me adjust: keep machine_id in X for inspection or do a different approach.\n\nBetter:\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# Sort by timestamp\ndf = df.sort_values(\"timestamp\").reset_index(drop=True)\n\n# Features (exclude machine_id, timestamp, target)\nfeatures = [c for c in df.columns if c not in [\"machine_id\", \"timestamp\", \"failure_next_24h\"]]\nX = df[features]\ny = df[\"failure_next_24h\"]\n\n# Temporal split\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False, random_state=42)\n\n# If you need machine_id for inspection or grouping:\ntrain_ids = df.loc[X_train.index, \"machine_id\"].unique()\ntest_ids = df.loc[X_test.index, \"machine_id\"].unique()\nprint(f\"Train machines: {len(train_ids)}, Test machines: {len(test_ids)}\")\n```\n\nI should also mention that for `failure_next_24h` specifically, a random split is problematic because the label at time t is the label for the window [t, t+24h], so random split can have overlapping windows across train and test. A temporal split avoids this. Also, if they want to predict on new machines, they can use GroupShuffleSplit by machine_id, but I'll mention it as an alternative.\n\nThe user said \"scikit-learn and pandas only\" so I should stick to those imports. I can use `train_test_split` with `shuffle=False` which is the temporal way.\n\nLet me finalize the answer:\n\n- Provide the code with clear comments.\n- Emphasize the temporal split due to the nature of the label.\n- Include a quick check that the split is chronological.\n- Optionally show the GroupShuffleSplit variant for machine-level generalization.\n\nI'll keep it concise but thorough.\n",
+ "content": "Here is a temporal split. This is important because `failure_next_24h` is a time-dependent label—randomly shuffling rows would leak future information into the training set.\n\n```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# 1. Sort by timestamp so the data is in chronological order\ndf = df.sort_values(\"timestamp\").reset_index(drop=True)\n\n# 2. Define features (exclude id, time, and the target)\nfeatures = [c for c in df.columns if c not in [\"machine_id\", \"timestamp\", \"failure_next_24h\"]]\nX = df[features]\ny = df[\"failure_next_24h\"]\n\n# 3. Temporal split: 80% train (earliest), 20% test (latest)\n#    shuffle=False is the key — it preserves the time order.\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, shuffle=False, random_state=42\n)\n\n# 4. Sanity checks: confirm the split is chronological\ntrain_ts = df.loc[X_train.index, \"timestamp\"]\ntest_ts = df.loc[X_test.index, \"timestamp\"]\nprint(f\"Train:  {train_ts.min()} -> {train_ts.max()}\")\nprint(f\"Test:   {test_ts.min()} -> {test_ts.max()}\")\nassert test_ts.min() >= train_ts.max(), \"Split is not chronological!\"\n\n# 5. (Optional) Check machine overlap — with a temporal split all 40 machines\n#    should appear in both sets, but at different time periods.\ntrain_machines = df.loc[X_train.index, \"machine_id\"].nunique()\ntest_machines  = df.loc[X_test.index, \"machine_id\"].nunique()\nprint(f\"Machines in train: {train_machines}, in test: {test_machines}\")\n```\n\n### Why not a random split?\nWith `failure_next_24h`, the label at time `t` depends on the window `[t, t+24h]`. A random split can place a failure window in the training set while its overlapping \"pre-failure\" sensor readings are in the test set, causing data leakage and inflated performance.\n\n### If you instead need to test on *unseen* machines\nIf the real goal is to predict failures on brand-new machines (cold start), use `GroupShuffleSplit` by `machine_id`:\n\n```python\nfrom sklearn.model_selection import GroupShuffleSplit\n\ngss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)\ntrain_idx, test_idx = next(gss.split(X, y, groups=df[\"machine_id\"]))\n\nX_train, X_test = X.iloc[train_idx], X.iloc[test_idx]\ny_train, y_test = y.iloc[train_idx], y.iloc[test_idx]\n```\n\nThis guarantees no machine appears in both sets. For most \"predict the next 24h\" monitoring tasks, the temporal split is the safer default.",
+ "usage": {
+  "completion_tokens": 2193,
+  "prompt_tokens": 80,
+  "total_tokens": 2273,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 80,
+  "prompt_ms": 1958.504,
+  "prompt_per_token_ms": 24.481299999999997,
+  "prompt_per_second": 40.84750401326727,
+  "predicted_n": 2193,
+  "predicted_ms": 232556.623,
+  "predicted_per_token_ms": 106.09334990875912,
+  "predicted_per_second": 9.425661465680983
+ },
+ "tokens": {
+  "reasoning_tokenized": 1567,
+  "content_tokenized": 623,
+  "completion_tokens_usage": 2193,
+  "prompt_tokens_usage": 80,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.962,
+  "to_first_reasoning": 1.962,
+  "to_first_answer_token": 168.24,
+  "to_final_answer": 234.519
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26617
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26719
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26617
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26694
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26728
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26753
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26750
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26752
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26751
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 191.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26753
+  },
+  {
+   "t_s": 201.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 221.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  }
+ ]
+}

@@ -1,0 +1,103 @@
+{
+ "id": "W2",
+ "title": "Cover letter opening paragraph with fixed facts",
+ "prompt_text": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1002,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1002,
+ "started_at": "2026-10-30T22:36:16",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to craft opening paragraph of a cover letter, max 120 words, using only provided facts. Must not invent any employer name, project name, dates or additional skills, and not overstate SQL experience. Must mention four years experience using pandas and scikit-learn, built customer churn model reducing false-positive alerts by 18% over six months, led team of three, role is Data Analyst at mid-sized logistics company, job advert asks for SQL and dashboard experience; applicant has used SQL occasionally and never built a dashboard. Must be careful to phrase honestly: \"I have used SQL occasionally\" not \"I am proficient in SQL\". Also \"I have not built a dashboard\" maybe not needed but can mention lack? Typically opening paragraph shouldn't mention lacking dashboard, but we need to incorporate that they have occasional SQL and no dashboard? The instruction says using only these facts and nothing else. The facts include that they have used SQL occasionally and never built a dashboard. Should we mention that? It might be okay to acknowledge to be transparent, but a cover letter opening might not need to mention lack. However the instruction says \"using only these facts and nothing else\". It doesn't explicitly require to mention the SQL and dashboard experience, but the job advert asks for it, and the facts include that they have used SQL occasionally and never built a dashboard. To be safe, we can mention that they have used SQL occasionally and have not built a dashboard, but that could be seen as negative. However, the user likely expects an opening paragraph that acknowledges those facts, but not overstate. Maybe they want to include a brief note that \"My SQL usage has been occasional, and I have not yet built a dashboard\" to be transparent. That might be odd for a cover letter. But the instruction says using only these facts, so we can include the fact that they have used SQL occasionally and have never built a dashboard, as a way of aligning with job requirements. However typical cover letter wouldn't highlight lack of skills. Yet the instruction says \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\" That is a fact. The user might want the cover letter to reflect that they have some SQL experience (occasional) and they haven't built a dashboard, maybe to be honest. The opening paragraph can be something like: \"I am writing to express my interest in the Data Analyst position at your mid-sized logistics company. With four years of experience using pandas and scikit-learn, I built a customer churn model that reduced false-positive alerts by 18% over six months, leading a team of three. My SQL experience has been occasional, and I have not yet built a dashboard, but I am eager to apply my analytical skills...\" That is within 120 words. Let's count words.\n\nCount: \"I am writing to express my interest in the Data Analyst position at your mid-sized logistics company.\" That's 18 words? Let's count: I(1) am2 writing3 to4 express5 my6 interest7 in8 the9 Data10 Analyst11 position12 at13 your14 mid-sized15 logistics16 company17. So 17 words. Then: \"With four years of experience using pandas and scikit-learn, I built a customer churn model that reduced false-positive alerts by 18% over six months, leading a team of three.\" Count: With1 four2 years3 of4 experience5 using6 pandas7 and8 scikit-learn,9 I10 built11 a12 customer13 churn14 model15 that16 reduced17 false-positive18 alerts19 by20 18%21 over22 six23 months,24 leading25 a26 team27 of28 three29. So 29 words. Running total 46. Then: \"My SQL experience has been occasional, and I have not yet built a dashboard, but I am eager to apply my analytical skills to support your data-driven operations.\" Count: My1 SQL2 experience3 has4 been5 occasional,6 and7 I8 have9 not10 yet11 built12 a13 dashboard,14 but15 I16 am17 eager18 to19 apply20 my21 analytical22 skills23 to24 support25 your26 data-driven27 operations28. So 28 words. Total 74 words. Under 120. Good.\n\nBut we need to ensure \"using only these facts and nothing else\". The phrase \"I am writing to express my interest\" is a generic opening but not a fact? It's typical letter phrasing, not a new fact. Might be acceptable. The user didn't forbid standard cover letter phrasing, just said use only these facts and nothing else. The phrase \"I am writing to express my interest\" is not a fact, it's an action. It's fine. \"Mid-sized logistics company\" is given. \"Data Analyst position\" is given. \"I am eager to apply my analytical skills to support your data-driven operations\" is a generic statement, but not a new fact. It's okay.\n\nBut perhaps they'd prefer a more direct opening: \"I am excited to apply for the Data Analyst role at your mid-sized logistics company.\" That is fine. Could include \"I have four years of experience using pandas and scikit-learn, and I built a customer churn model that reduced false-positive alerts by 18% over six months, leading a team of three. My SQL usage has been occasional, and I have not yet built a dashboard.\" That would be honest. Let's produce final paragraph with maybe 100 words.\n\nLet's craft final answer: Provide the opening paragraph only.\n\nPotential final:\n\n\"I am writing to express my interest in the Data Analyst position at your mid‑sized logistics company. Over the past four years I have worked extensively with pandas and scikit‑learn, building a customer churn model that cut false‑positive alerts by 18 % within six months while leading a team of three. My SQL experience has been occasional, and I have not yet built a dashboard, but I am keen to apply this analytical background to support the data‑driven decisions that drive your operations.\"\n\nCount words: I1 am2 writing3 to4 express5 my6 interest7 in8 the9 Data10 Analyst11 position12 at13 your14 mid‑sized15 logistics16 company17. Over18 the19 past20 four21 years22 I23 have24 worked25 extensively26 with27 pandas28 and29 scikit‑learn,30 building31 a32 customer33 churn34 model35 that36 cut37 false‑positive38 alerts39 by40 18 %41 within42 six43 months44 while45 leading46 a47 team48 of49 three50. My51 SQL52 experience53 has54 been55 occasional,56 and57 I58 have59 not60 yet61 built62 a63 dashboard,64 but65 I66 am67 keen68 to69 apply70 this71 analytical72 background73 to74 support75 the76 data‑driven77 decisions78 that79 drive80 your81 operations82. So 82 words.\n\nAll good.",
+ "content": "I am writing to express my interest in the Data Analyst position at your mid‑sized logistics company. Over the past four years I have worked extensively with pandas and scikit‑learn, building a customer churn model that cut false‑positive alerts by 18 % within six months while leading a team of three. My SQL experience has been occasional, and I have not yet built a dashboard, but I am keen to apply this analytical background to support the data‑driven decisions that drive your operations.",
+ "usage": {
+  "completion_tokens": 1537,
+  "prompt_tokens": 132,
+  "total_tokens": 1669,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 132,
+  "prompt_ms": 421.018,
+  "prompt_per_token_ms": 3.1895303030303026,
+  "prompt_per_second": 313.52578749602156,
+  "predicted_n": 1537,
+  "predicted_ms": 42189.926,
+  "predicted_per_token_ms": 27.467399739583332,
+  "predicted_per_second": 36.40679530938262
+ },
+ "tokens": {
+  "reasoning_tokenized": 1434,
+  "content_tokenized": 101,
+  "completion_tokens_usage": 1537,
+  "prompt_tokens_usage": 132,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.423,
+  "to_first_reasoning": 0.423,
+  "to_first_answer_token": 39.646,
+  "to_final_answer": 42.613
+ },
+ "peaks": {
+  "gpu_temp_c": 72,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26177
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 57,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26177
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26417
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26428
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26444
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26450
+  }
+ ]
+}

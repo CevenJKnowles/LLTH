@@ -1,0 +1,36 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "- `x.nbytes` reports `20480000` bytes, which is approximately `19.53125 MiB`.  \n- The shape of `x[:, ::2].T` is `(256, 10000)`.  \n- `x[:, ::2]` is a **view** (a non-contiguous view, since it takes every second column)."
+   }
+  }
+ ],
+ "created": 1793845925,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 77,
+  "prompt_tokens": 86,
+  "total_tokens": 163,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-AtVHGrGWdFrOCJD2fYI1EcwaDvxy74PP",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 86,
+  "prompt_ms": 2142.138,
+  "prompt_per_token_ms": 24.908581395348836,
+  "prompt_per_second": 40.14680660162884,
+  "predicted_n": 77,
+  "predicted_ms": 6143.879,
+  "predicted_per_token_ms": 80.84051315789473,
+  "predicted_per_second": 12.37003528227037
+ }
+}

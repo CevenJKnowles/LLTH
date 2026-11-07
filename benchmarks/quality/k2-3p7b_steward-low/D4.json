@@ -1,0 +1,83 @@
+{
+ "id": "D4",
+ "title": "Group totals that do not add up (looks easy, is hard)",
+ "prompt_text": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1019,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1019,
+ "started_at": "2026-11-05T04:47:58",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "<ifm|tool_calls>\n<ifm|tool_call>thinking\n</ifm|tool_call>\n</ifm|think_faster><ifm|tool_calls>\n<ifm|tool_call>thinking\n</ifm|tool_call>\n</ifm|tool_calls>",
+ "usage": {
+  "completion_tokens": 18,
+  "prompt_tokens": 152,
+  "total_tokens": 170,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 152,
+  "prompt_ms": 110.366,
+  "prompt_per_token_ms": 0.7260921052631579,
+  "prompt_per_second": 1377.2357428918326,
+  "predicted_n": 18,
+  "predicted_ms": 310.908,
+  "predicted_per_token_ms": 18.288705882352943,
+  "predicted_per_second": 54.67855442767635
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 16,
+  "completion_tokens_usage": 18,
+  "prompt_tokens_usage": 152,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.131,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.131,
+  "to_final_answer": 0.424
+ },
+ "peaks": {
+  "gpu_temp_c": 74,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22308
+ },
+ "samples": [
+  {
+   "t_s": 0.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22308
+  }
+ ]
+}

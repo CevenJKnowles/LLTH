@@ -1,0 +1,483 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1003,
+ "started_at": "2026-10-30T17:44:48",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Platform/Format:** Substack article\n   - **Word Count:** 550 to 650 words (strict)\n   - **Target Audience:** Readers who have trained a model or two but have no math background\n   - **Topic:** Why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it\n   - **Requirements:**\n     - Title it yourself\n     - Include one small worked example with made-up numbers (handful of examples with predicted probabilities before and after a few more epochs) showing the effect\n     - Finish with one practical takeaway\n     - No code, no bullet points, no headings inside the body\n   - **Tone/Style:** Accessible, conversational but informative, suitable for Substack\n\n2.  **Deconstruct the Topic:**\n   - *Core phenomenon:* Validation accuracy ↑ while validation loss ↓ (gets worse/larger) during training\n   - *Why it happens:* Loss functions (like cross-entropy) penalize confident wrong predictions heavily, but also reward confident correct predictions aggressively. Accuracy is a step function (threshold at 0.5 for binary). If the model becomes more confident in its correct predictions, accuracy stays high or improves, but if it starts making highly confident wrong predictions on a few samples, loss spikes. Actually, wait: cross-entropy loss decreases as confidence increases for correct classes, and increases sharply for incorrect ones. So how can accuracy improve while loss gets worse?\n   - Let's think carefully: For binary classification, accuracy counts how many predictions are above 0.5 (class 1) or below (class 0). Loss is cross-entropy. If the model was previously uncertain on some hard samples and made correct predictions just barely over 0.5, those contributed low loss but only marginally to accuracy. Then the model becomes overconfident but still correct on those → accuracy same, loss drops. That's normal.\n   - But the prompt says: validation accuracy keeps improving while validation loss gets worse. This is a known phenomenon in early training or when using certain metrics/optimizers, often due to calibration issues or class imbalance. Actually, it's common when the model starts making highly confident predictions on wrong samples (loss spikes) but those wrong predictions are still in the correct class region? No, that doesn't make sense.\n   - Let's reconsider: In binary classification with cross-entropy loss, if the model is initially very uncertain (probabilities near 0.5 for everything), both accuracy and loss are bad. As training progresses, probabilities move away from 0.5 toward 0 or 1. If they move in the right direction, both accuracy and loss improve. But if some samples flip class predictions, accuracy might drop. How can accuracy improve while loss worsens?\n   - Actually, it's often about threshold mismatch. Cross-entropy loss doesn't care about the 0.5 threshold directly. You can have a situation where the model becomes more confident on correctly classified samples (loss goes down), but also becomes overconfident on a few misclassified samples (loss goes up). The net loss could increase while accuracy improves if the correct predictions' confidence gains outweigh the penalty, or wait... if loss gets worse (increases), that means the average penalty increased. How can accuracy improve then?\n   - Let's think of a concrete scenario: Initially, model predicts 0.6 for class 1 when true is 1, and 0.45 for class 0 when true is 0. Accuracy is 100%, loss is moderate. Then it adjusts: now predicts 0.99 for class 1 samples (good for loss), but predicts 0.98 for some class 0 samples (bad for loss, and accuracy drops). That's not it.\n   - Actually, the phenomenon described is real and often occurs when using binary cross-entropy with imbalanced data or when the model is overfitting to confident errors on a small subset. Wait, another angle: The loss function penalizes wrong predictions exponentially, but accuracy only cares about majority vote. If you have many samples where the model was previously correct but barely (e.g., 0.51 vs true class 0), those count as correct for accuracy but contribute moderate loss. Later, the model flips to be highly confident but WRONG on a few hard examples (loss skyrockets), but still correct on the rest → accuracy might stay same or even improve if it crosses threshold on previously borderline cases? Hmm.\n   - Let's simplify for the audience: The key is that loss and accuracy measure different things. Loss cares about confidence calibration; accuracy only cares about which side of 0.5 you land. You can become more confident in wrong answers (loss spikes) while still landing on the right side of the threshold for most samples (accuracy improves). This usually means your model is learning to be decisively wrong on a few tricky examples, often because it's overfitting or the data is noisy/imbalanced. The pattern tells you the model is losing calibration—it’s trusting itself too much on hard cases. What to do: add regularization, simplify the model, check for label noise, use learning rate warmup/cosine decay, or switch to a metric that aligns with your goal.\n   - I need to make sure the explanation is intuitive and matches the \"no math background\" requirement. I'll avoid formulas, focus on concepts like confidence vs correctness, thresholds, and calibration.\n\n3.  **Structure the Article:**\n   - Catchy title\n   - Hook/Introduction: Acknowledge the frustration of seeing accuracy up but loss down (wait, \"loss gets worse\" means loss increases). Clarify the metric divergence.\n   - Explain why it happens: Loss measures confidence + correctness; accuracy only cares about final guess. Use the threshold analogy.\n   - What it tells you: Model is overconfident on hard examples, losing calibration, possibly overfitting or chasing noisy labels.\n   - Worked example: Made-up numbers showing probabilities before and after a few epochs for a handful of samples. Show accuracy improving while average loss increases.\n   - What to do: Practical steps without code/bullets. Keep it narrative.\n   - Finish with one practical takeaway (as requested).\n   - Check constraints: 550-650 words, no code, no bullets, no internal headings, Substack style.\n\n4.  **Draft - Mental Refinement (Word Count Control):**\n   I'll write carefully, monitoring length. I'll aim for ~600 words.\n\n   Title: The Confidence Trap: When Your Model Gets Smarter at Being Wrong\n   (Or something similar)\n\n   Let's draft paragraph by paragraph, counting words roughly.\n\n   *Paragraph 1 (Hook & Setup):* You have probably seen it scrolling through your training logs. The validation accuracy ticks upward, steady and reassuring, while the validation loss climbs instead of falling. It feels like a glitch in the simulation, as if your model is simultaneously learning and unlearning. The truth is simpler and far more instructive: you are watching two metrics that speak different languages begin to disagree. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss, on the other hand, measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. When these two signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails.\n\n   *Paragraph 2 (Why it happens):* Imagine your validation set contains a dozen straightforward photos of cats and a handful of blurry images that look equally like dogs. Early in training, your model hesitates on the blurry pictures, assigning them probabilities near the fifty percent mark. Sometimes it guesses right by luck, sometimes it misses. Because it is unsure, the loss stays moderate even when it errs. As training continues, the network starts locking in stronger opinions. It becomes decisively correct on the easy photos and crosses the decision boundary on a few borderline cases, which pushes accuracy higher. But it also grows recklessly certain about the truly ambiguous examples. A prediction of ninety nine percent confidence for the wrong label will skyrocket your loss, even if those same predictions barely miss changing the final accuracy count. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference.\n\n   *Paragraph 3 (Worked Example):* Consider five validation samples from a binary problem. After ten epochs, your model outputs these probabilities for the positive class alongside the true labels: example one predicts point six correct, example two predicts point four correct, example three predicts point seven wrong, example four predicts point two right, and example five predicts point five wrong. Two samples miss their marks, but all predictions sit close to center, keeping the average loss low. After fifteen more epochs, the probabilities shift dramatically: example one becomes point ninety nine correct, example two shifts to point eighty eight wrong, example three climbs to point ninety five wrong, example four rises to point ninety six right, and example five settles at point point zero right. Now three predictions are definitively incorrect, yet only two original errors remain classified differently, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the heavy penalties for confidently wrong guesses have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter.\n\n   *Paragraph 4 (What it tells you & What to do):* This pattern reveals a model that is rapidly losing calibration. It has found shortcuts in its feature space and is now betting too heavily on local patterns that happen to work for the majority of cases but fail catastrophically on edge conditions. You are likely overfitting, chasing noisy labels, or using a learning rate that drives weights past reasonable bounds without giving the gradient steps room to settle. The fix requires steering confidence back toward reality rather than blindly trusting early improvements. Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep parameters from drifting too far into extreme regions. If your dataset contains unclear examples, consider removing obvious label errors or training with focal loss that naturally penalizes high confidence on mislabeled data. Most importantly, start tracking calibrated metrics like expected calibration error alongside your standard logs so you can spot overconfidence before it becomes a deployment liability.\n\n   *Paragraph 5 (Takeaway):* When accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. The most practical step you can take right now is to pause weight updates, reduce your learning rate by half, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing.\n\n5.  **Word Count Check:**\n   Let's count words carefully.\n   P1: ~98\n   P2: ~168\n   P3: ~158\n   P4: ~158\n   P5: ~78\n   Total: ~660. Slightly over. Need to trim to 550-650. I'll cut ~15-20 words strategically.\n\n   Let's count exactly:\n   You have probably seen it scrolling through your training logs. (10)\n   The validation accuracy ticks upward, steady and reassuring, while the validation loss climbs instead of falling. (16)\n   It feels like a glitch in the simulation, as if your model is simultaneously learning and unlearning. (17)\n   The truth is simpler and far more instructive: you are watching two metrics that speak different languages begin to disagree. (21)\n   Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. (21)\n   Loss, on the other hand, measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. (22)\n   When these two signals diverge, your model is not broken. (10)\n   It is telling you exactly where its intuition is going off the rails. (13) -> Total P1: 130\n\n   Imagine your validation set contains a dozen straightforward photos of cats and a handful of blurry images that look equally like dogs. (22)\n   Early in training, your model hesitates on the blurry pictures, assigning them probabilities near the fifty percent mark. (18)\n   Sometimes it guesses right by luck, sometimes it misses. (9)\n   Because it is unsure, the loss stays moderate even when it errs. (12)\n   As training continues, the network starts locking in stronger opinions. (10)\n   It becomes decisively correct on the easy photos and crosses the decision boundary on a few borderline cases, which pushes accuracy higher. (22)\n   But it also grows recklessly certain about the truly ambiguous examples. (11)\n   A prediction of ninety nine percent confidence for the wrong label will skyrocket your loss, even if those same predictions barely miss changing the final accuracy count. (27)\n   Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. (16)\n   Loss does not share that indifference. (6) -> Total P2: 153\n\n   Consider five validation samples from a binary problem. (8)\n   After ten epochs, your model outputs these probabilities for the positive class alongside the true labels: example one predicts point six correct, example two predicts point four correct, example three predicts point seven wrong, example four predicts point two right, and example five predicts point five wrong. (46)\n   Two samples miss their marks, but all predictions sit close to center, keeping the average loss low. (17)\n   After fifteen more epochs, the probabilities shift dramatically: example one becomes point ninety nine correct, example two shifts to point eighty eight wrong, example three climbs to point ninety five wrong, example four rises to point ninety six right, and example five settles at point point zero right. (48) -> \"point point zero\" typo, fix to \"zero\"\n   Now three predictions are definitively incorrect, yet only two original errors remain classified differently, so accuracy actually improves from forty percent to sixty percent. (23)\n   Meanwhile, the heavy penalties for confidently wrong guesses have pushed the average loss upward noticeably. (15)\n   The model learned to be louder, not necessarily smarter. (9) -> Total P3: ~164\n\n   This pattern reveals a model that is rapidly losing calibration. (10)\n   It has found shortcuts in its feature space and is now betting too heavily on local patterns that happen to work for the majority of cases but fail catastrophically on edge conditions. (32)\n   You are likely overfitting, chasing noisy labels, or using a learning rate that drives weights past reasonable bounds without giving the gradient steps room to settle. (25)\n   The fix requires steering confidence back toward reality rather than blindly trusting early improvements. (14)\n   Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep parameters from drifting too far into extreme regions. (23)\n   If your dataset contains unclear examples, consider removing obvious label errors or training with focal loss that naturally penalizes high confidence on mislabeled data. (23)\n   Most importantly, start tracking calibrated metrics like expected calibration error alongside your standard logs so you can spot overconfidence before it becomes a deployment liability. (24) -> Total P4: ~151\n\n   When accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. (18)\n   The most practical step you can take right now is to pause weight updates, reduce your learning rate by half, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing. (39) -> Total P5: 57\n\n   Total so far: ~130+153+164+151+57 = 655. Still slightly over. I need to trim ~10-20 words.\n   Let's tighten P2 and P3.\n   P2: Remove \"Imagine your validation set contains a dozen straightforward photos of cats and a handful of blurry images that look equally like dogs.\" (22) -> Replace with \"On any dataset, some examples will naturally sit near the decision boundary.\" \n   P3: Tighten the example description slightly. \"point six\" -> \"sixty percent\", etc. to save words? Actually numbers are fine. I'll just trim a few filler phrases.\n   Let's rewrite carefully to hit ~600.\n\n   Draft V2 (mental):\n   You have probably seen it scrolling through your training logs. The validation accuracy ticks upward while the validation loss climbs instead of falling. It feels like a glitch, as if your model is simultaneously learning and unlearning. The truth is simpler: you are watching two metrics that speak different languages begin to disagree. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. When these signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails.\n\n   On any dataset, some examples naturally sit near the decision boundary. Early in training, your model hesitates on them, assigning probabilities near fifty percent. Sometimes it guesses right by luck, sometimes it misses. Because it remains unsure, the loss stays moderate even when it errs. As training continues, the network locks in stronger opinions. It becomes decisively correct on easy photos and crosses the decision boundary on a few borderline cases, which pushes accuracy higher. But it also grows recklessly certain about the truly ambiguous examples. A ninety nine percent prediction for the wrong label will skyrocket your loss, even if that same prediction barely changes how we count correct guesses. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference.\n\n   Consider five validation samples from a binary problem. After ten epochs, your model outputs these probabilities for the positive class: example one predicts sixty percent correct, example two predicts forty percent correct, example three predicts seventy percent wrong, example four predicts twenty percent right, and example five predicts fifty percent wrong. Two samples miss their marks, but all predictions sit close to center, keeping the average loss low. After fifteen more epochs, the probabilities shift dramatically: example one becomes ninety nine percent correct, example two shifts to eighty eight percent wrong, example three climbs to ninety five percent wrong, example four rises to ninety six percent right, and example five settles at zero percent right. Now three predictions are definitively incorrect, yet only two original errors remain classified differently, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the heavy penalties for confidently wrong guesses have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter.\n\n   This pattern reveals a model that is rapidly losing calibration. It has found shortcuts in its feature space and is now betting too heavily on local patterns that work for most cases but fail on edge conditions. You are likely overfitting, chasing noisy labels, or using a learning rate that drives parameters past reasonable bounds. The fix requires steering confidence back toward reality rather than blindly trusting early improvements. Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep weights from drifting into extreme regions. If your dataset contains unclear examples, consider removing obvious label errors or switching to a loss function that penalizes high confidence on mislabeled data. Most importantly, track calibration metrics alongside your standard logs so you can spot overconfidence before deployment.\n\n   When accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. The most practical step you can take right now is to pause training, halve your learning rate, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing.\n\n   Word count check:\n   P1: 108\n   P2: 158\n   P3: 168\n   P4: 168\n   P5: 71\n   Total: ~673. Still a bit high. I need to cut ~30 words total without losing meaning.\n   Let's trim carefully:\n   - Remove \"It feels like a glitch, as if your model is simultaneously learning and unlearning.\" \n   - Change \"On any dataset, some examples naturally sit near the decision boundary.\" to \"Some examples naturally sit near the decision boundary.\" \n   - Trim P3 slightly: remove \"from a binary problem\", change probability descriptions to be more concise. Actually, the example needs to show the effect clearly. I'll keep it but tighten phrasing.\n   - Trim P4: remove \"or switching to a loss function that penalizes high confidence on mislabeled data.\" \n   Let's count again after cuts:\n   You have probably seen it scrolling through your training logs. The validation accuracy ticks upward while the validation loss climbs instead of falling. The truth is simpler: you are watching two metrics that speak different languages begin to disagree. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. When these signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails. (108-13=95)\n\n   Some examples naturally sit near the decision boundary. Early in training, your model hesitates on them, assigning probabilities near fifty percent. Sometimes it guesses right by luck, sometimes it misses. Because it remains unsure, the loss stays moderate even when it errs. As training continues, the network locks in stronger opinions. It becomes decisively correct on easy cases and crosses the decision boundary on a few borderline examples, which pushes accuracy higher. But it also grows recklessly certain about the truly ambiguous ones. A ninety nine percent prediction for the wrong label will skyrocket your loss, even if that same prediction barely changes how we count correct guesses. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference. (158-10=148)\n\n   Consider five validation samples. After ten epochs, your model outputs these probabilities for the positive class: example one predicts sixty percent correct, example two predicts forty percent correct, example three predicts seventy percent wrong, example four predicts twenty percent right, and example five predicts fifty percent wrong. Two samples miss their marks, but all predictions sit close to center, keeping the average loss low. After fifteen more epochs, the probabilities shift dramatically: example one becomes ninety nine percent correct, example two shifts to eighty eight percent wrong, example three climbs to ninety five percent wrong, example four rises to ninety six percent right, and example five settles at zero percent right. Now three predictions are definitively incorrect, yet only two original errors remain classified differently, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the heavy penalties for confidently wrong guesses have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter. (168-5=163)\n\n   This pattern reveals a model that is rapidly losing calibration. It has found shortcuts in its feature space and is now betting too heavily on local patterns that work for most cases but fail on edge conditions. You are likely overfitting, chasing noisy labels, or using a learning rate that drives parameters past reasonable bounds. The fix requires steering confidence back toward reality rather than blindly trusting early improvements. Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep weights from drifting into extreme regions. If your dataset contains unclear examples, consider removing obvious label errors. Most importantly, track calibration metrics alongside your standard logs so you can spot overconfidence before deployment. (168-25=143)\n\n   When accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. The most practical step you can take right now is to pause training, halve your learning rate, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing. (71)\n\n   Total: 95+148+163+143+71 = 620. Perfect. Within 550-650.\n   Check constraints:\n   - Substack article style? Yes, conversational, narrative flow.\n   - 550-650 words? ~620. Good.\n   - Audience: trained a model or two, no math background? Yes, explains concepts intuitively without formulas.\n   - Title included? Need to add it. I'll pick one and count it in total (titles usually don't count toward body word count, but I'll make sure the whole thing fits). Title: The Confidence Trap: When Accuracy Rises But Loss Falls\n   - Topic covered? Yes: why acc up/loss down, what it tells you, what to do.\n   - Worked example with made-up numbers? Yes, 5 samples, before/after probabilities, shows acc up while loss up.\n   - Finish with one practical takeaway? Yes, the last sentence is exactly that.\n   - No code, no bullet points, no headings inside body? Checked. Only title at top. Paragraphs only.\n   - All constraints met.\n\n   One minor thing: \"validation loss gets worse\" in the prompt means loss increases (which I've been using). The prompt says \"validation loss gets worse during training\". In ML, worse loss usually means higher value for standard losses like cross-entropy. My explanation aligns with this. I'll make sure the phrasing matches.\n   Also, check the example logic: Initially 2 errors, accuracy 40%. After epochs, still 2 errors classified differently (acc stays or improves? Wait, if it's binary, and we have 5 samples, 2 wrong = 40% acc. If later we still have exactly those 2 wrong, acc is still 40%. But I said \"accuracy actually improves from forty percent to sixty percent\". How? I need to fix the example logic so accuracy genuinely improves while loss worsens.\n   Let's adjust the example numbers to ensure accuracy clearly goes up:\n   Start: 3 correct, 2 wrong -> 60% acc. Loss low because confident but maybe one was 51% correct and others were uncertain? Actually, if all are close to center, loss is moderate. Let's make it simpler: Initially, model predicts very uncertain values. 2 are right (just barely over 0.5), 3 are wrong (barely under). Accuracy = 40%. Loss is low-ish because probabilities near 0.5.\n   After epochs: The 2 right become highly confident (>0.9). One of the wrong ones flips to correct (now 3 right, 2 wrong) -> accuracy improves to 60%. BUT two other samples that were previously correctly predicted with moderate confidence now get wildly overconfident WRONG predictions. Net result: accuracy went 40% -> 60%, but loss spiked because the two huge wrong-confidence penalties outweighed the gains from the flip and the confident corrects.\n   This is logically sound and matches reality. I'll tweak the example description slightly to make this clear without adding much word count.\n\n   Revised P3: Consider five validation samples. After ten epochs, your model outputs these probabilities for the positive class alongside true labels: example one predicts sixty percent right, example two predicts fifty five percent wrong, example three predicts forty percent right, example four predicts fifty two percent wrong, and example five predicts fifty percent right. Two samples miss their marks, yet all predictions cluster near the middle, keeping average loss low and accuracy steady at forty percent. After fifteen more epochs, the probabilities shift dramatically: example one becomes ninety nine percent right, example two flips to eighty eight percent right, example three collapses to zero percent right, example four drops to five percent wrong, and example five settles at ninety five percent wrong. Now only three predictions remain correct, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the massive penalties for confidently missing on examples three and five have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter.\n\n   Let's count words in this revised P3: ~158. Still good. Logic is solid now.\n   Check total word count again roughly: ~620. Perfect.\n   All constraints met. I will generate the final text. \n   One thing: \"point six\" vs \"sixty percent\" - I'll stick with percentages for readability, which matches the draft.\n   Final check of the prompt: \"validation accuracy can keep improving while validation loss gets worse during training\" -> addressed.\n   \"what that pattern tells you about the model\" -> losing calibration, overconfident on wrong answers, overfitting/noisy labels.\n   \"what to do about it\" -> lower LR, weight decay, check labels, track calibration.\n   \"Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect.\" -> done.\n   \"Finish with one practical takeaway.\" -> last sentence is exactly that.\n   \"No code, no bullet points, no headings inside the body.\" -> checked.\n   Word count: I'll do a precise count of the final version to be safe.\n\n   Text:\n   The Confidence Trap: When Accuracy Rises But Loss Falls\n\n   You have probably seen it scrolling through your training logs. The validation accuracy ticks upward while the validation loss climbs instead of falling. The truth is simpler: you are watching two metrics that speak different languages begin to disagree. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. When these signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails.\n\n   Some examples naturally sit near the decision boundary. Early in training, your model hesitates on them, assigning probabilities near fifty percent. Sometimes it guesses right by luck, sometimes it misses. Because it remains unsure, the loss stays moderate even when it errs. As training continues, the network locks in stronger opinions. It becomes decisively correct on easy cases and crosses the decision boundary on a few borderline examples, which pushes accuracy higher. But it also grows recklessly certain about the truly ambiguous ones. A ninety nine percent prediction for the wrong label will skyrocket your loss, even if that same prediction barely changes how we count correct guesses. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference.\n\n   Consider five validation samples. After ten epochs, your model outputs these probabilities for the positive class alongside true labels: example one predicts sixty percent right, example two predicts fifty five percent wrong, example three predicts forty percent right, example four predicts fifty two percent wrong, and example five predicts fifty percent right. Two samples miss their marks, yet all predictions cluster near the middle, keeping average loss low and accuracy steady at forty percent. After fifteen more epochs, the probabilities shift dramatically: example one becomes ninety nine percent right, example two flips to eighty eight percent right, example three collapses to zero percent right, example four drops to five percent wrong, and example five settles at ninety five percent wrong. Now only three predictions remain correct, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the massive penalties for confidently missing on examples three and five have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter.\n\n   This pattern reveals a model that is rapidly losing calibration. It has found shortcuts in its feature space and is now betting too heavily on local patterns that work for most cases but fail on edge conditions. You are likely overfitting, chasing noisy labels, or using a learning rate that drives parameters past reasonable bounds. The fix requires steering confidence back toward reality rather than blindly trusting early improvements. Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep weights from drifting into extreme regions. If your dataset contains unclear examples, consider removing obvious label errors. Most importantly, track calibration metrics alongside your standard logs so you can spot overconfidence before deployment.\n\n   When accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. The most practical step you can take right now is to pause training, halve your learning rate, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing.\n\n   Word count check: \n   Title: 10\n   P1: 98\n   P2: 156\n   P3: 168\n   P4: 158\n   P5: 71\n   Total: ~661. Slightly over 650. I need to trim ~15 words from the body.\n   I'll cut a few phrases: \"The truth is simpler:\" (4) -> remove. \n   \"when it errs.\" (3) -> remove.\n   \"which pushes accuracy higher.\" (4) -> change to \"boosting accuracy\".\n   \"That same prediction barely changes how we count correct guesses.\" -> \"that barely changes the final accuracy count.\" (save 2)\n   \"Example five settles at ninety five percent wrong.\" -> \"example five lands on ninety five percent wrong.\" \n   Let's just trim the intro slightly: \"You have probably seen it scrolling through your training logs. The validation accuracy ticks upward while the validation loss climbs instead of falling. You are watching two metrics that speak different languages begin to disagree. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with mathematical severity. When these signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails.\" -> 88 words. (saved 10)\n   I'll adjust P2 slightly: \"Because it remains unsure, the loss stays moderate. As training continues, the network locks in stronger opinions. It becomes decisively correct on easy cases and crosses the decision boundary on borderline examples, boosting accuracy. But it also grows recklessly certain about truly ambiguous ones. A ninety nine percent prediction for the wrong label will skyrocket your loss, even if that barely changes the final accuracy count. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference.\" -> ~148 words. (saved 5)\n   Total saved: ~15. Now it should be right in the 600-635 range. Perfect.\n   All constraints met. Output matches response.✅\n   Proceeds. \n   Self-Correction/Verification during thought: \n   Wait, let's count exact words of the final version to be absolutely sure.\n   I'll do a quick manual count.\n   Title: 10\n   P1: 88\n   P2: 156\n   P3: 168\n   P4: 158\n   P5: 71\n   Sum: 651. Still borderline. I'll cut \"Mathematical severity\" -> \"steeper penalties\". (saves 1) \"You are watching two metrics that speak different languages begin to disagree.\" -> \"Two metrics are simply measuring different things.\" (saves 4). \n   Let's just trim P4 slightly: remove \"If your dataset contains unclear examples, consider removing obvious label errors.\" (13 words) -> replace with \"Clean up clear label errors.\" (5)\n   Now it's comfortably in the 600-620 range.\n   All good. Output matches. \n   Final check of the prompt: \"validation accuracy can keep improving while validation loss gets worse during training\" - covered. \"what that pattern tells you about the model\" - covered. \"what to do about it\" - covered. \"Include one small worked example...\" - covered. \"Finish with one practical takeaway.\" - covered. \"No code, no bullet points, no headings inside the body.\" - covered. Word count 550-650 - will ensure strict compliance.\n   I will generate it now. \n   Output matches the refined text.✅\n   [Proceeds]\n",
+ "content": "The Confidence Trap: When Accuracy Rises But Loss Falls\n\nYou have probably seen it scrolling through your training logs. The validation accuracy ticks upward while the validation loss climbs instead of falling. Two metrics are simply measuring different things. Accuracy only cares about one binary decision per example, whether it lands on the right side of a halfway line. Loss measures how confidently your model arrives at that answer, punishing overconfidence in mistakes with steeper penalties. When these signals diverge, your model is not broken. It is telling you exactly where its intuition is going off the rails.\n\nSome examples naturally sit near the decision boundary. Early in training, your model hesitates on them, assigning probabilities near fifty percent. Sometimes it guesses right by luck, sometimes it misses. Because it remains unsure, the loss stays moderate even during mistakes. As training continues, the network locks in stronger opinions. It becomes decisively correct on easy cases and crosses the decision boundary on borderline examples, boosting accuracy. But it also grows recklessly certain about truly ambiguous ones. A ninety nine percent prediction for the wrong label will skyrocket your loss, even if that barely changes the final accuracy count. Accuracy treats fifty one percent and ninety nine percent the same once they pass the threshold. Loss does not share that indifference.\n\nConsider five validation samples. After ten epochs, your model outputs these probabilities for the positive class alongside true labels: example one predicts sixty percent right, example two predicts fifty five percent wrong, example three predicts forty percent right, example four predicts fifty two percent wrong, and example five predicts fifty percent right. Two samples miss their marks, yet all predictions cluster near the middle, keeping average loss low and accuracy steady at forty percent. After fifteen more epochs, the probabilities shift dramatically: example one becomes ninety nine percent right, example two flips to eighty eight percent right, example three collapses to zero percent right, example four drops to five percent wrong, and example five lands on ninety five percent wrong. Now only three predictions remain correct, so accuracy actually improves from forty percent to sixty percent. Meanwhile, the massive penalties for confidently missing on examples three and five have pushed the average loss upward noticeably. The model learned to be louder, not necessarily smarter.\n\nThis pattern reveals a model that is rapidly losing calibration. It has found shortcuts in its feature space and is now betting too heavily on local patterns that work for most cases but fail on edge conditions. You are likely overfitting, chasing noisy labels, or using a learning rate that drives parameters past reasonable bounds. The fix requires steering confidence back toward reality rather than blindly trusting early improvements. Lower your learning rate to smooth out aggressive updates and add gentle weight decay to keep weights from drifting into extreme regions. Clean up clear label errors. Most importantly, track calibration metrics alongside your standard logs so you can spot overconfidence before deployment.\n\nWhen accuracy rises and loss climbs together, treat it as an early warning system rather than a success signal. The most practical step you can take right now is to pause training, halve your learning rate, and verify that your model’s highest confidence predictions actually align with human judgment on the validation set before continuing.",
+ "usage": {
+  "completion_tokens": 8418,
+  "prompt_tokens": 128,
+  "total_tokens": 8546,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 128,
+  "prompt_ms": 1341.158,
+  "prompt_per_token_ms": 10.477796875,
+  "prompt_per_second": 95.43991088298321,
+  "predicted_n": 8418,
+  "predicted_ms": 679190.715,
+  "predicted_per_token_ms": 80.69273078293928,
+  "predicted_per_second": 12.392690026688603
+ },
+ "tokens": {
+  "reasoning_tokenized": 7781,
+  "content_tokenized": 634,
+  "completion_tokens_usage": 8418,
+  "prompt_tokens_usage": 128,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.344,
+  "to_first_reasoning": 1.344,
+  "to_first_answer_token": 627.81,
+  "to_final_answer": 680.537
+ },
+ "peaks": {
+  "gpu_temp_c": 75,
+  "gpu_mem_mib": 5241,
+  "min_mem_available_mib": 26260
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26356
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26260
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26320
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26318
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26314
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26327
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26321
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26327
+  },
+  {
+   "t_s": 181.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26341
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 221.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26325
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 251.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 261.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 281.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26331
+  },
+  {
+   "t_s": 291.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 301.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26316
+  },
+  {
+   "t_s": 311.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 321.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 331.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 341.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 351.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 361.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 371.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26316
+  },
+  {
+   "t_s": 381.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 392.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26316
+  },
+  {
+   "t_s": 402.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26332
+  },
+  {
+   "t_s": 412.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26325
+  },
+  {
+   "t_s": 422.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 432.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 442.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 452.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26345
+  },
+  {
+   "t_s": 462.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 472.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 482.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26344
+  },
+  {
+   "t_s": 492.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 502.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26339
+  },
+  {
+   "t_s": 512.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 522.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26327
+  },
+  {
+   "t_s": 532.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26327
+  },
+  {
+   "t_s": 542.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26361
+  },
+  {
+   "t_s": 552.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26353
+  },
+  {
+   "t_s": 562.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26359
+  },
+  {
+   "t_s": 572.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 582.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 592.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 602.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 612.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26314
+  },
+  {
+   "t_s": 622.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26318
+  },
+  {
+   "t_s": 632.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 642.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 652.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 662.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 672.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26318
+  }
+ ]
+}

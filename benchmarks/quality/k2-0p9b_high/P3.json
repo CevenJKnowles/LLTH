@@ -1,0 +1,79 @@
+{
+ "id": "P3",
+ "title": "scikit-learn pipeline with mixed types and an unseen category",
+ "prompt_text": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1008,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1008,
+ "started_at": "2026-10-31T01:16:34",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce code that builds a pipeline: one-hot encode colour, standardize numeric columns (size_cm, weight_g), then logistic regression. Fit on data X,y. Then create a one-row DataFrame with colour \"purple\", size_cm=12.0, weight_g=150 (or maybe using the values from training? The example says \"contains a colour never seen in training\". So we create a new DataFrame with those values. Then call predict_proba on that one-row frame. Ensure it doesn't raise error. Explain why unseen colour doesn't cause error: because pipeline handles missing categories via one-hot encoding of unseen categories? Actually one-hot encoding of colour will produce columns for \"red\", \"blue\", \"green\"? But if colour not in training, the one-hot encoding will create new binary features for that colour (like \"purple\"). That's fine; no error. Also standardization: we need to include the numeric columns in pipeline; they are standardized using mean/std from training. The new row will be transformed, but no error. Provide code.\n\nWe must not use any library beyond pandas and scikit-learn. Provide complete runnable code.\n\nExplain in two sentences why unseen colour does not cause error.\n\nLet's craft code:\n\n```python\nimport pandas as pd\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.preprocessing import OneHotEncoder\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.linear_model import LogisticRegression\n\nX = pd.DataFrame(...)\ny = ...\n\n# Identify columns to scale\nnumeric_features = [\"size_cm\", \"weight_g\"]\ncategorical_features = [\"colour\"]\n\npreprocess = ColumnTransformer(\n    transformers=[\n        (\"num\", StandardScaler(), numeric_features),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), categorical_features)\n    ]\n)\n\nmodel = LogisticRegression()\npipeline = Pipeline([\n    (\"preprocess\", preprocess),\n    (\"clf\", model)\n])\n\npipeline.fit(X, y)\n\n# one-row example\nnew_row = pd.DataFrame({\n    \"colour\": [\"purple\"],\n    \"size_cm\": 12.0,\n    \"weight_g\": 150\n})\nnew_row = new_row.reindex(columns=X.columns)  # ensure same columns\nproba = pipeline.predict_proba(new_row)[0]\nprint(proba)\n```\n\nBut note that ColumnTransformer expects DataFrame of same columns; we can use a DataFrame with same columns as X (including colour). Simpler: create a DataFrame with same columns but new values.\n\nExplain: one-hot encoder ignores unseen categories because handle_unknown='ignore' ensures no error, and the pipeline does not require training labels for unseen categories.\n\nTwo sentences explanation.\n\nLet's produce code with explicit steps.\n\n",
+ "content": "```python\nimport pandas as pd\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import StandardScaler, OneHotEncoder\nfrom sklearn.linear_model import LogisticRegression\n\n# ---------- data ----------\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n\n# ---------- build pipeline ----------\n# numeric columns that must be standardised\nnumeric_features = [\"size_cm\", \"weight_g\"]\n# categorical column that will be one‑hot encoded\ncategorical_features = [\"colour\"]\n\npreprocess = ColumnTransformer(\n    transformers=[\n        (\"num\", StandardScaler(), numeric_features),                     # scale numbers\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), categorical_features)  # ignore unseen categories\n    ]\n)\n\nmodel = LogisticRegression()\npipeline = Pipeline([\n    (\"preprocess\", preprocess),\n    (\"clf\", model)\n])\n\n# fit on the whole training set\npipeline.fit(X, y)\n\n# ---------- test on a row that contains a colour never seen in training ----------\nnew_row = pd.DataFrame({\n    \"colour\":   [\"purple\"],          # colour not present in X\n    \"size_cm\":  12.0,\n    \"weight_g\": 150\n})\n\n# predict probability for this single‑row frame\nproba = pipeline.predict_proba(new_row)[0]\nprint(proba)\n```\n\n**Why it works:** The `OneHotEncoder` is configured with `handle_unknown=\"ignore\"`, so when the pipeline sees a colour token it simply adds the corresponding dummy column for it and does not raise an error; the unseen colour is encoded as a new binary feature, and the subsequent standardisation of the numeric columns uses the training statistics, so the whole pipeline runs without crashing.",
+ "usage": {
+  "completion_tokens": 1133,
+  "prompt_tokens": 308,
+  "total_tokens": 1441,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 308,
+  "prompt_ms": 55.73,
+  "prompt_per_token_ms": 0.18094155844155843,
+  "prompt_per_second": 5526.6463305221605,
+  "predicted_n": 1133,
+  "predicted_ms": 7803.558,
+  "predicted_per_token_ms": 6.893602473498233,
+  "predicted_per_second": 145.06203452322646
+ },
+ "tokens": {
+  "reasoning_tokenized": 617,
+  "content_tokenized": 513,
+  "completion_tokens_usage": 1133,
+  "prompt_tokens_usage": 308,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.058,
+  "to_first_reasoning": 0.058,
+  "to_first_answer_token": 4.238,
+  "to_final_answer": 7.861
+ },
+ "peaks": {
+  "gpu_temp_c": 64,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26230
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26230
+  }
+ ]
+}

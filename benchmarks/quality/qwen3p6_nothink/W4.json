@@ -1,0 +1,84 @@
+{
+ "id": "W4",
+ "title": "README installation section, terse rewrite",
+ "prompt_text": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1004,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1004,
+ "started_at": "2026-10-30T20:04:09",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Install Python 3.9 or newer. Run `pip install quillcache`. For plotting helpers, run `pip install quillcache[viz]`. Set the `QUILLCACHE_HOME` environment variable to change the default cache location at `~/.quillcache`. Import the library after configuration.",
+ "usage": {
+  "completion_tokens": 64,
+  "prompt_tokens": 174,
+  "total_tokens": 238,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 174,
+  "prompt_ms": 1414.52,
+  "prompt_per_token_ms": 8.129425287356321,
+  "prompt_per_second": 123.00992562848174,
+  "predicted_n": 64,
+  "predicted_ms": 3845.493,
+  "predicted_per_token_ms": 61.03957142857143,
+  "predicted_per_second": 16.3828148952553
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 63,
+  "completion_tokens_usage": 64,
+  "prompt_tokens_usage": 174,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.417,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.417,
+  "to_final_answer": 5.263
+ },
+ "peaks": {
+  "gpu_temp_c": 68,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26236
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26236
+  }
+ ]
+}

@@ -1,0 +1,101 @@
+### K2-Horizon-3.7B Q5_K_M  ngl=99  depth=0
+start: 2026-10-23T22:24:22+02:00  gpu_temp_before=66  mem_available_MiB=26481
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q8_0 -ctv q8_0 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |           pp512 |      1686.78 ± 13.88 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |           tg128 |         56.11 ± 0.39 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3789 gpu_temp_C=75 sm_clock_min_MHz=300 sm_clock_max_MHz=1380 power_max_W=78 mem_available_min_MiB=25987 samples=10 exit=0
+end: 2026-10-23T22:24:32+02:00
+
+### K2-Horizon-3.7B Q5_K_M  ngl=99  depth=8192
+start: 2026-10-23T22:24:52+02:00  gpu_temp_before=64  mem_available_MiB=26476
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q8_0 -ctv q8_0 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |       1031.29 ± 8.65 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         33.87 ± 0.12 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4409 gpu_temp_C=76 sm_clock_min_MHz=300 sm_clock_max_MHz=1740 power_max_W=91 mem_available_min_MiB=25513 samples=21 exit=0
+end: 2026-10-23T22:25:14+02:00
+
+### K2-Horizon-3.7B Q5_K_M  ngl=99  depth=16384
+start: 2026-10-23T22:25:34+02:00  gpu_temp_before=65  mem_available_MiB=26485
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q8_0 -ctv q8_0 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |  pp512 @ d16384 |        726.16 ± 7.97 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  99 |   q8_0 |   q8_0 |   1 |  tg128 @ d16384 |         23.42 ± 0.08 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5029 gpu_temp_C=78 sm_clock_min_MHz=300 sm_clock_max_MHz=1845 power_max_W=77 mem_available_min_MiB=24890 samples=36 exit=0
+end: 2026-10-23T22:26:11+02:00
+
+### K2-Horizon-3.7B Q5_K_M  ngl=99  depth=32768
+start: 2026-10-23T22:26:31+02:00  gpu_temp_before=66  mem_available_MiB=26490
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q8_0 -ctv q8_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 547.09 MiB on device 0: cudaMalloc failed: out of memory
+ggml_gallocr_reserve_n_impl: failed to allocate CUDA0 buffer of size 573669376
+graph_reserve: failed to allocate compute buffers
+llama_init_from_model: failed to initialize the context: failed to allocate compute pp buffers
+llama_bench: error: failed to create context with model '$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf'
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+peaks: vram_MiB=3207 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=930 power_max_W=25 mem_available_min_MiB=26225 samples=2 exit=1
+end: 2026-10-23T22:26:32+02:00
+
+ALL DONE
+### K2-Horizon-3.7B Q5_K_M  ngl=32  depth=32768  (added: fewer layers, baseline q8_0 cache)
+start: 2026-10-23T23:01:15+02:00  gpu_temp_before=61  mem_available_MiB=26397
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 32 -fa on -ctk q8_0 -ctv q8_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  32 |   q8_0 |   q8_0 |   1 |  pp512 @ d32768 |        410.48 ± 2.55 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  32 |   q8_0 |   q8_0 |   1 |  tg128 @ d32768 |          3.16 ± 0.02 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5535 gpu_temp_C=81 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=85 mem_available_min_MiB=22953 samples=172 exit=0
+end: 2026-10-23T23:04:12+02:00
+
+### K2-Horizon-3.7B Q5_K_M  ngl=30  depth=32768  (added: fewer layers, baseline q8_0 cache)
+start: 2026-10-23T23:04:32+02:00  gpu_temp_before=68  mem_available_MiB=26409
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 30 -fa on -ctk q8_0 -ctv q8_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  30 |   q8_0 |   q8_0 |   1 |  pp512 @ d32768 |        387.59 ± 1.29 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  30 |   q8_0 |   q8_0 |   1 |  tg128 @ d32768 |          2.30 ± 0.05 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5259 gpu_temp_C=85 sm_clock_min_MHz=300 sm_clock_max_MHz=1860 power_max_W=85 mem_available_min_MiB=22532 samples=219 exit=0
+end: 2026-10-23T23:08:18+02:00
+
+### K2-Horizon-3.7B Q5_K_M  ngl=28  depth=32768  (added: fewer layers, baseline q8_0 cache)
+start: 2026-10-23T23:08:38+02:00  gpu_temp_before=67  mem_available_MiB=26451
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf -p 512 -n 128 -r 3 -ngl 28 -fa on -ctk q8_0 -ctv q8_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  28 |   q8_0 |   q8_0 |   1 |  pp512 @ d32768 |        382.49 ± 1.39 |
+| k2-horizon 4B Q5_K - Medium    |   3.38 GiB |     5.06 B | CUDA       |  28 |   q8_0 |   q8_0 |   1 |  tg128 @ d32768 |          1.88 ± 0.04 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4989 gpu_temp_C=86 sm_clock_min_MHz=300 sm_clock_max_MHz=1680 power_max_W=97 mem_available_min_MiB=22610 samples=255 exit=0
+end: 2026-10-23T23:13:03+02:00
+
+ALL DONE (3.7B 32K baseline retry)

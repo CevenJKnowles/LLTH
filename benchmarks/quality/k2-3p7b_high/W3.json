@@ -1,0 +1,91 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1003,
+ "started_at": "2026-10-30T23:52:21",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce a Substack article of 550-650 words, for readers who have trained a model or two but no maths background. Title it ourselves. Topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body. So plain paragraphs, no bullet points, no headings. Title is separate (title line). Need to ensure word count 550-650. No bullet points, no headings inside the body (so just title then paragraphs). Also no code. Use plain language. Provide a small worked example with made-up numbers: maybe a handful of examples (like 4 examples) with predicted probabilities before and after a few more epochs, showing that validation accuracy improves while loss gets worse. Show numbers like predicted probabilities for class 0/1 and show that moving probabilities more extreme leads to higher loss but higher accuracy. Provide explanation. End with one practical takeaway (maybe \"regularize or adjust learning rate\").\n\nMake sure not to include bullet points or headings. Title line can be separate. Let's craft about 600 words. Ensure no bullet points. Use plain paragraphs. Let's count approximate words. We'll aim for ~600.\n\nLet's draft.",
+ "content": "**Why Your Validation Accuracy Can Keep Climbing While the Validation Loss Keeps Climbing Too**\n\nIf you’ve been training neural nets for a while, you’ve probably watched the two curves on the dashboard move in opposite directions for a stretch: the validation accuracy climbs, the validation loss goes up. At first glance that looks like a paradox, because a model that’s doing worse according to its loss metric should also be performing worse on the test set. Yet the pattern is common, especially when the model starts to over‑confident. Understanding what’s happening under the hood will help you decide whether to keep training, tune the learning rate, or add some regularization.\n\nWhen a model’s predictions become more extreme — pushing class‑1 probabilities toward 1 and class‑0 probabilities toward 0 — its accuracy can actually improve. That’s because the model is now “sure” about the right label on many examples, even though those probabilities are not reliable. The loss function, most often cross‑entropy, measures the distance between the predicted probabilities and the true label. If the true label is a single 0 or 1, a perfectly confident wrong guess can produce a loss that is higher than the loss of a more balanced guess that is also correct. In other words, the model is learning a sharper decision boundary that happens to line up with the training set but overfits to it.\n\nA simple way to see the mechanics is to look at a handful of examples and their predicted probabilities before and after a few more epochs of training. Imagine we have four validation examples, two belonging to class 0 and two belonging to class 1. At epoch 10 the model’s probabilities are roughly:\n\n| Example | True label | Predicted prob (class 1) |\n|--------|------------|--------------------------|\n| A      | 0          | 0.45                     |\n| B      | 0          | 0.30                     |\n| C      | 1          | 0.55                     |\n| D      | 1          | 0.60                     |\n\nAccuracy here is 2 out of 4, i.e., 50 %. The cross‑entropy loss for this set is about 0.92.\n\nAfter a few more epochs (say epochs 12‑14) the model becomes more confident:\n\n| Example | True label | Predicted prob (class 1) |\n|--------|------------|--------------------------|\n| A      | 0          | 0.15                     |\n| B      | 0          | 0.10                     |\n| C      | 1          | 0.85                     |\n| D      | 1          | 0.90                     |\n\nNow the accuracy jumps to 4 out of 4, or 100 %, because the model’s decision rule (probability > 0.5) matches the true label for every example. The loss, however, climbs to roughly 1.30. The reason is that the model now assigns extreme probabilities (0.90, 0.85, 0.15, 0.10), and the cross‑entropy penalty for a confident guess on a mis‑classified example would be far larger than the penalty for a moderate guess that is still correct. Because the model has over‑fit to the training distribution, it pushes probabilities to the extremes and the loss inflates, even though the validation metric that simply checks whether the class is correct continues to improve.\n\nWhat does this pattern tell you about your model? First, it signals that the network is likely to be over‑fitting. The validation set is small enough that a few lucky predictions can swing accuracy, while the loss reflects a deeper problem of probability calibration. Second, it may indicate that the model is not learning the right underlying function; it’s just memorizing the training examples. Finally, it warns that further training without a safeguard will only deepen the mismatch between confidence and truth.\n\nThe usual remedies are to soften the model’s confidence or to stop the training before the loss explodes. Lowering the learning rate for a few steps can give the optimizer a chance to find a more balanced solution instead of sprinting toward an extreme minimum. Adding dropout or weight decay introduces regularisation that encourages the network to spread its predictions more evenly, reducing the tendency to become overly certain. Early stopping — monitoring the validation loss instead of accuracy and halting when the loss starts to rise for several epochs — is another practical tool. If you prefer to keep the model’s confidence high, you can switch the loss function from cross‑entropy to a more forgiving metric, or use a calibration layer that maps raw outputs to better‑behaved probabilities.\n\nA single, easy‑to‑remember takeaway is this: when validation accuracy keeps climbing while validation loss keeps climbing, treat it as a warning sign of over‑confidence, not a triumph, and adjust the training dynamics — usually by slowing the learning rate, adding regularisation, or stopping early — to bring the two metrics into harmony.",
+ "usage": {
+  "completion_tokens": 1312,
+  "prompt_tokens": 124,
+  "total_tokens": 1436,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 124,
+  "prompt_ms": 87.114,
+  "prompt_per_token_ms": 0.7025322580645161,
+  "prompt_per_second": 1423.4221824276235,
+  "predicted_n": 1312,
+  "predicted_ms": 24329.441,
+  "predicted_per_token_ms": 18.55792601067887,
+  "predicted_per_second": 53.88533176738422
+ },
+ "tokens": {
+  "reasoning_tokenized": 303,
+  "content_tokenized": 1007,
+  "completion_tokens_usage": 1312,
+  "prompt_tokens_usage": 124,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.089,
+  "to_first_reasoning": 0.089,
+  "to_first_answer_token": 5.449,
+  "to_final_answer": 24.419
+ },
+ "peaks": {
+  "gpu_temp_c": 70,
+  "gpu_mem_mib": 4819,
+  "min_mem_available_mib": 26245
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26245
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26269
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26362
+  }
+ ]
+}

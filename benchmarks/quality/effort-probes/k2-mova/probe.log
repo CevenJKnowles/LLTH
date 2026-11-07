@@ -1,0 +1,22 @@
+prompt effort reasoning_tok answer_tok gen_tok_s total_s finish split_ok gpu_c
+W1 low 42 0 8.5 12.0 stop False 54 generated=43
+W1 medium 109 42 11.3 15.7 stop True 57 generated=154
+W1 high 228 38 11.0 26.2 stop True 61 generated=269
+W2 low 207 0 11.3 20.5 stop False 63 generated=208
+W2 medium 620 100 10.5 70.5 stop True 66 generated=723
+W2 high 2857 66 9.9 297.4 stop True 70 generated=2926
+W4 low 0 62 12.4 7.6 stop True 64 generated=65
+W4 medium 312 65 10.6 38.1 stop True 65 generated=380
+W4 high 375 68 10.5 44.7 stop True 66 generated=447
+D1 low 0 74 12.4 8.3 stop True 64 generated=77
+D1 medium 285 65 10.7 35.0 stop True 65 generated=353
+D1 high 964 25 10.1 99.8 stop True 67 generated=992
+D4 low 96 296 10.5 39.8 stop True 66 generated=395
+D4 medium 321 506 10.2 83.2 stop True 67 generated=830
+D4 high 176 334 10.4 51.4 stop True 66 generated=513
+P1 low 13 376 10.4 39.7 stop True 65 generated=392
+P1 medium 229 425 10.0 71.6 stop True 67 generated=657
+P1 high 345 443 9.4 86.7 stop True 68 generated=791
+R2 low 884 0 9.5 98.2 stop False 68 generated=885
+R2 medium 1021 413 10.1 144.5 stop True 69 generated=1437
+R2 high 3468 110 9.9 364.6 stop True 72 generated=3582

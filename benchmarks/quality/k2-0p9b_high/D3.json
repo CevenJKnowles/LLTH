@@ -1,0 +1,79 @@
+{
+ "id": "D3",
+ "title": "Compress a paragraph without losing facts (looks easy, is hard)",
+ "prompt_text": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1018,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1018,
+ "started_at": "2026-10-31T01:38:47",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to shorten paragraph to at most 40 words. Must preserve every fact. Let's list facts:\n\n- Tidelog is a small Python library.\n- Version 0.4.2.\n- Purpose: read newline-delimited JSON log files and write them out again as Parquet files for efficient querying.\n- Tested on files up to 8 GB.\n- Requires Python 3.10 or newer.\n- Only third-party dependency is pyarrow.\n- Released under MIT licence.\n- Maintainers publish new release roughly every six weeks.\n\nWe need to condense into <=40 words, include all facts. Count words.\n\nDraft: \"Tidelog is a small Python library version 0.4.2; it reads newline‑delimited JSON logs and writes them as Parquet files for efficient querying. Tested on up to 8 GB files. Requires Python 3.10+; only dependency is pyarrow. MIT‑licensed; releases about every six weeks.\"\n\nCount words:\n\nTidelog(1) is2 a3 small4 Python5 library6 version7 0.4.28; it9 reads10 newline‑delimited11 JSON12 logs13 and14 writes15 them16 as17 Parquet18 files19 for20 efficient21 querying.22 Tested23 on24 up25 to26 8 GB27 files.28 Requires29 Python30 3.1021+; only22 dependency23 is24 pyarrow.25 MIT‑licensed26; releases27 about28 every29 six30 weeks31.\n\nThat's 31 words? Let's recount carefully.\n\nI'll write sentence by sentence.\n\n\" Tidelog is a small Python library version 0.4.2; it reads newline‑delimited JSON logs and writes them as Parquet files for efficient querying. Tested on up to 8 GB files. Requires Python 3.10+; only dependency is pyarrow. MIT‑licensed; releases about every six weeks.\"\n\nCount:\n\nTidelog(1)\nis2\na3\nsmall4\nPython5\nlibrary6\nversion7\n0.4.28\n;? punctuation doesn't count.\nit9\nreads10\nnewline‑delimited11\nJSON12\nlogs13\nand14\nwrites15\nthem16\nas17\nParquet18\nfiles19\nfor20\nefficient21\nquerying.22\nTested23\non24\nup25\nto26\n8 GB27\nfiles.28\nRequires29\nPython30\n3.1021+\n;? punctuation not word.\nonly32\ndependency33\nis34\npyarrow.35\nMIT‑licensed36\n;37\nreleases38\nabout39\nevery40\nsix41\nweeks42.\n\nWe have 42 words, exceeding 40. Need <=40. Need to trim.\n\nWe can combine some words.\n\nGoal <=40.\n\nLet's craft: \"Tidelog is a small Python library version 0.4.2; reads newline‑delimited JSON logs, writes them as Parquet files for efficient querying. Tested on up to 8 GB files. Requires Python 3.10+; only dependency is pyarrow. MIT‑licensed; releases about every six weeks.\"\n\nCount:\n\nTidelog1\nis2\na3\nsmall4\nPython5\nlibrary6\nversion7\n0.4.28\n; punctuation skip\nreads9\nnewline‑delimited10\nJSON11\nlogs,12\nwrites13\nthem14\nas15\nParquet16\nfiles17\nfor18\nefficient19\nquerying.20\nTested21\non22\nup23\nto24\n8 GB25\nfiles.26\nRequires27\nPython28\n3.1029+\n; punctuation skip\nonly30\ndependency31\nis32\npyarrow.33\nMIT‑licensed34\n;35\nreleases36\nabout37\nevery38\nsix39\nweeks40.\n\nExactly 40 words. Good. Ensure all facts present: library, version, purpose (reads logs, writes as Parquet), tested up to 8GB, requires Python 3.10+, only dep pyarrow, MIT licence, releases every six weeks. Yes.\n",
+ "content": "Tidelog is a small Python library version 0.4.2; reads newline‑delimited JSON logs, writes them as Parquet files for efficient querying. Tested on up to 8 GB files. Requires Python 3.10+; only dependency is pyarrow. MIT‑licensed; releases about every six weeks.",
+ "usage": {
+  "completion_tokens": 1009,
+  "prompt_tokens": 145,
+  "total_tokens": 1154,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 145,
+  "prompt_ms": 32.283,
+  "prompt_per_token_ms": 0.22264137931034483,
+  "prompt_per_second": 4491.528048818263,
+  "predicted_n": 1009,
+  "predicted_ms": 6872.253,
+  "predicted_per_token_ms": 6.817711309523809,
+  "predicted_per_second": 146.67678852917666
+ },
+ "tokens": {
+  "reasoning_tokenized": 931,
+  "content_tokenized": 75,
+  "completion_tokens_usage": 1009,
+  "prompt_tokens_usage": 145,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.034,
+  "to_first_reasoning": 0.034,
+  "to_first_answer_token": 6.378,
+  "to_final_answer": 6.907
+ },
+ "peaks": {
+  "gpu_temp_c": 67,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26295
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26295
+  }
+ ]
+}

@@ -1,0 +1,309 @@
+{
+ "id": "P3",
+ "title": "scikit-learn pipeline with mixed types and an unseen category",
+ "prompt_text": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1008,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1008,
+ "started_at": "2026-10-30T18:17:39",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process:\n\n1.  **Understand User Requirements:**\n   - Use `scikit-learn` 1.5+ and `pandas` 2.x\n   - Input data: `X` (DataFrame with columns: \"colour\", \"size_cm\", \"weight_g\"), `y` (list of 0s and 1s)\n   - Build a single `Pipeline` that:\n     - One-hot encodes `colour`\n     - Standardizes the two numeric columns (`size_cm`, `weight_g`)\n     - Fits a `LogisticRegression`\n   - Fit on `X, y`\n   - Predict probability for a new row: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}` (a colour never seen in training)\n   - Must *not* raise an error for the unseen category\n   - Provide complete runnable code\n   - Explain in two sentences why the unseen colour doesn't cause an error\n   - Do not use libraries beyond `pandas` and `scikit-learn`\n\n2.  **Identify Key Components:**\n   - `Pipeline` from `sklearn.pipeline`\n   - One-hot encoding: `ColumnTransformer` + `OneHotEncoder` for categorical, but wait, the requirement says \"Build a single Pipeline that one-hot encodes colour, standardises the two numeric columns, and fits a LogisticRegression.\" This implies using `ColumnTransformer` inside the pipeline or handling it differently. Actually, in scikit-1.2+, `set_output(transform=\"pandas\")` on transformers makes them return DataFrames with proper column names, which `LogisticRegression` can handle directly, but standardisation needs to be applied only to numeric columns.\n   - Wait, the requirement says \"Build a single Pipeline that one-hot encodes colour, standardises the two numeric columns, and fits a LogisticRegression.\" This typically means:\n     ```python\n     from sklearn.pipeline import Pipeline\n     from sklearn.compose import ColumnTransformer\n     from sklearn.preprocessing import OneHotEncoder, StandardScaler\n     from sklearn.linear_model import LogisticRegression\n\n     preprocessor = ColumnTransformer([\n         (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n         (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n     ])\n     pipe = Pipeline([\n         (\"preprocessor\", preprocessor),\n         (\"classifier\", LogisticRegression())\n     ])\n     ```\n   - `handle_unknown=\"ignore\"` is the key to handling unseen categories in `OneHotEncoder`. In scikit-learn 1.5+, it's still the standard way (or `min_categories` etc., but `handle_unknown=\"ignore\"` is correct).\n   - Wait, `LogisticRegression` expects a 2D array. When using `ColumnTransformer`, it returns a dense or sparse matrix depending on the transformers. `StandardScaler` outputs dense arrays, `OneHotEncoder` outputs sparse by default. This combination works fine in scikit-learn. Alternatively, we can use `set_output(transform=\"pandas\")` but it's not strictly necessary for `LogisticRegression`.\n   - Actually, in recent scikit-learn versions, `ColumnTransformer` with mixed transformers might raise a warning or error about sparse/dense mixing, but it usually works. To be safe, I can specify `remainder=\"drop\"` and ensure compatibility. Scikit-learn 1.2+ handles this fine.\n   - Let's test mentally: `OneHotEncoder(handle_unknown=\"ignore\")` will output all zeros for unseen categories during transform/predict. This prevents shape mismatches or unknown category errors.\n   - The new row is a DataFrame/Series? The prompt says \"this one-row frame, which contains a colour never seen in training\". So I'll create it as `pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})`.\n   - Fit: `pipe.fit(X, y)`\n   - Predict: `pipe.predict_proba(new_row)`\n\n3.  **Check Scikit-learn 1.5+ Specifics:**\n   - In 1.4+, `OneHotEncoder(handle_unknown=\"ignore\")` is standard.\n   - `ColumnTransformer` automatically routes columns based on dtype or explicit column names. Specifying column names is fine.\n   - `LogisticRegression` defaults to `\"lbfgs\"` solver and `\"l2\"` penalty, which works with standardized data.\n   - I should make sure the code runs without warnings if possible, but the prompt doesn't forbid warnings, just errors.\n   - One detail: `StandardScaler` expects numeric data. Specifying `[\"size_cm\", \"weight_g\"]` is correct.\n   - Should I use `make_pipeline`? The prompt says \"Build a single Pipeline\", so explicit `Pipeline([...])` or `make_pipeline(...)` is fine. I'll stick to explicit for clarity.\n   - Let's write out the code structure:\n     ```python\n     import pandas as pd\n     from sklearn.pipeline import Pipeline\n     from sklearn.compose import ColumnTransformer\n     from sklearn.preprocessing import OneHotEncoder, StandardScaler\n     from sklearn.linear_model import LogisticRegression\n\n     X = pd.DataFrame({\n         \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n         \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n         \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n     })\n     y = [0, 1, 0, 1, 1, 1, 0, 1]\n\n     preprocessor = ColumnTransformer([\n         (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n         (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n     ])\n\n     pipe = Pipeline([\n         (\"preprocessor\", preprocessor),\n         (\"clf\", LogisticRegression())\n     ])\n\n     pipe.fit(X, y)\n\n     new_data = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\n     probs = pipe.predict_proba(new_data)\n     print(probs)\n     ```\n\n4.  **Verify Requirements:**\n   - `scikit-learn 1.5 or later, pandas 2.x`: The code uses standard API compatible with these versions.\n   - Single Pipeline: Yes.\n   - One-hot encodes colour: Yes.\n   - Standardises two numeric columns: Yes.\n   - Fits LogisticRegression: Yes.\n   - Fit on X, y: Yes.\n   - Call predict_proba on one-row frame with unseen colour: Yes.\n   - Must not raise: `handle_unknown=\"ignore\"` prevents this.\n   - Complete runnable code: Yes.\n   - Explain in two sentences why unseen colour doesn't cause error: I need to craft exactly two sentences explaining `handle_unknown=\"ignore\"` behavior (outputs zeros/doesn't fail) and how it maintains feature count consistency for the downstream estimator.\n   - No extra libraries: Only pandas and scikit-learn used.\n\n   Let's double-check the exact wording of the explanation requirement: \"explain in two sentences why the unseen colour does not cause an error.\"\n   I'll write: The `OneHotEncoder` is configured with `handle_unknown=\"ignore\"`, which instructs it to output a row of zeros for any category not encountered during fitting rather than raising a `ValueError`. This guarantees that the transformed output always has the same number of feature columns as expected by the downstream `LogisticRegression`, preventing shape mismatch or lookup errors.\n\n   Check scikit-learn 1.5+ compatibility: `OneHotEncoder(handle_unknown=\"ignore\")` is still valid. In fact, it's the recommended approach. `ColumnTransformer` routing works as expected. `StandardScaler` doesn't care about sparse/dense mixing in recent versions, but to be perfectly safe and avoid warnings, I could set `dense_output=True` on OneHotEncoder or just rely on default behavior which works fine with StandardScaler (it converts to dense). Actually, mixing sparse and dense transformers in ColumnTransformer might raise a warning in some versions, but it's generally allowed. To be strictly clean, I can add `sparse_output=False` to OneHotEncoder, but it's not required. I'll stick to defaults unless needed. The prompt doesn't mention warnings.\n\n   Wait, one potential issue: In scikit-learn 1.2+, if you mix transformers that return sparse and dense matrices in a `ColumnTransformer`, it automatically converts all to dense, which is fine. `StandardScaler` returns dense. So the output will be dense. This is compatible with `LogisticRegression`.\n\n   Let's verify the exact API for `OneHotEncoder`: `handle_unknown=\"ignore\"` is correct.\n   What about `set_output(transform=\"pandas\")`? Not needed for `predict_proba` on `LogisticRegression`, but it's a modern feature. I'll skip it to keep it simple and robust.\n\n   One minor point: The prompt says \"Build a single Pipeline that one-hot encodes colour, standardises the two numeric columns, and fits a LogisticRegression.\" This could be interpreted as putting everything in one `Pipeline` without explicitly showing `ColumnTransformer`, but `ColumnTransformer` is the standard way to apply different preprocessing steps to different columns within a pipeline. I'll use `ColumnTransformer` inside the pipeline, which is standard practice. Alternatively, I could use `make_column_transformer` but `ColumnTransformer` class is fine.\n\n   Let's construct the final code block carefully.\n\n   ```python\n   import pandas as pd\n   from sklearn.pipeline import Pipeline\n   from sklearn.compose import ColumnTransformer\n   from sklearn.preprocessing import OneHotEncoder, StandardScaler\n   from sklearn.linear_model import LogisticRegression\n\n   X = pd.DataFrame({\n       \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n       \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n       \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n   })\n   y = [0, 1, 0, 1, 1, 1, 0, 1]\n\n   pipe = Pipeline([\n       (\"preprocessor\", ColumnTransformer([\n           (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n           (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n       ])),\n       (\"classifier\", LogisticRegression())\n   ])\n\n   pipe.fit(X, y)\n\n   new_row = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\n   probs = pipe.predict_proba(new_row)\n   print(probs)\n   ```\n\n   Check if `predict_proba` works directly on the pipeline: Yes, it delegates to the final estimator's method after transformation.\n   Check if `handle_unknown=\"ignore\"` is sufficient for 1.5+: Yes.\n   Check two-sentence explanation: I'll make sure it's exactly two sentences and directly answers why no error occurs.\n\n   One thing: In scikit-learn 1.4+, `OneHotEncoder`'s `sparse_output` parameter replaced `sparse` (deprecated). Default is `sparse_output=True`. When combined with `StandardScaler`, `ColumnTransformer` will handle the conversion automatically. It's fine.\n\n   Let's verify the exact behavior of `handle_unknown=\"ignore\"`: During transform, unseen categories produce all-zero rows for that feature's columns. This maintains the column count expected by `LogisticRegression`, so no shape mismatch or key error occurs. The model just treats it as having minimal contribution from that categorical part (which is mathematically consistent with not knowing it).\n\n   I'll refine the explanation to exactly two sentences:\n   The `OneHotEncoder` is initialized with `handle_unknown=\"ignore\"`, which silently outputs a row of zeros for any category not seen during fitting instead of raising an error. Because this maintains a consistent number of feature columns across train and test data, the downstream `LogisticRegression` receives properly shaped input without encountering shape mismatches or lookup failures.\n\n   That's two sentences. Perfect.\n\n   Check constraints:\n   - scikit-learn 1.5 or later, pandas 2.x: Code is compatible.\n   - Single Pipeline: Yes.\n   - One-hot encodes colour: Yes.\n   - Standardises numeric columns: Yes.\n   - Fits LogisticRegression: Yes.\n   - Fit on X, y: Yes.\n   - predict_proba on unseen colour row: Yes.\n   - Must not raise: Handled.\n   - Complete runnable code: Yes.\n   - Explain in two sentences: Yes.\n   - No extra libraries: Only pandas and sklearn used.\n\n   One minor consideration: Should I use `make_pipeline`? The prompt says \"Build a single Pipeline\", so explicit construction is fine. I'll stick to it.\n   Also, `LogisticRegression` might require `max_iter=100` or similar if it doesn't converge, but with small data and standardized features, it will converge fine. I won't add unnecessary parameters.\n   The code looks solid.\n\n   Final check of the prompt: \"Build a single Pipeline that one-hot encodes colour, standardises the two numeric columns, and fits a LogisticRegression.\"\n   This matches my structure.\n   \"Fit it on X, y.\"\n   \"Then call predict_proba on this one-row frame, which contains a colour never seen in training, and it must not raise: {\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}.\"\n   I'll make sure the DataFrame is created exactly as specified or compatible. `pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})` matches.\n   All good.\n\n   I will output the code block followed by the two-sentence explanation.\n   One detail: In scikit-learn 1.5, `ColumnTransformer` still works identically. No changes there.\n   I'll present the solution clearly.\n   Code structure:\n   ```python\n   import pandas as pd\n   from sklearn.pipeline import Pipeline\n   from sklearn.compose import ColumnTransformer\n   from sklearn.preprocessing import OneHotEncoder, StandardScaler\n   from sklearn.linear_model import LogisticRegression\n\n   X = pd.DataFrame({ ... })\n   y = [ ... ]\n\n   pipe = Pipeline([\n       (\"preprocessor\", ColumnTransformer([\n           (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n           (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n       ])),\n       (\"clf\", LogisticRegression())\n   ])\n\n   pipe.fit(X, y)\n\n   new_data = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\n   print(pipe.predict_proba(new_data))\n   ```\n   This is complete and runnable.\n   Explanation: exactly two sentences as required.\n   All constraints met.\n   Proceed. \n   Self-Correction/Refinement during thought: \n   Wait, does `ColumnTransformer` require `remainder=\"drop\"`? By default it's `\"drop\"`, which is fine since we specify all columns. \n   Does `OneHotEncoder(handle_unknown=\"ignore\")` work in 1.5? Yes. \n   Is there any chance `predict_proba` fails because of the one-hot encoding returning sparse matrix? `LogisticRegression` accepts sparse matrices, so it's fine. If needed, I could add `sparse_output=False` to `OneHotEncoder` to force dense output, avoiding any potential deprecation warnings in 1.5 about mixing sparse/dense, but it's not strictly necessary. I'll leave it default for brevity, as it works reliably. Actually, to be perfectly safe across versions and avoid the \"EstimatorX does not support sparse input\" warning if any, `sparse_output=False` is safer. But `LogisticRegression` supports sparse. I'll keep it simple.\n   The prompt says \"Do not use any library beyond pandas and scikit-learn.\" - checked.\n   \"explain in two sentences why the unseen colour does not cause an error.\" - checked.\n   All good.\n   Output matches response. \n   One minor point: The prompt says \"this one-row frame, which contains a colour never seen in training, and it must not raise: {\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}.\" The phrasing is slightly ambiguous but clearly means predicting on that data should not raise an error.\n   I'll generate the response now. \n   Structure of response:\n   - Code block\n   - Two-sentence explanation\n   - Done. \n   All steps verified.✅\n   Output Generation. \n   [Self-Correction/Verification during generation prep]\n   Let's quickly mentally run `ColumnTransformer` with `OneHotEncoder(handle_unknown=\"ignore\")` and `StandardScaler()`. In sklearn 1.2+, if you mix sparse and dense transformers, it automatically converts all to dense. This is fine. \n   The code is robust.\n   Explanation: \"The `OneHotEncoder` is configured with `handle_unknown=\"ignore\"`, which instructs the transformer to output a row of zeros for any unseen category rather than raising a ValueError. This guarantees that the number of features remains consistent with training, preventing shape mismatches or key errors in the downstream `LogisticRegression`.\" -> Exactly two sentences. Matches requirement.\n   Ready. \n   Output matches the final response. \n   Proceeds. \n   [Output Generation] -> *Proceeds*\n   *(Self-Correction/Note during thought)*: I should ensure the code explicitly shows the DataFrame creation for the new row as requested, or just directly use it. The prompt says \"call predict_proba on this one-row frame\", so I'll create it and call predict_proba. All good.\n   Final check of the prompt: \"Build a single Pipeline that one-hot encodes colour, standardises the two numeric columns, and fits a LogisticRegression.\" -> My code does exactly that via `ColumnTransformer` inside `Pipeline`.\n   All constraints satisfied.✅\n   Output matches response. \n   [Done] \n   *Output Generation* (matches the final response)\n   ```python\n   import pandas as pd\n   from sklearn.pipeline import Pipeline\n   from sklearn.compose import ColumnTransformer\n   from sklearn.preprocessing import OneHotEncoder, StandardScaler\n   from sklearn.linear_model import LogisticRegression\n\n   X = pd.DataFrame({\n       \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n       \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n       \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n   })\n   y = [0, 1, 0, 1, 1, 1, 0, 1]\n\n   pipe = Pipeline([\n       (\"preprocessor\", ColumnTransformer([\n           (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n           (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n       ])),\n       (\"clf\", LogisticRegression())\n   ])\n\n   pipe.fit(X, y)\n\n   new_data = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\n   print(pipe.predict_proba(new_data))\n   ```\n   Explanation follows. All good. \n   *Self-Correction/Refinement during output prep*: I'll make sure the explanation strictly adheres to \"two sentences\". I count them carefully. Yes.\n   The code is complete and runnable. No extra imports. Uses only pandas and sklearn. Handles the unseen category gracefully. Matches scikit-learn 1.5+ API.\n   Ready.✅\n   Output matches response. \n   [Proceeds]\n",
+ "content": "```python\nimport pandas as pd\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.linear_model import LogisticRegression\n\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n\npipe = Pipeline([\n    (\"preprocessor\", ColumnTransformer([\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), [\"colour\"]),\n        (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"])\n    ])),\n    (\"clf\", LogisticRegression())\n])\n\npipe.fit(X, y)\n\nnew_data = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\nprint(pipe.predict_proba(new_data))\n```\n\n**Explanation:** The `OneHotEncoder` is configured with `handle_unknown=\"ignore\"`, which instructs it to output a row of zeros for any category not encountered during fitting instead of raising a `ValueError`. This guarantees that the transformed feature matrix always has the exact same column count as during training, preventing shape mismatches or lookup failures in the downstream `LogisticRegression`.",
+ "usage": {
+  "completion_tokens": 4941,
+  "prompt_tokens": 328,
+  "total_tokens": 5269,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 328,
+  "prompt_ms": 1769.409,
+  "prompt_per_token_ms": 5.394539634146342,
+  "prompt_per_second": 185.37263007026638,
+  "predicted_n": 4941,
+  "predicted_ms": 389404.406,
+  "predicted_per_token_ms": 78.8268028340081,
+  "predicted_per_second": 12.686040332065476
+ },
+ "tokens": {
+  "reasoning_tokenized": 4547,
+  "content_tokenized": 391,
+  "completion_tokens_usage": 4941,
+  "prompt_tokens_usage": 328,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.772,
+  "to_first_reasoning": 1.772,
+  "to_first_answer_token": 359.889,
+  "to_final_answer": 391.178
+ },
+ "peaks": {
+  "gpu_temp_c": 74,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26254
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26260
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26325
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 181.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26273
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 221.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 251.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 261.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 271.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26266
+  },
+  {
+   "t_s": 281.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26254
+  },
+  {
+   "t_s": 291.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 301.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 311.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 321.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26271
+  },
+  {
+   "t_s": 331.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26277
+  },
+  {
+   "t_s": 341.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 351.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 361.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26282
+  },
+  {
+   "t_s": 371.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 381.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  }
+ ]
+}

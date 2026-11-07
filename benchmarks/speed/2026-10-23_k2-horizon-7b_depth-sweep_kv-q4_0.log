@@ -1,0 +1,255 @@
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=99  depth=0
+start: 2026-10-23T22:27:53+02:00  gpu_temp_before=55  mem_available_MiB=26471
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q4_0 -ctv q4_0 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  99 |   q4_0 |   q4_0 |   1 |           pp512 |       1056.09 ± 5.63 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  99 |   q4_0 |   q4_0 |   1 |           tg128 |         38.72 ± 0.20 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5517 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1440 power_max_W=79 mem_available_min_MiB=25899 samples=14 exit=0
+end: 2026-10-23T22:28:07+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=99  depth=8192
+start: 2026-10-23T22:28:27+02:00  gpu_temp_before=58  mem_available_MiB=26461
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 99 -fa on -ctk q4_0 -ctv q4_0 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 538.09 MiB on device 0: cudaMalloc failed: out of memory
+ggml_gallocr_reserve_n_impl: failed to allocate CUDA0 buffer of size 564232192
+graph_reserve: failed to allocate compute buffers
+llama_init_from_model: failed to initialize the context: failed to allocate compute pp buffers
+llama_bench: error: failed to create context with model '$LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf'
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+peaks: vram_MiB=4935 gpu_temp_C=59 sm_clock_min_MHz=300 sm_clock_max_MHz=840 power_max_W=22 mem_available_min_MiB=26192 samples=2 exit=1
+end: 2026-10-23T22:28:28+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=36  depth=8192
+start: 2026-10-23T22:28:48+02:00  gpu_temp_before=56  mem_available_MiB=26435
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 36 -fa on -ctk q4_0 -ctv q4_0 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  36 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        744.65 ± 4.91 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  36 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         23.63 ± 0.23 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5707 gpu_temp_C=73 sm_clock_min_MHz=300 sm_clock_max_MHz=1755 power_max_W=79 mem_available_min_MiB=25727 samples=30 exit=0
+end: 2026-10-23T22:29:19+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=34  depth=8192
+start: 2026-10-23T22:29:39+02:00  gpu_temp_before=62  mem_available_MiB=26459
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 34 -fa on -ctk q4_0 -ctv q4_0 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  34 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        709.33 ± 5.96 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  34 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         16.38 ± 0.03 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5457 gpu_temp_C=78 sm_clock_min_MHz=300 sm_clock_max_MHz=1665 power_max_W=85 mem_available_min_MiB=25743 samples=38 exit=0
+end: 2026-10-23T22:30:17+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=32  depth=8192
+start: 2026-10-23T22:30:37+02:00  gpu_temp_before=65  mem_available_MiB=26470
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 32 -fa on -ctk q4_0 -ctv q4_0 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  32 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        679.49 ± 4.88 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  32 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         11.45 ± 0.25 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5221 gpu_temp_C=77 sm_clock_min_MHz=300 sm_clock_max_MHz=1665 power_max_W=85 mem_available_min_MiB=25710 samples=48 exit=0
+end: 2026-10-23T22:31:26+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=34  depth=16384
+start: 2026-10-23T22:31:46+02:00  gpu_temp_before=67  mem_available_MiB=26464
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 34 -fa on -ctk q4_0 -ctv q4_0 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+CUDA error: out of memory
+  current device: 0, in function ggml_cuda_graph_evaluate_and_capture at $LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:4779
+  cudaGraphInstantiate(&graph->instance, graph->graph, __null, __null, 0)
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+$LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:110: CUDA error
+[New LWP 77761]
+[New LWP 77760]
+[New LWP 77759]
+[New LWP 77758]
+[New LWP 77757]
+[New LWP 77743]
+[New LWP 77742]
+[New LWP 77738]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+0x00007f4feeea0952 in ?? () from /usr/lib/libc.so.6
+#0  0x00007f4feeea0952 in ?? () from /usr/lib/libc.so.6
+#1  0x00007f4feef0550b in wait4 () from /usr/lib/libc.so.6
+#2  0x00007f4ffa5433eb in ggml_print_backtrace () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#3  0x00007f4ffa543550 in ggml_abort () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#4  0x00007f4ff6500541 in ggml_cuda_error(char const*, char const*, char const*, int, char const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#5  0x00007f4ff65179a4 in ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context*, ggml_cgraph*, bool, bool, void const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#6  0x00007f4ff6518112 in ggml_backend_cuda_graph_compute(ggml_backend*, ggml_cgraph*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#7  0x00007f4ffa562037 in ggml_backend_sched_graph_compute_async () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#8  0x00007f4ffa2299ab in llama_context::graph_compute(ggml_cgraph*, bool) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#9  0x00007f4ffa22d7f6 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#10 0x00007f4ffa2371e6 in llama_context::decode(llama_batch_ext const&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#11 0x00007f4ffac243fb in test_prompt(llama_context*, int, int, int) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#12 0x00007f4ffac34824 in llama_bench(int, char**) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#13 0x00007f4feee27781 in ?? () from /usr/lib/libc.so.6
+#14 0x00007f4feee278b9 in __libc_start_main () from /usr/lib/libc.so.6
+#15 0x000055fa3fd2f075 in _start ()
+[Inferior 1 (process 77736) detached]
+peaks: vram_MiB=5743 gpu_temp_C=80 sm_clock_min_MHz=300 sm_clock_max_MHz=1860 power_max_W=80 mem_available_min_MiB=24832 samples=34 exit=134
+end: 2026-10-23T22:32:20+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=32  depth=16384
+start: 2026-10-23T22:32:40+02:00  gpu_temp_before=66  mem_available_MiB=26208
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 32 -fa on -ctk q4_0 -ctv q4_0 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  32 |   q4_0 |   q4_0 |   1 |  pp512 @ d16384 |        522.50 ± 2.08 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  32 |   q4_0 |   q4_0 |   1 |  tg128 @ d16384 |          5.87 ± 0.23 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5499 gpu_temp_C=82 sm_clock_min_MHz=300 sm_clock_max_MHz=1635 power_max_W=85 mem_available_min_MiB=24937 samples=93 exit=0
+end: 2026-10-23T22:34:15+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=30  depth=16384
+start: 2026-10-23T22:34:35+02:00  gpu_temp_before=68  mem_available_MiB=26447
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 30 -fa on -ctk q4_0 -ctv q4_0 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  30 |   q4_0 |   q4_0 |   1 |  pp512 @ d16384 |        506.82 ± 1.81 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  30 |   q4_0 |   q4_0 |   1 |  tg128 @ d16384 |          4.17 ± 0.01 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5245 gpu_temp_C=82 sm_clock_min_MHz=300 sm_clock_max_MHz=1845 power_max_W=86 mem_available_min_MiB=24970 samples=119 exit=0
+end: 2026-10-23T22:36:38+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=28  depth=16384
+start: 2026-10-23T22:36:58+02:00  gpu_temp_before=67  mem_available_MiB=26438
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 28 -fa on -ctk q4_0 -ctv q4_0 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  28 |   q4_0 |   q4_0 |   1 |  pp512 @ d16384 |        498.42 ± 1.40 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  28 |   q4_0 |   q4_0 |   1 |  tg128 @ d16384 |          3.50 ± 0.04 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5005 gpu_temp_C=82 sm_clock_min_MHz=300 sm_clock_max_MHz=1785 power_max_W=86 mem_available_min_MiB=25017 samples=137 exit=0
+end: 2026-10-23T22:39:19+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=30  depth=32768
+start: 2026-10-23T22:39:39+02:00  gpu_temp_before=67  mem_available_MiB=26472
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 30 -fa on -ctk q4_0 -ctv q4_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+CUDA error: out of memory
+  current device: 0, in function alloc at $LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:646
+  cuMemCreate(&handle, reserve_size, &prop, 0)
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+$LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:110: CUDA error
+[New LWP 80582]
+[New LWP 80581]
+[New LWP 80580]
+[New LWP 80579]
+[New LWP 80578]
+[New LWP 80571]
+[New LWP 80570]
+[New LWP 80566]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+0x00007f9b636a0952 in ?? () from /usr/lib/libc.so.6
+#0  0x00007f9b636a0952 in ?? () from /usr/lib/libc.so.6
+#1  0x00007f9b6370550b in wait4 () from /usr/lib/libc.so.6
+#2  0x00007f9b6f3503eb in ggml_print_backtrace () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#3  0x00007f9b6f350550 in ggml_abort () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#4  0x00007f9b6ad00541 in ggml_cuda_error(char const*, char const*, char const*, int, char const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#5  0x00007f9b6ad1b38d in ggml_cuda_pool_vmm::alloc(unsigned long, unsigned long*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#6  0x00007f9b6b6ade79 in void launch_mul_mat_q<(ggml_type)14, 128, false, (ggml_prec)30>(ggml_backend_cuda_context&, mmq_args const&, CUstream_st*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#7  0x00007f9b6ad58e41 in ggml_cuda_mul_mat_q(ggml_backend_cuda_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor const*, ggml_tensor*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#8  0x00007f9b6ad1760f in ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context*, ggml_cgraph*, bool, bool, void const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#9  0x00007f9b6ad18112 in ggml_backend_cuda_graph_compute(ggml_backend*, ggml_cgraph*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#10 0x00007f9b6f36f037 in ggml_backend_sched_graph_compute_async () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#11 0x00007f9b6ea299ab in llama_context::graph_compute(ggml_cgraph*, bool) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#12 0x00007f9b6ea2d7f6 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#13 0x00007f9b6ea371e6 in llama_context::decode(llama_batch_ext const&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#14 0x00007f9b6f4363fb in test_prompt(llama_context*, int, int, int) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#15 0x00007f9b6f4464fc in llama_bench(int, char**) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#16 0x00007f9b63627781 in ?? () from /usr/lib/libc.so.6
+#17 0x00007f9b636278b9 in __libc_start_main () from /usr/lib/libc.so.6
+#18 0x000055832fe96075 in _start ()
+[Inferior 1 (process 80564) detached]
+peaks: vram_MiB=5743 gpu_temp_C=72 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=55 mem_available_min_MiB=25454 samples=6 exit=134
+end: 2026-10-23T22:39:45+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=28  depth=32768
+start: 2026-10-23T22:40:05+02:00  gpu_temp_before=63  mem_available_MiB=26290
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 28 -fa on -ctk q4_0 -ctv q4_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  28 |   q4_0 |   q4_0 |   1 |  pp512 @ d32768 |        334.08 ± 0.01 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  28 |   q4_0 |   q4_0 |   1 |  tg128 @ d32768 |          1.98 ± 0.03 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5491 gpu_temp_C=84 sm_clock_min_MHz=300 sm_clock_max_MHz=1860 power_max_W=88 mem_available_min_MiB=24078 samples=259 exit=0
+end: 2026-10-23T22:44:32+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=26  depth=32768
+start: 2026-10-23T22:44:52+02:00  gpu_temp_before=67  mem_available_MiB=26422
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 26 -fa on -ctk q4_0 -ctv q4_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  26 |   q4_0 |   q4_0 |   1 |  pp512 @ d32768 |        321.67 ± 1.99 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  26 |   q4_0 |   q4_0 |   1 |  tg128 @ d32768 |          1.65 ± 0.04 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5205 gpu_temp_C=86 sm_clock_min_MHz=300 sm_clock_max_MHz=1815 power_max_W=84 mem_available_min_MiB=23933 samples=298 exit=0
+end: 2026-10-23T22:50:01+02:00
+
+### K2-Horizon-7B Q4_K_M  KV=q4_0  ngl=24  depth=32768
+start: 2026-10-23T22:50:21+02:00  gpu_temp_before=66  mem_available_MiB=26459
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf -p 512 -n 128 -r 3 -ngl 24 -fa on -ctk q4_0 -ctv q4_0 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | -----: | -----: | --: | --------------: | -------------------: |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  24 |   q4_0 |   q4_0 |   1 |  pp512 @ d32768 |        322.12 ± 1.01 |
+| k2-horizon 7B Q4_K - Medium    |   5.20 GiB |     9.00 B | CUDA       |  24 |   q4_0 |   q4_0 |   1 |  tg128 @ d32768 |          1.43 ± 0.03 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4911 gpu_temp_C=86 sm_clock_min_MHz=300 sm_clock_max_MHz=1845 power_max_W=86 mem_available_min_MiB=23837 samples=334 exit=0
+end: 2026-10-23T22:56:07+02:00
+
+ALL DONE

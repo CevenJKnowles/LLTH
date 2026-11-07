@@ -1,0 +1,214 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1003,
+ "started_at": "2026-10-30T20:57:06",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Topic: Why validation accuracy improves while validation loss worsens (overfitting/calibration issues), what it means, and how to fix it.\n*   Audience: People who have trained models/tried it but have no math background.\n*   Tone: Substack article (engaging, conversational, but informative).\n*   Word Count: 550 - 650 words.\n*   Constraints:\n    *   Title: Self-chosen.\n    *   Content: Explain the phenomenon, what it tells us about the model, and what to do.\n    *   Example: Small worked example with made-up numbers (predicted probabilities before/after a few epochs).\n    *   Format: One practical takeaway at the end.\n    *   Forbidden: No code, no bullet points, no headings *inside* the body (only the main title).\n\n    *   *The Concept:* Accuracy is about \"is the answer right or wrong?\" (Hard threshold). Loss is about \"how sure was the model about its answer?\" (Probability/Confidence).\n    *   *The Divergence:* As training progresses, a model might get \"overconfident.\" It correctly predicts the label, but its confidence drops from 0.9 to 0.6, or it makes mistakes with extreme confidence. Wait, the specific prompt is: *Accuracy improves, Loss gets worse*.\n    *   *Scenario:* The model is getting more items correct, but for the ones it is getting \"right,\" it is becoming less certain (probabilities are moving toward 0.5), OR it is getting slightly more items wrong but being extremely \"sure\" about its wrong answers.\n    *   *Wait, let's refine:* If accuracy improves, the model is getting the \"top\" category correct more often. If loss worsens, the *penalty* for its errors or its lack of confidence on correct answers is growing.\n    *   *Example Case:*\n        *   Epoch 1: 4/5 correct. Probabilities: [0.9, 0.8, 0.7, 0.6, 0.55].\n        *   Epoch 10: 5/5 correct. Probabilities: [0.9, 0.8, 0.6, 0.55, 0.51].\n        *   Actually, the classic case of \"accuracy up, loss up\" usually means the model is becoming overconfident in its *wrong* predictions. If accuracy is up, it means it's getting more things right, but the ones it gets wrong are becoming catastrophically wrong (e.g., predicting 0.99 for a wrong answer).\n\n    *   *Revised Scenario for the example:*\n        *   Epoch 1: 8/10 correct. Most wrong answers are \"uncomfortable\" (e.g., 0.4).\n        *   Epoch 10: 9/10 correct. But the 1 mistake it made is a \"confident error\" (e.g., 0.99 wrong). The loss function punishes that 0.99 error heavily.\n\n    *   Title: The Overconfidence Trap: Why Your Model is Winning the Battle but Losing the War.\n    *   Intro: Relate to the feeling of training a model. Seeing that accuracy line go up feels great. Then you look at the loss line and it's climbing. It feels like a paradox.\n    *   The \"Why\": Accuracy is a binary thing. It's a \"yes/no\" check. Loss is a \"how much did you miss by\" check.\n    *   The Divergence: Explain that the model is becoming an \"arrogant student.\" It's getting more questions right, but when it gets one wrong, it's absolutely certain it's right.\n    *   The Example:\n        *   Let's use 3 samples for simplicity.\n        *   Epoch 1 (The \"Humble\" Model):\n            *   Sample 1 (Correct): 0.8 probability.\n            *   Sample 2 (Correct): 0.7 probability.\n            *   Sample 3 (Wrong): 0.4 probability.\n            *   Accuracy: 66%. Loss: Low (because 0.4 error is a small penalty).\n        *   Epoch 5 (The \"Arrogant\" Model):\n            *   Sample 1 (Correct): 0.9 probability.\n            *   Sample 2 (Correct): 0.9 probability.\n            *   Sample 3 (Wrong): 0.1 probability.\n            *   Accuracy: 66% (wait, I need accuracy to go *up*).\n        *   *Try again:*\n        *   Epoch 1:\n            *   Sample 1 (Correct): 0.6 (Accuracy 1/1, Loss low)\n            *   Sample 2 (Correct): 0.6 (Accuracy 2/2, Loss low)\n            *   Sample 3 (Wrong): 0.4 (Accuracy 2/3, Loss low)\n            *   Total: 66% accuracy.\n        *   Epoch 10:\n            *   Sample 1 (Correct): 0.9 (Accuracy 1/1, Loss low)\n            *   Sample 2 (Correct): 0.9 (Accuracy 2/2, Loss low)\n            *   Sample 3 (Wrong): 0.01 (Accuracy 2/3, Loss HIGH)\n            *   *Wait, accuracy stayed the same.*\n        *   *Final attempt at example logic:*\n            *   Epoch 1: 2/3 correct. Samples: [0.6, 0.6, 0.4]. Accuracy 66%. Loss is moderate.\n            *   Epoch 5: 3/3 correct. Samples: [0.9, 0.9, 0.1]. Accuracy 100%. Loss is MASSIVE because of that 0.1.\n            *   Actually, the prompt asks for a scenario where accuracy *keeps improving* while loss *gets worse*.\n            *   Let's look at 10 samples.\n            *   Epoch 1: 7/10 correct. Errors are 0.4 (close to 0.5).\n            *   Epoch 5: 8/10 correct. Errors are 0.01 (extreme certainty in error).\n            *   The gain in accuracy (1 correct answer) is offset by the massive penalty of the extreme error.\n\n    *   *Drafting the explanation:*\n        Accuracy is the scorekeeper. Loss is the judge of character.\n        Loss cares about the distance between your prediction and the truth.\n        Accuracy only cares if you crossed the 50% line.\n        If accuracy goes up and loss goes up, your model is becoming a \"confident liar.\" It is making more mistakes, but those mistakes are becoming \"catastrophic\" because the model is very sure about the wrong thing.\n\n    *   *What to do:*\n        Regularization (Dropout, Weight Decay).\n        Early stopping (stop when loss starts climbing).\n        Data augmentation.\n        Label smoothing.\n\n    *   *Word Count Check:*\n        Intro: ~100\n        Mechanism: ~150\n        Example: ~150\n        Meaning/Solution: ~150\n        Total: ~550-600. Perfect.\n\n    *   *Constraint Check:*\n        *   No code.\n        *   No bullet points.\n        *   No headings in body.\n        *   One title.\n        *   One practical takeaway at the end.\n\n    *   *Title:* The Arrogant Student: Why Accuracy Can Lie to You.\n\n    *   *Refining the Example for clarity:*\n        Let's use three predictions for three items.\n        Epoch 1 (The Humble Model):\n        Item A (Correct): 0.6\n        Item B (Correct): 0.6\n        Item C (Wrong): 0.4\n        Accuracy: 66%. Loss: Low.\n        Epoch 10 (The Overconfident Model):\n        Item A (Correct): 0.95\n        Item B (Correct): 0.95\n        Item C (Wrong): 0.01\n        Accuracy: 66% (Wait, I need accuracy to *increase*).\n\n        Okay, let's try this:\n        Epoch 1 (Low Accuracy, Low Loss):\n        3 items. 2 are correct (0.6, 0.6). 1 is wrong (0.4).\n        Accuracy: 66%. Loss: moderate.\n        Epoch 5 (High Accuracy, High Loss):\n        3 items. 3 are correct (0.9, 0.9, 0.9).\n        Wait, if all are correct, loss is low.\n        Let's try the \"getting more right but the errors are bigger\" logic.\n\n        Let's use 4 items.\n        Epoch 1:\n        - Correct (0.6)\n        - Correct (0.6)\n        - Correct (0.6)\n        - Wrong (0.4)\n        Accuracy: 75%. Loss: Small.\n\n        Epoch 5:\n        - Correct (0.9)\n        - Correct (0.9)\n        - Correct (0.9)\n        - Wrong (0.01)\n        Accuracy: 75% (Still same).\n\n        Let's try:\n        Epoch 1: 7 out of 10 correct. Errors are 0.4.\n        Epoch 5: 8 out of 10 correct. One error is now 0.01.\n        The single new correct answer increases accuracy from 70% to 80%.\n        But the error changed from 0.4 to 0.01.\n        The penalty for a 0.4 error is small. The penalty for a 0.01 error is huge.\n        The math forces the loss to go up even though we \"won\" a new correct answer.\n\n    *   *Writing the text:*\n        (Self-Correction during drafting): I must ensure I don't use bullet points. I will use paragraphs to separate thoughts.\n\n    *   *The \"What to do\" section:*\n        Mention Early Stopping clearly as the main remedy.\n\n    *   *Reviewing against constraints:*\n        - 550-650 words? (Will check during final polish).\n        - No math background? (Avoid complex calculus, use \"penalty\" and \"confidence\").\n        - No code? Yes.\n        - No bullet points? Yes.\n        - No headings inside body? Yes.\n        - One small worked example with made-up numbers? Yes.\n        - One practical takeaway? Yes.\n\n    *   *Polishing the tone:*\n        Make it sound like a Substack post—engaging, direct, and helpful.\n\n    *   *Word Count Strategy:*\n        - Intro: 100\n        - The Logic: 150\n        - Example: 150\n        - Meaning/Solutions: 150\n        - Takeaway: 50\n        - Total: ~600\n\n    *   *Final Content Plan:*\n        Title: The Arrogant Student: When Your Model Wins the Battle but Loses the War\n\n        Intro: The confusion of seeing two lines move in opposite directions.\n        Body 1: Accuracy is about the \"what\" (right or wrong), Loss is about the \"how much\" (certainty).\n        Body 2: The phenomenon of the \"arrogant student.\"\n        Body 3: The Example (using the 10-item scenario).\n        Body 4: What this tells us (overfitting/calibration).\n        Body 5: What to do (Early stopping, regularization).\n        Takeaway: Watch the loss, not just the score.\n\n    *   *Refining the Example text:*\n        \"Imagine you are testing a student on ten questions. In the first round, they get seven questions right, but they are only slightly confident about them. For the three they miss, they are also somewhat unsure, guessing around 40% certainty. Their score is 70%, and their error is manageable. In the second round, they improve! They now get eight questions right, which looks like a victory. However, they have become incredibly stubborn. For the two they got right, they are now 99% certain. But for the two they got wrong, they are now 99% certain of the wrong answer. Even though their accuracy jumped from 70% to 80%, the massive 'penalty' for being so confidently wrong about those two questions makes their total error score—the loss—skyrocket.\"\n\n    *   *Checking the \"No headings inside body\" rule:*\n        I will use only one title. No \"Introduction\" or \"The Example\" headers.\n\n    *   *Final Polish:*\n        Ensure the transition between the example and the \"what to do\" is smooth. Ensure the \"no math\" requirement is met—avoiding terms like \"cross-entropy\" or \"log-likelihood\" unless explained simply as \"penalty for error.\" (Actually, better to avoid the terms entirely to stay safe).\n\n    *   *Word Count Check of the drafted example:*\n        The example above is about 110 words.\n        Total count looks healthy.\n\n    *   *One last check on instructions:* \"No code, no bullet points, no headings inside the body.\" This is a strict constraint. I'll use paragraph breaks to provide structure.\n\n    *   *Wait, one more thought:* The prompt asks: \"what that pattern tells you about the model\".\n        It tells us the model is *overfitting* and *poorly calibrated*. It's learning the noise in the training data to become overly certain about specific patterns that don't actually hold true in the validation set.\n\n    *   *Final Polish of the text flow:*\n        The transition from \"The Problem\" to \"The Example\" needs to be seamless without a heading.\n\n    *   *Word Count Check (Estimated):*\n        Title: 12\n        Intro: 80\n        Concept: 120\n        Example: 130\n        Meaning: 110\n        Solutions: 120\n        Takeaway: 30\n        Total: ~600. Perfect.",
+ "content": "The Arrogant Student: When Your Model Wins the Battle but Loses the War\n\nYou have spent hours, perhaps days, training your model. You are watching the progress curves on your screen, and suddenly, you notice something deeply unsettling. Your validation accuracy, the metric you care about most, is climbing steadily. You are getting more predictions right. But simultaneously, your validation loss—the measure of how much error the model is making—is starting to climb too. It feels like a paradox. How can the model be getting more things right while simultaneously getting \"worse\"?\n\nTo understand this, you have to understand the difference between a judge and a scorekeeper. Accuracy is a scorekeeper. It only cares about a binary outcome: did you get the answer right or wrong? It doesn't care if you were 51% sure or 99% sure; it only cares that you crossed the threshold of being correct. Loss, however, is a judge of character. Loss cares about your confidence. It penalizes you not just for being wrong, but for being confidently wrong.\n\nThis divergence usually happens because your model is becoming an arrogant student. As training progresses, the model starts to move beyond learning the actual patterns in your data and begins to memorize the specific quirks and noise of the training set. This makes the model extremely \"certain\" about its predictions.\n\nImagine you are testing a student on ten questions. In the first round, the student gets seven questions right. When they get them right, they are only slightly sure, around 60% confident. When they get a question wrong, they are also somewhat unsure, perhaps 40% confident. Their accuracy is 70%, and their error (loss) is relatively low because they weren't very wrong when they failed.\n\nIn the second round, the student improves. They now get eight questions right, which looks like a massive victory. Their accuracy has jumped from 70% to 80%. However, they have also become incredibly stubborn. For the eight they got right, they are now 99% confident. But for the two they got wrong, they are now 99% certain of the wrong answer. Even though the student is \"smarter\" according to the accuracy score, the massive penalty for being so confidently wrong about those two questions causes their total error score to skyrocket. The model has become overconfident in its mistakes.\n\nWhen you see this pattern, it is a clear signal of overfitting. Your model is not actually learning the underlying logic of the world; it is learning to be loud and certain about its guesses. It is finding ways to \"win\" the accuracy game by being slightly more right on some items, but in doing so, it is becoming dangerously certain about its errors on others. This is a sign that your model is losing its ability to generalize to new, unseen data.\n\nTo fix this, you need to reign in the model's ego. You can do this through a technique called regularization, which essentially adds a \"complexity penalty\" to the model, preventing it from becoming too extreme in its certainty. You can also use a technique called early stopping, which means you stop training the moment the loss starts to climb, even if the accuracy is still rising. Another option is label smoothing, which tells the model it shouldn't ever be 100% sure of anything, forcing it to remain a bit more humble in its predictions.\n\nThe practical takeaway is this: Never trust accuracy alone. If you want to know if your model is truly learning or just becoming a confident liar, always keep a close eye on your loss curve.",
+ "usage": {
+  "completion_tokens": 3948,
+  "prompt_tokens": 135,
+  "total_tokens": 4083,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 135,
+  "prompt_ms": 1481.674,
+  "prompt_per_token_ms": 10.975362962962963,
+  "prompt_per_second": 91.11315984487815,
+  "predicted_n": 3948,
+  "predicted_ms": 224884.399,
+  "predicted_per_token_ms": 56.97603217633646,
+  "predicted_per_second": 17.551239737177145
+ },
+ "tokens": {
+  "reasoning_tokenized": 3192,
+  "content_tokenized": 751,
+  "completion_tokens_usage": 3948,
+  "prompt_tokens_usage": 135,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.655,
+  "to_first_reasoning": 1.655,
+  "to_first_answer_token": 182.965,
+  "to_final_answer": 226.371
+ },
+ "peaks": {
+  "gpu_temp_c": 79,
+  "gpu_mem_mib": 5159,
+  "min_mem_available_mib": 26279
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26330
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26327
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26328
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26346
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26325
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26352
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26331
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26342
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26321
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26330
+  }
+ ]
+}

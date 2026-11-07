@@ -1,0 +1,33 @@
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  depth=0
+start: 2026-10-24T22:01:09+02:00  gpu_temp_before=44  mem_available_MiB=23942  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3923
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 48 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 5723.26 MiB on device 0: cudaMalloc failed: out of memory
+ggml_backend_buft_alloc_buffer_n_default: failed to allocate CUDA0 buffer of size 6001269760
+llama_model_load: error loading model: unable to allocate CUDA0 buffer
+llama_model_load_from_file_impl: failed to load model
+llama_bench: error: failed to load model '$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf'
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+peaks: vram_MiB=163 gpu_temp_C=45 sm_clock_min_MHz=300 sm_clock_max_MHz=690 power_max_W=7 mem_available_min_MiB=23646 samples=11 exit=1
+end: 2026-10-24T22:01:21+02:00
+
+ncmoe=48, KV=q8_0: did not load or complete at depth 0; the q8_0 sweep stops here.
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  depth=0
+start: 2026-10-24T22:01:41+02:00  gpu_temp_before=45  mem_available_MiB=23686  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4101
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 48 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 5723.26 MiB on device 0: cudaMalloc failed: out of memory
+ggml_backend_buft_alloc_buffer_n_default: failed to allocate CUDA0 buffer of size 6001269760
+llama_model_load: error loading model: unable to allocate CUDA0 buffer
+llama_model_load_from_file_impl: failed to load model
+llama_bench: error: failed to load model '$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf'
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+peaks: vram_MiB=163 gpu_temp_C=46 sm_clock_min_MHz=300 sm_clock_max_MHz=690 power_max_W=7 mem_available_min_MiB=23373 samples=3 exit=1
+end: 2026-10-24T22:01:44+02:00
+
+ncmoe=48, KV=q4_0: did not load or complete at depth 0; the q4_0 sweep stops here.
+DONE (ncmoe sweep k2-horizon-mova-36b)

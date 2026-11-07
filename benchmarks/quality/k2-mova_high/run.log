@@ -1,0 +1,26 @@
+[2026-10-30 14:52:27] run start: k2-mova_high, 2 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 14:52:53] W1: complete finish=stop reasoning_tok=228 answer_tok=38 total_tok=269 time=25.5s peak_temp=56 min_ram=26568
+[2026-10-30 14:54:27] P2: complete finish=stop reasoning_tok=551 answer_tok=440 total_tok=994 time=94.5s peak_temp=66 min_ram=26566
+[2026-10-30 14:54:27] run finished
+[2026-10-30 15:19:34] run start: k2-mova_high, 20 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 15:19:34] W1: result exists, skipped
+[2026-10-30 15:24:26] W2: complete finish=stop reasoning_tok=2857 answer_tok=66 total_tok=2926 time=292.6s peak_temp=70 min_ram=26533
+[2026-10-30 15:26:49] W3: complete finish=stop reasoning_tok=381 answer_tok=973 total_tok=1357 time=142.8s peak_temp=75 min_ram=26308
+[2026-10-30 15:27:37] W4: complete finish=stop reasoning_tok=375 answer_tok=68 total_tok=447 time=47.3s peak_temp=76 min_ram=26601
+[2026-10-30 15:36:51] W5: complete finish=stop reasoning_tok=4982 answer_tok=246 total_tok=5231 time=554.8s peak_temp=74 min_ram=26650
+[2026-10-30 15:38:15] P1: complete finish=stop reasoning_tok=345 answer_tok=443 total_tok=791 time=84.1s peak_temp=77 min_ram=26690
+[2026-10-30 15:38:15] P2: result exists, skipped
+[2026-10-30 15:39:51] P3: complete finish=stop reasoning_tok=528 answer_tok=363 total_tok=894 time=95.4s peak_temp=76 min_ram=26494
+[2026-10-30 15:49:49] P4: complete finish=stop reasoning_tok=5317 answer_tok=347 total_tok=5667 time=597.9s peak_temp=76 min_ram=26556
+[2026-10-30 15:51:13] P5: complete finish=stop reasoning_tok=515 answer_tok=276 total_tok=794 time=83.9s peak_temp=78 min_ram=26552
+[2026-10-30 16:06:43] R1: complete finish=stop reasoning_tok=8038 answer_tok=759 total_tok=8800 time=930.5s peak_temp=79 min_ram=26519
+[2026-10-30 16:13:02] R2: complete finish=stop reasoning_tok=3468 answer_tok=110 total_tok=3582 time=378.3s peak_temp=82 min_ram=26583
+[2026-10-30 16:35:54] R3: complete finish=stop reasoning_tok=10871 answer_tok=1832 total_tok=12706 time=1372.3s peak_temp=82 min_ram=26206
+[2026-10-30 16:46:13] R4: complete finish=stop reasoning_tok=4775 answer_tok=962 total_tok=5740 time=619.2s peak_temp=86 min_ram=26667
+[2026-10-30 16:56:38] R5: complete finish=stop reasoning_tok=4249 answer_tok=1726 total_tok=5978 time=625.0s peak_temp=80 min_ram=26695
+[2026-10-30 16:58:23] D1: complete finish=stop reasoning_tok=964 answer_tok=25 total_tok=992 time=104.3s peak_temp=81 min_ram=26611
+[2026-10-30 17:07:49] D2: complete finish=stop reasoning_tok=5069 answer_tok=334 total_tok=5406 time=566.7s peak_temp=79 min_ram=26691
+[2026-10-30 17:12:46] D3: complete finish=stop reasoning_tok=2706 answer_tok=66 total_tok=2775 time=296.4s peak_temp=78 min_ram=26637
+[2026-10-30 17:13:41] D4: complete finish=stop reasoning_tok=176 answer_tok=334 total_tok=513 time=55.1s peak_temp=77 min_ram=26592
+[2026-10-30 17:17:35] D5: complete finish=stop reasoning_tok=1567 answer_tok=623 total_tok=2193 time=234.5s peak_temp=76 min_ram=26617
+[2026-10-30 17:17:35] run finished

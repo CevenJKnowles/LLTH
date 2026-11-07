@@ -1,0 +1,90 @@
+{
+ "id": "P5",
+ "title": "Keras classifier, compile and parameter count",
+ "prompt_text": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1010,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1010,
+ "started_at": "2026-10-30T20:09:45",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nimport tensorflow as tf\nfrom tensorflow import keras\nfrom tensorflow.keras import layers\n\n# Define the Sequential model\nmodel = keras.Sequential([\n    layers.Dense(32, activation=\"relu\", input_shape=(10,)),\n    layers.Dropout(0.2),\n    layers.Dense(3, activation=\"softmax\")\n])\n\n# Compile with sparse categorical crossentropy since labels are integers (not one-hot)\nmodel.compile(\n    optimizer='adam',\n    loss='sparse_categorical_crossentropy',\n    metrics=['accuracy']\n)\n\n# Count the parameters\nnum_params = model.count_params()\nprint(num_params)  # This will return 487\n```",
+ "usage": {
+  "completion_tokens": 144,
+  "prompt_tokens": 116,
+  "total_tokens": 260,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 116,
+  "prompt_ms": 1329.013,
+  "prompt_per_token_ms": 11.457008620689654,
+  "prompt_per_second": 87.28281815151546,
+  "predicted_n": 144,
+  "predicted_ms": 10678.848,
+  "predicted_per_token_ms": 74.67725874125874,
+  "predicted_per_second": 13.390957526504732
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 143,
+  "completion_tokens_usage": 144,
+  "prompt_tokens_usage": 116,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.332,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.332,
+  "to_final_answer": 12.011
+ },
+ "peaks": {
+  "gpu_temp_c": 72,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26171
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26250
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26171
+  }
+ ]
+}

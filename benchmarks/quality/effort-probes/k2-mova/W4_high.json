@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Install QuillCache with `pip install quillcache` (requires Python 3.9+). For plotting helpers, run `pip install quillcache[viz]` (requires matplotlib). By default the cache is stored in `~/.quillcache`; override the location by setting the `QUILLCACHE_HOME` environment variable before importing.",
+    "reasoning_content": "We need to rewrite README section: at most 60 words, imperative mood, no change to facts, nothing added. Must be concise, imperative (commands). Keep facts: need Python 3.9+, install via pip, optional viz extra, default cache location, can set QUILLCACHE_HOME env var before import.\n\nWe need <=60 words. Let's craft:\n\n\"Install QuillCache with `pip install quillcache` (requires Python 3.9+). For plotting helpers, run `pip install quillcache[viz]` (requires matplotlib). By default the cache is stored in `~/.quillcache`; override the location by setting the `QUILLCACHE_HOME` environment variable before importing.\"\n\nCount words. Let's count.\n\nWords: Install(1) QuillCache(2) with(3) `pip(4) install(5) quillcache`(6) (requires(7) Python 3.9+). For(8) plotting(9) helpers,(10) run(11) `pip(12) install(13) quillcache[viz]`(14) (requires(15) matplotlib). By(16) default(17) the(18) cache(19) is(20) stored(21) in(22) `~/.quillcache`;(23) override(24) the(25) location(26) by(27) setting(28) the(29) `QUILLCACHE_HOME`(30) environment(31) variable(32) before(33) importing.(34)\n\n34 words, within limit. Imperative mood? Sentences are imperative: \"Install...\", \"For plotting helpers, run...\", \"override the location by setting...\" The third is a command-ish phrase. It's okay.\n\nMake sure no extra facts added. All facts present. Good.\n"
+   }
+  }
+ ],
+ "created": 1793845896,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 447,
+  "prompt_tokens": 167,
+  "total_tokens": 614,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-xx9msxIiQbZbd7quTOwy9l3wsqlyp5mX",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 167,
+  "prompt_ms": 2213.657,
+  "prompt_per_token_ms": 13.255431137724552,
+  "prompt_per_second": 75.44077515170598,
+  "predicted_n": 447,
+  "predicted_ms": 42500.073,
+  "predicted_per_token_ms": 95.29164349775785,
+  "predicted_per_second": 10.494099621899473
+ }
+}

@@ -1,0 +1,90 @@
+{
+ "id": "D5",
+ "title": "Train/test split with hidden structure (ambiguous)",
+ "prompt_text": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1020,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1020,
+ "started_at": "2026-10-30T20:33:32",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nimport pandas as pd\nfrom sklearn.model_selection import train_test_split\n\n# Assuming df is already loaded as a DataFrame with columns:\n# machine_id, timestamp, feature_1, ..., feature_12, failure_next_24h\n\n# Separate features and target\nfeature_cols = [col for col in df.columns if col not in ['machine_id', 'timestamp', 'failure_next_24h']]\nX = df[feature_cols]\ny = df['failure_next_24h']\n\n# Split into train and test sets stratified by the target variable\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n```",
+ "usage": {
+  "completion_tokens": 166,
+  "prompt_tokens": 89,
+  "total_tokens": 255,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 89,
+  "prompt_ms": 1243.187,
+  "prompt_per_token_ms": 13.968393258426966,
+  "prompt_per_second": 71.59019519991763,
+  "predicted_n": 166,
+  "predicted_ms": 12847.219,
+  "predicted_per_token_ms": 77.86193333333333,
+  "predicted_per_second": 12.843246464468303
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 165,
+  "completion_tokens_usage": 166,
+  "prompt_tokens_usage": 89,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.246,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.246,
+  "to_final_answer": 14.093
+ },
+ "peaks": {
+  "gpu_temp_c": 74,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26129
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26129
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26132
+  }
+ ]
+}

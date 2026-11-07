@@ -1,0 +1,100 @@
+{
+ "id": "D1",
+ "title": "Array memory and strided view (looks hard, is easy)",
+ "prompt_text": "numpy 2.x. `x = np.zeros((10000, 512), dtype=np.float32)`. Three questions: how many bytes does `x.nbytes` report, and what is that in MiB; what is the shape of `x[:, ::2].T`; and is `x[:, ::2]` a view or a copy? One line each.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "numpy 2.x. `x = np.zeros((10000, 512), dtype=np.float32)`. Three questions: how many bytes does `x.nbytes` report, and what is that in MiB; what is the shape of `x[:, ::2].T`; and is `x[:, ::2]` a view or a copy? One line each."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1016,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1016,
+ "started_at": "2026-10-30T21:55:06",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Library: NumPy 2.x (though NumPy 1.x and 2.x behavior for these specific attributes/operations is mostly identical for these basic properties).\n*   Input array: `x = np.zeros((10000, 512), dtype=np.float32)`.\n\n    *   `shape = (10000, 512)`\n    *   `dtype = np.float32` (which is 4 bytes per element).\n    *   Total elements = $10000 \\times 512 = 5,120,000$.\n    *   Total bytes = $5,120,000 \\times 4 = 20,480,000$ bytes.\n\n    *   $1 \\text{ MiB} = 1024 \\times 1024$ bytes $= 1,048,576$ bytes.\n    *   $20,480,000 / 1,048,576 \\approx 19.53125$ MiB.\n\n    *   `x.shape` is `(10000, 512)`.\n    *   `x[:, ::2]` (slicing columns with step 2):\n        *   Rows: 10,000 (unchanged).\n        *   Columns: `512 / 2 = 256`.\n        *   Shape of `x[:, ::2]` is `(10000, 256)`.\n    *   `.T` (transpose):\n        *   Transposing a 2D array swaps the axes.\n        *   Shape of `(10000, 256).T` is `(256, 10000)`.\n\n    *   Basic slicing in NumPy (like `x[..., ::2]`) returns a *view* of the original array to avoid unnecessary memory copying.\n\n    *   Constraint: \"One line each.\"\n    *   Q1: `20480000` bytes and `19.53125 MiB`.\n    *   Q2: `(256, 10000)`.\n    *   Q3: It is a view.\n\n    *   Calculation check: $10000 \\times 512 = 5,120,000$. $5,120,000 \\times 4 = 20,480,000$. Correct.\n    *   $20,480,000 / 1024 / 1024 = 19.53125$. Correct.\n    *   Shape check: `(10000, 512)` $\\to$ `x[:, ::2]` is `(10000, 256)` $\\to$ `.T` is `(256, 10000)`. Correct.\n    *   View vs Copy check: Slicing with steps (strides) creates a view with modified strides. Correct.\n\n    *   Answer 1: 20,480,000 bytes and 19.53125 MiB.\n    *   Answer 2: (256, 10000).\n    *   Answer 3: It is a view.",
+ "content": "20,480,000 bytes and 19.53125 MiB.\n(256, 10000).\nIt is a view.",
+ "usage": {
+  "completion_tokens": 842,
+  "prompt_tokens": 103,
+  "total_tokens": 945,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 103,
+  "prompt_ms": 1609.452,
+  "prompt_per_token_ms": 15.625747572815534,
+  "prompt_per_second": 63.996938088243695,
+  "predicted_n": 842,
+  "predicted_ms": 37772.663,
+  "predicted_per_token_ms": 44.91398692033294,
+  "predicted_per_second": 22.264779160526754
+ },
+ "tokens": {
+  "reasoning_tokenized": 794,
+  "content_tokenized": 43,
+  "completion_tokens_usage": 842,
+  "prompt_tokens_usage": 103,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.768,
+  "to_first_reasoning": 1.768,
+  "to_first_answer_token": 37.404,
+  "to_final_answer": 39.384
+ },
+ "peaks": {
+  "gpu_temp_c": 63,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26235
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 52,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26235
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 59,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 61,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26293
+  }
+ ]
+}

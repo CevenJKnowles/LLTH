@@ -1,0 +1,142 @@
+{
+ "id": "P4",
+ "title": "PyTorch MLP on a sign-product task",
+ "prompt_text": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1009,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1009,
+ "started_at": "2026-10-30T21:31:32",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Environment: PyTorch 2.x, CPU only.\n    *   Data Generation:\n        ```python\n        import torch\n        torch.manual_seed(0)\n        X = torch.rand(400, 2) * 2 - 1\n        y = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n        ```\n    *   Model Architecture: `nn.Module` with layers 2 $\\to$ 16 $\\to$ 16 $\\to$ 1.\n    *   Activations: ReLU between layers, no activation on the output.\n    *   Training Details:\n        *   Loss: `BCEWithLogitsLoss`.\n        *   Optimizer: `Adam(lr=0.01)`.\n        *   Batching: Full-batch (all 400 samples at once).\n        *   Epochs: 500.\n    *   Metrics:\n        *   Total number of trainable parameters.\n        *   Final training accuracy (threshold at logit 0).\n    *   Constraint: Accuracy $\\ge$ 0.95.\n    *   Constraint: Complete runnable code.\n\n    *   `X` is 400 points in a 2D space (range [-1, 1]).\n    *   `y` is 1 if $X_0 \\cdot X_1 > 0$ (Quadrant I and III) and 0 otherwise (Quadrant II and IV). This is the XOR-like problem (specifically, a checkerboard/XOR pattern).\n    *   This is a non-linearly separable problem in 2D space, so a simple linear model won't work. The required hidden layers (16, 16) with ReLU should handle this easily.\n\n    *   `Linear(2, 16)`\n    *   `ReLU()`\n    *   `Linear(16, 16)`\n    *   `ReLU()`\n    *   `Linear(16, 1)`\n\n    *   `criterion = torch.nn.BCEWithLogitsLoss()`\n    *   `optimizer = torch.optim.Adam(model.parameters(), lr=0.01)`\n    *   `for epoch in range(500):`\n        *   `optimizer.zero_grad()`\n        *   `preds = model(X)`\n        *   `loss = criterion(preds, y)`\n        *   `loss.backward()`\n        *   `optimizer.step()`\n\n    *   Total Parameters: Sum of elements in `model.parameters()`.\n    *   Accuracy: `preds > 0` (since sigmoid(0)=0.5, and logits > 0 maps to probability > 0.5).\n\n    *   `import torch`\n    *   `import torch.nn as nn`\n    *   Data generation code.\n    *   Class definition.\n    *   Instantiation.\n    *   Training loop.\n    *   Calculation of params and accuracy.\n    *   Printing.\n\n    *   Does the code handle the CPU requirement? (Implicitly, default is CPU).\n    *   Is the accuracy target achievable? Yes, XOR is easy for 16-16 nets.\n    *   Is the threshold at logit 0 correct? Yes, `sigmoid(0) = 0.5`. So `logit > 0` corresponds to `prob > 0.5`.\n\n    *   `nn.Module` subclass? Yes.\n    *   2 $\\to$ 16 $\\to$ 16 $\\to$ 1? Yes.\n    *   ReLU between layers? Yes.\n    *   No activation on output? Yes (used `BCEWithLogitsLoss` which expects raw logits).\n    *   Full-batch? Yes.\n    *   `Adam(lr=0.01)`? Yes.\n    *   500 epochs? Yes.\n    *   Print params and accuracy? Yes.\n\n    ```python\n    import torch\n    import torch.nn as nn\n\n    # 1. Data Generation\n    torch.manual_seed(0)\n    X = torch.rand(400, 2) * 2 - 1\n    y = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\n    # 2. Model Definition\n    class Net(nn.Module):\n        def __init__(self):\n            super().__init__()\n            self.net = nn.Sequential(\n                nn.Linear(2, 16),\n                nn.ReLU(),\n                nn.Linear(16, 16),\n                nn.ReLU(),\n                nn.Linear(16, 1)\n            )\n        \n        def forward(self, x):\n            return self.net(x)\n\n    model = Net()\n\n    # 3. Training Setup\n    criterion = nn.BCEWithLogitsLoss()\n    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\n    # 4. Training Loop\n    for epoch in range(500):\n        optimizer.zero_grad()\n        logits = model(X)\n        loss = criterion(logits, y)\n        loss.backward()\n        optimizer.step()\n\n    # 5. Evaluation\n    with torch.no_grad():\n        final_logits = model(X)\n        # Threshold at logit 0\n        predictions = (final_logits > 0).float()\n        accuracy = (predictions == y).float().mean()\n\n    # 6. Parameter Count\n    total_params = sum(p.numel() for p in model.parameters())\n\n    print(f\"Total trainable parameters: {total_params}\")\n    print(f\"Final training accuracy: {accuracy.item():.4f}\")\n    ```\n\n    *   Target Accuracy: 0.95+. The XOR problem is quite easy for this architecture.\n    *   CPU only: No `.to('cuda')` or `.to('mps')` used.\n\n(Proceed to generate response).",
+ "content": "```python\nimport torch\nimport torch.nn as nn\n\n# 1. Data Generation\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\n# 2. Model Definition\nclass XORNet(nn.Module):\n    def __init__(self):\n        super(XORNet, self).__init__()\n        self.layers = nn.Sequential(\n            nn.Linear(2, 16),\n            nn.ReLU(),\n            nn.Linear(16, 16),\n            nn.ReLU(),\n            nn.Linear(16, 1)\n        )\n\n    def forward(self, x):\n        return self.layers(x)\n\n# Initialize model, loss, and optimizer\nmodel = XORNet()\ncriterion = nn.BCEWithLogitsLoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\n# 3. Training (Full-batch)\nepochs = 500\nfor epoch in range(epochs):\n    # Forward pass\n    logits = model(X)\n    loss = criterion(logits, y)\n    \n    # Backward pass and optimization\n    optimizer.zero_grad()\n    loss.backward()\n    optimizer.step()\n    \n    # Optional: print progress every 100 epochs\n    if (epoch + 1) % 100 == 0:\n        print(f\"Epoch {epoch+1}/{epochs} - Loss: {loss.item():.4f}\")\n\n# 4. Evaluation\nwith torch.no_grad():\n    final_logits = model(X)\n    # Thresholding at logit 0 (equivalent to probability 0.5)\n    predictions = (final_logits > 0).float()\n    accuracy = (predictions == y).float().mean()\n\n# 5. Calculate total trainable parameters\ntotal_params = sum(p.numel() for p in model.parameters() if p.requires_grad)\n\nprint(\"-\" * 30)\nprint(f\"Total trainable parameters: {total_params}\")\nprint(f\"Final training accuracy: {accuracy.item():.4f}\")\n```",
+ "usage": {
+  "completion_tokens": 1895,
+  "prompt_tokens": 198,
+  "total_tokens": 2093,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 198,
+  "prompt_ms": 1447.501,
+  "prompt_per_token_ms": 7.310611111111111,
+  "prompt_per_second": 136.78747026772348,
+  "predicted_n": 1895,
+  "predicted_ms": 101387.214,
+  "predicted_per_token_ms": 53.53073600844773,
+  "predicted_per_second": 18.68085654271948
+ },
+ "tokens": {
+  "reasoning_tokenized": 1370,
+  "content_tokenized": 520,
+  "completion_tokens_usage": 1895,
+  "prompt_tokens_usage": 198,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.591,
+  "to_first_reasoning": 1.591,
+  "to_first_answer_token": 74.246,
+  "to_final_answer": 102.839
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26260
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26278
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26271
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26260
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26268
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26278
+  }
+ ]
+}

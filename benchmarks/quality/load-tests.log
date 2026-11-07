@@ -1,0 +1,114 @@
+2026-10-30 load test 1: K2 Horizon MoVA 36B-A4B Q4_K_M (ADR-004 section 5b, configuration of model 3)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 34816 -ngl 99 -ncmoe 46 -ot attn_v_exps=CPU -ctk q4_0 -ctv q4_0
+result: loaded; /health ok; /props n_ctx 34816, total_slots 1, build b11839-e1e3b2c40
+at idle after load: GPU 50 C, VRAM 4,709 MiB of 6,144 MiB, RAM available 25,402 MiB (gate: at least 3,072 MiB)
+after two short test requests (non-streaming, 24 prompt tokens, 33 generated): GPU 54 C, VRAM 4,723 MiB, RAM available 25,361 MiB
+generation at about zero depth: 10.3 and 10.6 tokens/s (benchmark, DOC-IMPL-006: 11.2 at depth 0, q4_0)
+reasoning: returned in message.reasoning_content, separate from message.content, with the default settings; a per-request reasoning_format=deepseek gave the same result. usage does not split reasoning tokens (completion_tokens only), so the runner counts them with /tokenize, which responds.
+not tested here: streaming (the pilot does), reasoning_effort, context depth beyond a few tokens (the 34,816 context allocated without error; behaviour near the full depth is measured by the runs themselves).
+
+2026-10-30 reasoning_effort check on K2 MoVA (R2 prompt, seed 1012, non-streaming, 6000 max tokens, same server as load test 1)
+no setting: 3468 reasoning tokens, 3582 completion tokens, 365 s
+reasoning_effort=low (top-level request field): 884 reasoning, 885 completion, 93 s
+reasoning_effort=high (top-level request field): 3468 reasoning, 3582 completion, 376 s
+chat_template_kwargs reasoning_effort=low: 884 / 885, 93 s; chat_template_kwargs reasoning_effort=high: 3468 / 3582, 376 s
+conclusions: the field has an effect (low is about a quarter of the reasoning); the top-level field and chat_template_kwargs behave identically; high is the model's default; the same seed and settings reproduced token for token (also in the runner: R2 3468 / 3582 in the full run).
+observation to follow up in the thinking-control tests (PD-014): at low, completion tokens exceed reasoning tokens by 1, so the visible answer was almost empty; not yet inspected.
+
+2026-10-30 K2 MoVA full quality run (config high): k2-mova_high, 20 of 20 prompts, started 15:19 (W1 and P2 from the pilot at 14:52), finished 17:17; exit code 0.
+no aborts, no prompt reached the 32768-token budget; peak GPU 86 C (R4), minimum RAM available 26206 MiB; total generation time 2.00 h; median 2136 reasoning tokens, 340 answer tokens, 264 s per prompt.
+
+2026-10-30 load test 2: Qwen3.6-35B-A3B UD-IQ4_XS (ADR-004 section 5b, configuration of model 4)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 34816 -ngl 99 -ncmoe 34 -ctk q8_0 -ctv q8_0
+result: loaded; /health ok; /props n_ctx 34816, total_slots 1, build b11839-e1e3b2c40
+at idle after load: GPU 47 C, VRAM 5,223 MiB of 6,144 MiB, RAM available 26,453 MiB (gate: at least 3,072 MiB); after two short requests: GPU 53 C, VRAM 5,237 MiB, RAM available 26,308 MiB
+thinking on (default) with the card's thinking sampling (temperature 1.0, top_p 0.95, top_k 20, min_p 0.0, presence_penalty 1.5): reasoning returned in message.reasoning_content, answer in content; 183 completion tokens for "17 + 25"
+enable_thinking=false sent per request (chat_template_kwargs) with the card's non-thinking sampling (0.7, 0.8, 20, 0.0, 1.5): no reasoning_content, 3 completion tokens. The per-request switch works; no server restart is needed between the thinking and non-thinking runs.
+/tokenize responds.
+observation: generation reported 13.1 tokens/s in both short requests, against 19.2 tokens/s at depth 0 in the benchmark with the same -ncmoe 34 and q8_0 cache (DOC-IMPL-006 section 13), about 32% lower. K2 MoVA showed 10.3 to 10.6 against 11.2 (about 7% lower). Cause not established: possible contributors are the sampling chain (top_k, presence_penalty), the short generations, or the larger allocated context; to be checked on a longer generation in the pilot. Both requests were short, so the figure is indicative only. The 8 tokens/s gate at 8K is not at risk.
+sampling source: Qwen model card and the Unsloth GGUF card, read 2026-10-30 (huggingface.co, read-only). Both pages show licence apache-2.0 and no gated notice.
+
+2026-10-30 Qwen3.6-35B-A3B full quality runs (server configuration of load test 2; 20 of 20 prompts in each configuration; no aborts, no prompt reached the 32768-token budget, no prompt without a final answer)
+qwen3p6_think (thinking on; temperature 1.0, top_p 0.95, top_k 20, min_p 0.0, presence_penalty 1.5): pilot W1 and P2 at 17:30; categories W, P, R, D to 19:55; total generation time 2.15 h; median 3788 reasoning tokens, 368 answer tokens, 329 s per prompt; peak GPU 80 C; minimum RAM available 25997 MiB; server-reported generation speed 12.0 to 15.0 tokens/s (median 12.4), below the benchmark at depth 0 (19.2) for a reason not established.
+qwen3p6_nothink (enable_thinking=false per request; temperature 0.7, top_p 0.8, top_k 20, min_p 0.0, presence_penalty 1.5): 20:02 to 20:33; total generation time 0.35 h (21 min); zero reasoning tokens in every result; median 378 answer tokens, 30 s per prompt; peak GPU 77 C; minimum RAM available 25991 MiB.
+categories (minutes, thinking on / off): writing 30.2 / 1.9; Python 24.1 / 2.7; reasoning 44.7 / 12.6; deceptive 29.9 / 4.0.
+
+2026-10-30 load test 3: Gemma 4 26B-A4B-it QAT q4_0 (ADR-004 section 5b, configuration of model 5)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 34816 -ngl 99 -ncmoe 24 -ctk q8_0 -ctv q8_0
+result: loaded; /health ok; /props n_ctx 34816, total_slots 1, build b11839-e1e3b2c40
+at idle after load: GPU 50 C, VRAM 5,141 MiB of 6,144 MiB, RAM available 26,388 MiB (gate: at least 3,072 MiB); after four short requests: GPU 65 C, VRAM 5,155 MiB, RAM available 26,314 MiB
+sampling source: Gemma 4 model cards (QAT GGUF and unquantised), read 2026-10-30: temperature 1.0, top_p 0.95, top_k 64 for all use cases; no min_p or penalties stated (min_p stays at the server default 0.05, as for K2). Licence apache-2.0, no gated notice in the fetched pages. No recommended maximum output length; context 256K.
+thinking switches tested (17 + 25 prompt, seed 1):
+  no setting: reasoning on by default (reasoning_content returned; 420 completion tokens)
+  chat_template_kwargs enable_thinking=true: identical to no setting (420 tokens)
+  chat_template_kwargs enable_thinking=false: no reasoning_content, 29 completion tokens
+  system prompt "<|think|>": reasoning on (413 tokens; the system message changes the prompt, so output differs slightly)
+conclusion: thinking is on by default in this server; enable_thinking=false per request switches it off; no system prompt is needed for the thinking-on run, so the Gemma runs use the same no-system-prompt setup as K2 and Qwen. /tokenize responds.
+generation speed in the short requests: 21.3 to 22.3 tokens/s with thinking on, 25.0 with it off, against 25.3 at depth 0 in the benchmark (DOC-IMPL-006 section 12); about 12% lower with thinking on, indicative only.
+
+correction (2026-10-30): the Qwen medians first written above (4029 / 386 / 337 s thinking on; 441 / 35 s thinking off) were the upper middle value of 20 results, not the median; the corrected figures are in the entries above. K2 MoVA's medians were already true medians.
+
+2026-10-30 Gemma 4 26B-A4B full quality run (server configuration of load test 3; thinking on via chat_template_kwargs enable_thinking=true; temperature 1.0, top_p 0.95, top_k 64, min_p at the server default; no system prompt)
+gemma4_think: 20 of 20 prompts, pilot W1 and P2 at 20:43 (first attempt refused: the GPU read 51 C against the 50 C start limit; nothing was written), then categories W, P, R, D to 22:10; no aborts, no prompt at the 32768-token budget, every prompt has a final answer, no channel tags in any answer.
+total generation time 1.16 h; median 1539 reasoning tokens, 512 answer tokens, 138 s per prompt; longest reasoning W5 with 18656 tokens (1134 s, finish stop); peak GPU 83 C; minimum RAM available 26171 MiB; server-reported generation speed 16.6 to 22.7 tokens/s (median 18.4) against 25.3 at depth 0 in the benchmark.
+categories (minutes): writing 31.5; Python 7.9; reasoning 13.6; deceptive 16.6.
+start-temperature rule: the idle GPU temperature rose to a steady 50 C during the run. ADR-004 section 3 asks for 50 C or lower at the start of each model's runs; that was met at the Gemma pilot (48 C). Categories after the pilot were started with a limit of 52 C (runner option --max-start-temp 52), as parts of the same model run, with three consecutive readings under the limit. A launcher that waited for 48 C would never have started; it was stopped and replaced. Earlier runs (K2 MoVA, Qwen) all started within 50 C.
+
+2026-10-30 load test 4: K2 Horizon 7B Q4_K_M (ADR-004 section 5b, configuration of model 1)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/IFM/K2-Horizon-7B-GGUF/K2-Horizon-7B-Q4_K_M.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 16384 -ngl 99 -ub 64 -ctk q4_0 -ctv q4_0
+result: loaded; /health ok; /props n_ctx 16384, total_slots 1, build b11839-e1e3b2c40
+at idle after load: GPU 47 C, VRAM 5,675 MiB of 6,144 MiB (about 70 MiB under the 5,746 MiB usable ceiling of the benchmarks, which peaked at 5,711 MiB for this setting), RAM available 26,476 MiB; after three short requests: GPU 57 C, VRAM 5,675 MiB (unchanged), RAM available 26,453 MiB
+reasoning split: reasoning in message.reasoning_content, answer in content, with no setting and with reasoning_effort=high (identical output, 97 reasoning tokens for 17 + 25: high is the default, as for K2 MoVA)
+reasoning_effort=low: 9 reasoning tokens, content EMPTY; reasoning_content was 'Simple arithmetic. Answer 42.</ifm|think>42': the closing tag </ifm|think> and the answer both ended up inside reasoning_content, so the server did not split at low effort.
+consequence: for K2 models at low effort the final answer must be taken from the text after </ifm|think> in reasoning_content when content is empty. This is probably also the explanation of the K2 MoVA observation above (completion tokens 885 against reasoning 884 at low). The runner does not do this yet; it must before the steward pass (PD-014). The high-effort runs of section 5 are not affected.
+generation speed at near-zero depth: 39.4 to 39.9 tokens/s (benchmark 40.0 at depth 0, DOC-IMPL-006 section 1).
+/tokenize responds.
+
+2026-10-30 K2 Horizon 7B full quality run (server configuration of load test 4; reasoning_effort high; temperature 1.0, top_p 0.95; top_k and min_p at the server defaults; no system prompt; output budget 15000 tokens, context 16384)
+k2-7b_high: 20 of 20 prompts; pilot W1 and P2 at 22:32, categories W, P, R, D to 23:44; no aborts; one prompt reached the 15000-token budget: R3 (14999 reasoning tokens, 0 answer tokens, finish reason length, no final answer; kept and marked as did not finish within budget, per ADR-004 section 5); R5 finished with stop at 14964 total tokens, 36 under the budget.
+total generation time 0.89 h; median 1428 reasoning tokens, 242 answer tokens, 59 s per prompt; peak GPU 90 C (plateau of 89 to 90 C on prompts of 5000 tokens or more; the abort limit is 92 C); peak VRAM 5685 MiB; minimum RAM available 26143 MiB; server-reported speed 36 to 40 tokens/s on short prompts, 16.7 to 26 tokens/s on the long ones.
+categories (minutes): writing 11.9; Python 3.8; reasoning 33.3; deceptive 4.2.
+thermal gate (ADR-004 section 6, gate 3: no more than a 30% drop in generation speed within one run) is not yet evaluated: per-prompt average speeds are recorded but speed over time is not; to be compared with depth-matched benchmark speeds (DOC-IMPL-006).
+
+2026-10-30 load test 5: K2 Horizon 3.7B Q5_K_M (ADR-004 section 5b, configuration of model 2)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 34816 -ngl 99 -ctk q4_0 -ctv q4_0
+result: loaded; /health ok; /props n_ctx 34816, total_slots 1, build b11839-e1e3b2c40. The context of 34,816 is about 6% beyond the deepest benchmark (32K) and allocated without error.
+at idle after load: GPU 51 C, VRAM 4,815 MiB of 6,144 MiB (benchmark peak at 32K depth with this cache: 5,099 MiB), RAM available 26,449 MiB; after three short requests: GPU 62 C, VRAM 4,815 MiB (unchanged), RAM available 26,350 MiB
+reasoning split: reasoning in message.reasoning_content, answer in content, with no setting and with reasoning_effort=high (identical output, 200 reasoning tokens for 17 + 25: high is the default, as for the other K2 models)
+reasoning_effort=low: 0 reasoning tokens, content '42', 3 completion tokens, properly split. Unlike the 7B (answer left inside reasoning_content after </ifm|think>) and K2 MoVA (probably the same), the 3.7B skipped thinking entirely at low effort on this prompt; one prompt only, to be examined in the thinking-control tests (PD-014).
+generation speed at near-zero depth: 57.3 to 58.2 tokens/s (benchmark 56.1 at depth 0 with the q8_0 cache).
+/tokenize responds.
+
+2026-10-31 K2 Horizon 3.7B full quality run (server configuration of load test 5; reasoning_effort high; temperature 1.0, top_p 0.95; top_k and min_p at the server defaults; no system prompt; output budget 32768 tokens, context 34816, q4_0 cache)
+k2-3p7b_high: 20 of 20 prompts; pilot W1 and P2 at 23:49 on 2026-10-30, categories W, P, R, D to 00:54 on 2026-10-31; no aborts; no prompt reached the 32768-token budget; every prompt has a final answer; no stray think tags.
+total generation time 0.84 h; 87,139 generated tokens; median 1524 reasoning tokens, 316 answer tokens, 33 s per prompt; longest reasoning R3 with 21629 tokens (1154 s, finish stop; more than the 7B's 15000-token budget, which that prompt exhausted); R5 11139 reasoning tokens; peak GPU 91 C (R3, P4; the abort limit is 92 C); peak VRAM 4819 MiB; minimum RAM available 25770 MiB; server-reported speed 56 to 58 tokens/s on short prompts, 20 to 30 on the long ones.
+categories (minutes): writing 1.7; Python 9.3; reasoning 34.0; deceptive 5.5.
+Six of seven runs are now generated; only the K2 0.9B remains.
+
+2026-10-31 load test 6: K2 Horizon 0.9B Q8_0 (ADR-004 section 5b, configuration of model 6)
+command: $LLTH_HOME/llama.cpp/build/bin/llama-server -m $LLTH_HOME/models/IFM/K2-Horizon-0.9B-GGUF/K2-Horizon-1B-Q8_0.gguf --host 127.0.0.1 --port 8080 -np 1 -fa on -cram 0 -c 34816 -ngl 99 -ctk q8_0 -ctv q8_0
+file checksum verified before the load: 741fb9ad263956c003883cb7caddeb14b4dfb9b4b67b5414ad12967e965dd547 (matches ADR-004 section 1a)
+result: loaded; /health ok; /props n_ctx 34816, total_slots 1, build b11839-e1e3b2c40; model trained context (n_ctx_train) 131072.
+at idle after load: GPU 46 C, VRAM 2,313 MiB of 6,144 MiB, RAM available 26,446 MiB; after three short requests: GPU 51 C, VRAM 2,313 MiB (unchanged), RAM available 26,430 MiB
+reasoning split: reasoning in message.reasoning_content, answer in content, with no setting and with reasoning_effort=high (identical output, 33 reasoning tokens for 17 + 25: high is the default, as for the other K2 models)
+reasoning_effort=low: 10 reasoning tokens, content '42', properly split (unlike the 7B, where the answer stayed inside reasoning_content after </ifm|think>); one prompt only, to be examined in the thinking-control tests (PD-014). The card calls low and medium "not recommended except for research".
+generation speed at near-zero depth: 102.6 tokens/s on the first request (cold), 154.5 and 154.7 on the next two (benchmark: 164.8 at depth 0, DOC-IMPL-006 section 11).
+/tokenize responds.
+
+2026-10-31 01:09 INCIDENT, K2 0.9B run: the llama-server stopped responding while W4 was generating.
+sequence: pilot W1 and P2 complete (01:08); writing category W2 (2.3 s) and W3 (8.6 s) complete; W4 stream ended after 32 s with 1,292 characters of reasoning, no finish reason and no answer; W5 failed at once with ConnectionRefusedError (111). Port 8080 had nothing listening afterwards and no llama-server process existed. Cause not established: the user did not report stopping it; no out-of-memory, kernel or GPU error lines were found in the kernel log for 01:08 to 01:11. The server terminal's last lines were not seen and should be read.
+runner fault found: v1.0 recorded W4 as status "complete" although the stream ended without a finish reason, and recorded W5 as an ordinary result file, so a resume would have skipped both. The three queued category launchers (Python, reasoning, deceptive) were stopped by PID before they could write more failures (exit code 143, deliberate).
+actions: W4.json and W5.json were renamed, not deleted, to W4.failed-20261031-010937-server-lost.json and W5.failed-20261031-010937-server-lost.json (raw record kept). quality_run.py v1.1: a stream that ends without a finish reason is "incomplete"; error, incomplete, aborted_temp and aborted_ram attempts are written as <ID>.failed-<time>-<status>.json (not results, retried on resume); a lost server stops the run with exit code 4. quality_blind.py v1.1 ignores .failed files. Tested against a fake server killed mid-answer: status incomplete, exit code 4, no W2.json left behind. All earlier results (126 files in the six complete runs and the 0.9B pilot files) were checked: none has a missing finish reason.
+note: the checksums of quality_run.py and quality_blind.py in MANIFEST-2026-10-31-six-complete-runs.sha256 and in the six-run archive now differ from the files on disk (v1.0 versus v1.1); the archive holds v1.0, which produced all stored results.
+state: k2-0p9b_high has W1, W2, W3 and P2 as valid results; W4, W5, P1, P3 to P5, R1 to R5 and D1 to D5 remain. The server must be restarted by the user first.
+
+2026-10-31 DESIGNER DECISION on the K2 0.9B R1 answer: R1 (k2-0p9b_high/R1.json) has 19,121 reasoning tokens and an answer field of 10,424 characters in which the model's own working-out precedes its end-of-thinking marker </ifm|think> (at character 8,516), followed by the final solution. The designer agreed to preserve the full output of the model unedited: the blind sheet shows the answer exactly as stored (working-out and tag included) and it is scored as it stands, with a note; nothing is cut or rewritten. The tag appears in no other 0.9B result so far (checked R2 to R5 and P1). If the same leak shows up in other results, the same rule applies: leave the stored output untouched.
+
+2026-10-31 K2 Horizon 0.9B full quality run COMPLETE (server configuration of load test 6; reasoning_effort high; temperature 0.6, top_p 0.95; top_k and min_p at the server defaults; no system prompt; output budget 32768 tokens, context 34816, q8_0 cache)
+k2-0p9b_high: 20 of 20 valid results; pilot W1 and P2 at 01:08; W2, W3 then the incident (server died during W4, see above); resumed 01:15 with the restarted server: W4, W5, then categories P, R, D to 01:39 (runner v1.1 for the resumed part). The two failed attempts (W4, W5) are kept as *.failed-*.json. Result files from the first attempt (W1 to W3, P2) were produced by runner v1.0 with identical settings (the header check passed).
+no valid result at the budget, none without a final answer, none with a missing finish reason; one stray </ifm|think> tag inside an answer (R1, designer decision above: preserved unedited).
+total generation time 0.28 h; 74,041 generated tokens; median 588 reasoning tokens, 720 answer tokens, 12 s per prompt; longest reasoning R4 23,199 tokens (456 s) and R1 19,121 (339 s); shortest R3 129 and R5 231 reasoning tokens with 2,386 and 2,309 answer tokens; peak GPU 90 C; peak VRAM 2,315 MiB; minimum RAM available 25,937 MiB; server-reported speed 142 to 151 tokens/s on short prompts, 53 to 68 on the two longest.
+categories (minutes): writing 0.6; Python 0.9; reasoning 14.5; deceptive 0.8.
+ALL SEVEN GENERATED RUNS NOW EXIST: k2-mova_high, qwen3p6_think, qwen3p6_nothink, gemma4_think, k2-7b_high, k2-3p7b_high, k2-0p9b_high. Not yet done: blind sheet and scoring, the steward pass (section 5a), the thinking-control tests (PD-014).
+
+2026-10-31 verification of the saved record (about 01:50): every figure in the session record was recomputed from the 140 valid result files and matches; 149 JSON files parse (140 results, 7 headers, 2 failed attempts); the seven-run manifest verifies except benchmarks/prompts-review-notes.md, whose header (status, version, date) was changed after the manifest was made; the three archives verify against their checksums; the blind-sheet command was run into a scratch folder and produced 140 answers (7 per prompt, labels A to G), contained no failed attempt and no model name, kept the 0.9B R1 stray tag as agreed, and wrote the key with mode 0600. Stale wording in the session record, the session handoff and the memory index was corrected.

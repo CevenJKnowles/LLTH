@@ -1,0 +1,91 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1013,
+ "started_at": "2026-10-31T01:25:00",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to design a daily batch pipeline. Provide stages, storage format, directory layout, memory under 16GB, scheduling, failure detection, rough estimates. No code. Should be prose or numbered list. Provide details. Ensure no code. Let's produce a numbered list covering stages: ingest, parse, aggregate, store raw logs, delete old raw logs, compute aggregates, store aggregates, schedule retraining, cleanup. Also mention using memory limits, maybe using dask? But no code, but can describe tools like Python scripts? Probably okay to describe steps. Provide approximate times. Let's craft.\n",
+ "content": "**Daily Batch Pipeline – High‑level Overview**\n\n| Step | What happens | Storage format | Directory layout | Memory considerations | Scheduling | Failure handling |\n|------|--------------|----------------|------------------|----------------------|------------|-----------------|\n| 1️⃣  | **Ingest raw logs** – each hour a new *.gz* JSONL file is placed in a “raw‑logs” folder. | Gzipped JSONL (one line per event) | `raw-2025-11-18/2025-11-18_12-00.gz` … `raw-2025-11-18/2025-11-18_23-00.gz` | The script reads the file line‑by‑line; it never loads the whole file into RAM – it keeps only a small buffer for tokenisation. | `cron 0 0 * * *` (run at 00:00) | If the script exits with a non‑zero code, the cron job aborts the next run. The previous run’s files stay untouched so the pipeline can be restarted without re‑processing already‑finished hours. |\n| 2️⃣  | **Validate & truncate** – check file size (≤ 20 GB) and discard any older than 60 days after the last successful run. | Same format | `raw-*/` (already trimmed) | No extra memory; a simple `os.path.getsize` check. | Same cron entry. | If the validation fails, the raw‑logs folder is left unchanged; the next run will start fresh. |\n| 3️⃣  | **Parse & enrich** – read the gzipped file, extract `user_id`, `event_type`, `timestamp`, and write a compact “enriched” stream to a temporary “tmp‑enrich” directory (one file per hour). | JSONL → CSV‑style (user, event_type, ts) | `tmp-*/` | Memory limited to the size of the current line (≈ few MB). | Same cron entry. | If parsing crashes, the temporary files are removed and the pipeline continues. |\n| 4️⃣  | **Aggregate per user & per event type** – for each hour, count occurrences of each `(user, event_type)` pair. | CSV (user_id, event_type, hour) | `agg-*/` (one folder per day) | Process one hour at a time; keep only the current hour’s rows plus a small lookup table for the current day. | Same cron entry. | If the aggregation fails, rows from the failed hour are still written to `agg-*/` so the next run can resume. |\n| 5️⃣  | **Write daily aggregates** – aggregate files are concatenated into a single daily archive (one CSV per user/event_type). | CSV (compressed with gzip) | `agg-*/` | Write to a single temporary file, then atomically rename to the final location. | Same cron entry. | If the write fails, the pipeline rolls back to the previous successful state (the previous rename is undone). |\n| 6️⃣  | **Retrain scikit‑learn classifier** – on the last 30 days of aggregates, train a model and save the model artifact. | Model file (`*.pkl` or `*.joblib`) | `models/` | Model size is ~ few MB; fits in RAM. | Cron runs at 06:00 after aggregates are ready. | If training fails, the model folder is left empty; the pipeline can retry later. |\n| 7️⃣  | **Cleanup raw logs** – delete files older than 60 days to free disk space. | N/A | `raw-*/` | No RAM impact. | Same cron entry. | If deletion fails, the raw folder is left untouched; the next run will start fresh. |\n| 8️⃣  | **Archive aggregates** – move daily aggregates to a long‑term cold store (e.g., 2 TB HDD) and keep only the “ready‑by‑06:00” files in the hot directory. | Same CSV format | `agg-hot/` (ready) + `agg-cold/` (archived) | No RAM impact. | Same cron entry. | If archiving fails, the hot aggregates remain for immediate use. |\n| 9️⃣  | **Restart‑ready state** – ensure the hot aggregates folder contains the exact files that were produced by the previous run, so a crash can be brought back to a known state. | N/A | `agg-hot/` | N/A | Same cron entry. | If any step aborts, the pipeline continues to the next step; the previous run’s state is preserved. |\n\n---\n\n### Detailed Directory Layout\n\n```\n/pipeline/\n│\n├─ raw-            # hourly gzipped JSONL logs (max 20 GB/day)\n│   └─ 2025-11-18/\n│       ├─ 2025-11-18_12-00.gz\n│       └─ …\n│\n├─ tmp-            # temporary parsed files (cleared after step 3)\n│   └─ 2025-11-18/\n│       └─ …\n│\n├─ agg-hot/        # daily aggregates ready for consumption (≤ 4 GB total)\n│   ├─ 2025-11-18/\n│   │   ├─ user_A-eventX.csv.gz\n│   │   └─ …\n│   └─ 2025-11-17/ …   # previous day’s ready‑by‑06:00 files\n│\n├─ agg-cold/       # archived aggregates (compressed, moved on disk)\n│   └─ …\n│\n├─ models/         # trained classifier artifacts\n│   └─ classifier.pkl\n│\n└─ scripts/        # optional Python scripts (no code shown here)\n```\n\n*All paths are relative to the repository root.*\n\n---\n\n### Memory‑under‑16 GB Strategy\n\n* **Line‑by‑line processing** – the script reads one JSON line at a time, parses it into a small in‑memory dictionary (`defaultdict(int)`) that holds counts for the current hour only.  \n* **No large in‑memory tables** – after the hour is processed, the temporary dictionary is discarded and the next hour starts fresh.  \n* **Disk‑based temp files** – parsed data is written to a temporary directory and only the final CSV is written to the final location; no intermediate large structures are kept.  \n* **Model size** – the scikit‑learn model used for retraining is kept under ~ 2 MB, well within the RAM budget.  \n\n---\n\n### Scheduling (cron)\n\n```\n# 00:00 – ingest & validate raw logs\n0 0 * * * /bin/bash -c \"python ingest.py\"\n\n# 06:00 – produce daily aggregates & retrain model\n6 0 * * * /bin/bash -c \"python aggregate.py\"\n\n# 23:00 – cleanup raw logs older than 60 days\n23 0 * * * /bin/bash -c \"python cleanup.py\"\n```\n\n*All jobs run with the same cron entry; the pipeline can be started manually or via a systemd timer.*\n\n---\n\n### Failure Detection & Recovery\n\n* **Exit codes** – each Python script returns `0` on success, non‑zero on error.  \n* **Cron retries** – the default `cron` daemon retries failed jobs a few times; if it still fails, the next run will start fresh.  \n* **State preservation** – after step 5 (aggregates ready) the script writes a tiny “state‑file” (`/tmp/pipeline.state`) containing the list of files that were successfully written. The next run reads this file and only processes the missing files, guaranteeing that a crash does not lose the already‑produced aggregates.  \n* **Rollback** – if a step aborts, the script removes the partially written files (e.g., renames them to `.bad`) so the pipeline can continue to the next step without corrupting earlier results.  \n\n---\n\n### Rough Performance Estimates\n\n| Operation | Approx. Time (per day) | Disk I/O | RAM usage |\n|-----------|------------------------|----------|-----------|\n| Ingest 20 GB of gzipped JSONL | ~ 5 min (single‑core, linear scan) | 1 TB read‑modify‑write | < 200 MB |\n| Parse & enrich (one hour at a time) | ~ 1 min per hour (≈ 3 h) | 1 GB per hour | < 50 MB |\n| Aggregate per user/event type (≈ 10 k unique combos) | ~ 2 min | 100 MB (CSV) | < 5 MB |\n| Write daily aggregates (≈ 1 GB total) | ~ 1 min | 1 GB | < 20 MB |\n| Retrain classifier (last 30 days) | ~ 30 min (training a small model) | < 1 GB (model files) | < 10 MB |\n| Cleanup raw logs | ~ 30 min (scan + delete) | 0.5 TB | < 10 MB |\n| **Overall wall‑clock** | **≈ 8 min** | **≈ 2 TB** (disk) | **≤ 200 MB** (well under 16 GB) |\n\nThese numbers assume a single core; adding a second core would halve the wall‑clock time for the heavy aggregation step but would not change the memory budget.\n\n---\n\n### Summary of Key Points\n\n* The pipeline is **hourly**, runs at **00:00** to guarantee that by **06:00** all daily aggregates are available.  \n* Raw logs are **automatically purged** after 60 days, keeping disk usage predictable.  \n* A **weekly** retraining job consumes only the most recent 30 days of aggregates, keeping the model small.  \n* The design is **stateless** except for a tiny state file, making it **restartable** after any crash.  \n* All steps stay within the **16 GB RAM ceiling** by processing data incrementally and never storing the whole day’s data in memory.",
+ "usage": {
+  "completion_tokens": 2518,
+  "prompt_tokens": 200,
+  "total_tokens": 2718,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 200,
+  "prompt_ms": 62.731,
+  "prompt_per_token_ms": 0.313655,
+  "prompt_per_second": 3188.216352361671,
+  "predicted_n": 2518,
+  "predicted_ms": 25129.168,
+  "predicted_per_token_ms": 9.983777512912198,
+  "predicted_per_second": 100.16248846758477
+ },
+ "tokens": {
+  "reasoning_tokenized": 129,
+  "content_tokenized": 2386,
+  "completion_tokens_usage": 2518,
+  "prompt_tokens_usage": 200,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.066,
+  "to_first_reasoning": 0.066,
+  "to_first_answer_token": 1.278,
+  "to_final_answer": 25.196
+ },
+ "peaks": {
+  "gpu_temp_c": 88,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26294
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26374
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26364
+  }
+ ]
+}

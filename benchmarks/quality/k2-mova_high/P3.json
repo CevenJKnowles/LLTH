@@ -1,0 +1,133 @@
+{
+ "id": "P3",
+ "title": "scikit-learn pipeline with mixed types and an unseen category",
+ "prompt_text": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1008,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1008,
+ "started_at": "2026-10-30T15:38:15",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need answer with complete runnable code and explanation. Need ensure unseen category doesn't raise. In sklearn, OneHotEncoder with handle_unknown='ignore' doesn't raise and all-zero row for unknown. But if using ColumnTransformer, need set handle_unknown=\"ignore\" in OneHotEncoder. Also pandas 2.x, sklearn 1.5. Need fit pipeline. Let's craft code.\n\nNeed include imports, DataFrame, y, ColumnTransformer, OneHotEncoder(handle_unknown=\"ignore\", sparse_output=False), StandardScaler, Pipeline, fit, predict_proba on unseen df. Need maybe set random_state. Logistic regression. Need predict_proba output. Need mention unseen category ignored and numeric standardized. The \"single Pipeline\" is one pipeline object.\n\nLet's write code:\n\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.linear_model import LogisticRegression\n\nX = pd.DataFrame({...})\ny = [0,1,0,1,1,1,0,1]\n\nX_train = X  # or subset? The user says fit on X, y. Fine.\n\npre = ColumnTransformer(\n    transformers=[\n        (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"]),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\", sparse_output=False), [\"colour\"]),\n    ],\n    remainder=\"drop\",\n)\n\npipe = Pipeline([\n    (\"preprocess\", pre),\n    (\"classifier\", LogisticRegression(max_iter=1000)),\n])\n\npipe.fit(X, y)\n\nnew = pd.DataFrame({\"colour\": [\"purple\"], \"size_cm\": [12.0], \"weight_g\": [150]})\nprint(pipe.predict_proba(new))\n\nNeed explanation in two sentences. Why unseen colour does not cause error: OneHotEncoder with handle_unknown=\"ignore\" drops unseen categories and encodes them as all-zero vector, so logistic regression receives consistent feature vector. The scaler is unaffected because it only transforms numeric columns and doesn't depend on categories. That is two sentences maybe.\n\nNeed ensure complete runnable code. Also note pandas version? Good.\n\nNeed maybe mention LogisticRegression predict_proba returns probabilities for classes [0,1]. The unseen colour \"purple\" gets same numeric representation as any other unknown, no error. Need include \"handle_unknown='ignore'\" and \"sparse_output=False\" to get dense DataFrame. Could use sparse_output=False. Need maybe set `handle_unknown='ignore'` in OneHotEncoder. Good.\n\nLet's craft final answer with code block and explanation. Need not use any library beyond pandas and scikit-learn. Use no extra. Done.\n",
+ "content": "```python\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.linear_model import LogisticRegression\n\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n\npreprocessor = ColumnTransformer(\n    transformers=[\n        (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"]),\n        (\"cat\", OneHotEncoder(handle_unknown=\"ignore\", sparse_output=False), [\"colour\"]),\n    ],\n    remainder=\"drop\",\n)\n\npipeline = Pipeline([\n    (\"preprocess\", preprocessor),\n    (\"classifier\", LogisticRegression(max_iter=1000)),\n])\n\npipeline.fit(X, y)\n\nnew_data = pd.DataFrame({\n    \"colour\": [\"purple\"],\n    \"size_cm\": [12.0],\n    \"weight_g\": [150],\n})\n\nproba = pipeline.predict_proba(new_data)\nprint(proba)\n```\n\nThe unseen colour `purple` does not cause an error because the `OneHotEncoder` is configured with `handle_unknown=\"ignore\"`, so it encodes the unknown category as an all-zero vector instead of raising an exception. The `StandardScaler` only transforms numeric columns and is completely unaffected by the unknown categorical value.",
+ "usage": {
+  "completion_tokens": 894,
+  "prompt_tokens": 291,
+  "total_tokens": 1185,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 291,
+  "prompt_ms": 2371.588,
+  "prompt_per_token_ms": 8.149786941580757,
+  "prompt_per_second": 122.70259421113616,
+  "predicted_n": 894,
+  "predicted_ms": 93069.109,
+  "predicted_per_token_ms": 104.2207267637178,
+  "predicted_per_second": 9.595020405750311
+ },
+ "tokens": {
+  "reasoning_tokenized": 528,
+  "content_tokenized": 363,
+  "completion_tokens_usage": 894,
+  "prompt_tokens_usage": 291,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.375,
+  "to_first_reasoning": 2.375,
+  "to_first_answer_token": 57.063,
+  "to_final_answer": 95.445
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26494
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26762
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26494
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26544
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26605
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26597
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26582
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26578
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26572
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26639
+  },
+  {
+   "t_s": 91.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26621
+  }
+ ]
+}

@@ -1,0 +1,79 @@
+{
+ "id": "D1",
+ "title": "Array memory and strided view (looks hard, is easy)",
+ "prompt_text": "numpy 2.x. `x = np.zeros((10000, 512), dtype=np.float32)`. Three questions: how many bytes does `x.nbytes` report, and what is that in MiB; what is the shape of `x[:, ::2].T`; and is `x[:, ::2]` a view or a copy? One line each.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "numpy 2.x. `x = np.zeros((10000, 512), dtype=np.float32)`. Three questions: how many bytes does `x.nbytes` report, and what is that in MiB; what is the shape of `x[:, ::2].T`; and is `x[:, ::2]` a view or a copy? One line each."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1016,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1016,
+ "started_at": "2026-10-31T01:38:30",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to answer three questions:\n\n1. How many bytes does `x.nbytes` report, and what is that in MiB.\nGiven x = np.zeros((10000, 512), dtype=np.float32). Shape: (10000,512). dtype float32 = 4 bytes per element. Number of elements = 10000*512 = 5,120,000? Actually 10000*512 = 5,120,000. Multiply by 4 = 20,480,000 bytes. Let's compute: 10000*512 = 5,120,000. Times 4 = 20,480,000 bytes. In MiB: 1 MiB = 2^20 bytes = 1,048,576 bytes. So MiB = 20,480,000 / 1,048,576 ≈ 19.5 MiB. Let's compute precisely: 20,480,000 / 1,048,576 = approx 19.5. More exactly: 20,480,000 / 1,048,576 = 19.5? 1,048,576 * 19 = 19,923,344; remainder 556,656; 556,656/1,048,576 ≈0.53. So about 19.53 MiB. Could say ~19.5 MiB.\n\n2. Shape of `x[:, ::2].T`. `x[:, ::2]` selects every other column, resulting shape (10000, 256) because original columns 512, step 2 gives 256 columns. Then transpose: shape (256, 10000). So shape (256,10000).\n\n3. Is `x[:, ::2]` a view or a copy? It's a view because slicing with ::2 returns a new array but with stride pattern? Actually x[:, ::2] returns a view of the original array with stride adjustment, not copy. So it's a view.\n\nThus answer lines: first line: bytes = 20480000, MiB ≈19.5. Second line: shape (256,10000). Third line: view.\n\nWe need one line each. Probably format: \"20480000 bytes ≈19.5 MiB\" or just \"20480000 bytes, 19.5 MiB\". But they ask \"how many bytes does x.nbytes report, and what is that in MiB\". So maybe \"20480000 bytes, 19.5 MiB\". Then shape line: \" (256, 10000)\". Then view line: \"view\". Provide one line each.\n",
+ "content": "20480000 bytes, 19.5 MiB  \n(256, 10000)  \nview",
+ "usage": {
+  "completion_tokens": 583,
+  "prompt_tokens": 89,
+  "total_tokens": 672,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 89,
+  "prompt_ms": 259.129,
+  "prompt_per_token_ms": 2.911561797752809,
+  "prompt_per_second": 343.4582775374427,
+  "predicted_n": 583,
+  "predicted_ms": 3854.914,
+  "predicted_per_token_ms": 6.623563573883162,
+  "predicted_per_second": 150.97613072561413
+ },
+ "tokens": {
+  "reasoning_tokenized": 558,
+  "content_tokenized": 22,
+  "completion_tokens_usage": 583,
+  "prompt_tokens_usage": 89,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.261,
+  "to_first_reasoning": 0.261,
+  "to_first_answer_token": 3.964,
+  "to_final_answer": 4.116
+ },
+ "peaks": {
+  "gpu_temp_c": 57,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26297
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 57,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26297
+  }
+ ]
+}

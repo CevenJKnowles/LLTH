@@ -1,0 +1,36 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Convert CSV timetables into ICS calendar files. This tool is for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`."
+   }
+  }
+ ],
+ "created": 1793844416,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 39,
+  "prompt_tokens": 87,
+  "total_tokens": 126,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-McaiTg2Srq5ZpdHF2LKmUc6JrYUNcfTZ",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 321.427,
+  "prompt_per_token_ms": 3.694563218390805,
+  "prompt_per_second": 270.6679899323952,
+  "predicted_n": 39,
+  "predicted_ms": 676.465,
+  "predicted_per_token_ms": 17.80171052631579,
+  "predicted_per_second": 56.17437709268033
+ }
+}

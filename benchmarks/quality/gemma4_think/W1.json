@@ -1,0 +1,106 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1001,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1001,
+ "started_at": "2026-10-30T20:43:43",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Topic: `gridhop` (CLI tool).\n*   Functionality: Converts CSV timetables to ICS calendar files.\n*   Target Audience: People who receive timetables as spreadsheets and want them in a calendar app.\n*   Installation Command: `pip install gridhop`.\n*   Constraint 1: Exactly three sentences.\n*   Constraint 2: Sentence 1 = What it does.\n*   Constraint 3: Sentence 2 = Who it is for.\n*   Constraint 4: Sentence 3 = How to install it.\n*   Constraint 5: Plain wording, no marketing language (no \"powerful,\" \"amazing,\" \"easy,\" \"seamlessly,\" etc.).\n\n    *   *Sentence 1 (Function):* gridhop is a command-line tool that converts CSV timetables into ICS calendar files.\n    *   *Sentence 2 (Audience):* It is designed for people who receive timetables in spreadsheet format and want to import them into a calendar application.\n    *   *Sentence 3 (Installation):* Install it using `pip install gridhop`.\n\n    *   *S1:* gridhop converts CSV timetables into ICS files. (A bit short, but functional).\n    *   *S2:* It is for people who receive timetables as spreadsheets and need them in a calendar app.\n    *   *S3:* You can install it via `pip install gridhop`.\n\n    *   \"gridhop converts CSV timetables into ICS calendar files. It is for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.\"\n\n    *   *S1:* gridhop is a command-line tool that converts CSV timetables into ICS calendar files. (Plain, direct).\n    *   *S2:* It is for people who receive timetables as spreadsheets and want to use them in a calendar app. (Direct).\n    *   *S3:* Install it using `pip install gridhop`. (Direct).\n\n    *   S1: gridhop converts CSV timetables into ICS calendar files.\n    *   S2: It is for anyone who receives timetables as spreadsheets and wants to import them into a calendar app.\n    *   S3: Install it using `pip install gridhop`.\n\n    *Self-Correction:* The prompt says \"Sentence one says what it does\", \"Sentence two says who it is for\", \"Sentence three says how to install it\".\n\n    *Refined Draft:*\n    gridhop is a command-line tool that converts CSV timetables into ICS calendar files. It is for people who receive timetables as spreadsheets and want to use them in a calendar app. Install it via `pip install gridhop`.\n\n    1. gridhop converts CSV timetables into ICS calendar files. (What it does)\n    2. It is for people who receive timetables as spreadsheets and want them in a calendar app. (Who it is for)\n    3. Install it with `pip install gridhop`. (How to install)\n\n    Wait, let's make sure it's not \"marketing-y\".\n    \"gridhop is a command-line tool that converts CSV timetables into ICS calendar files. It is for people who receive timetables as spreadsheets and want to import them into a calendar app. Install it with `pip install gridhop`.\"\n\n    This is perfect. Simple, functional, adheres to all constraints.\n\n    *Check constraints again:*\n    - First three sentences? Yes.\n    - S1: What it does? Yes.\n    - S2: Who it is for? Yes.\n    - S3: How to install? Yes.\n    - Plain wording/No marketing? Yes.\n\n    *Final version:*\n    gridhop is a command-line tool that converts CSV timetables into ICS calendar files. It is for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+ "content": "gridhop is a command-line tool that converts CSV timetables into ICS calendar files. It is for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+ "usage": {
+  "completion_tokens": 901,
+  "prompt_tokens": 93,
+  "total_tokens": 994,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 93,
+  "prompt_ms": 1528.654,
+  "prompt_per_token_ms": 16.437139784946236,
+  "prompt_per_second": 60.83783511507509,
+  "predicted_n": 901,
+  "predicted_ms": 39632.165,
+  "predicted_per_token_ms": 44.035738888888886,
+  "predicted_per_second": 22.708827539449334
+ },
+ "tokens": {
+  "reasoning_tokenized": 851,
+  "content_tokenized": 45,
+  "completion_tokens_usage": 901,
+  "prompt_tokens_usage": 93,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.648,
+  "to_first_reasoning": 1.648,
+  "to_first_answer_token": 39.136,
+  "to_final_answer": 41.163
+ },
+ "peaks": {
+  "gpu_temp_c": 62,
+  "gpu_mem_mib": 5159,
+  "min_mem_available_mib": 26227
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 52,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26227
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26262
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26278
+  }
+ ]
+}

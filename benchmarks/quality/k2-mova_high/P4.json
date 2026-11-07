@@ -1,0 +1,433 @@
+{
+ "id": "P4",
+ "title": "PyTorch MLP on a sign-product task",
+ "prompt_text": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "PyTorch 2.x, CPU only. Generate the data exactly like this:\n\n```python\nimport torch\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n```\n\nWrite an `nn.Module` with layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output. Train it full-batch with `BCEWithLogitsLoss` and `Adam(lr=0.01)` for 500 epochs. Print the total number of trainable parameters and the final training accuracy (threshold at logit 0). Give complete runnable code. Target: accuracy of at least 0.95."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1009,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1009,
+ "started_at": "2026-10-30T15:39:51",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to provide PyTorch 2.x CPU-only code. Need nn.Module with layers 2→16→16→1, ReLU between, no activation on output. Train full-batch Adam lr=0.01 BCEWithLogitsLoss for 500 epochs. Print total trainable parameters and final training accuracy (threshold at logit 0). Target accuracy ≥0.95. Need complete runnable code.\n\nWe should make sure it achieves target. Let's think: data is X ~ Uniform(-1,1)^2, y = 1 if product >0 (quadrants I and III), else 0. This is XOR-like pattern but with two diagonal regions. A two-hidden-layer MLP with ReLU 16 each should be able to fit this well. Full-batch Adam 500 epochs lr 0.01 should get very high accuracy, likely 100%. We need to verify mentally or perhaps run in head? Can't run, but can reason. The data is linearly non-separable; two-layer network can represent XOR-like function. 16 hidden units enough. 500 epochs full batch with Adam lr 0.01 should easily reach near zero loss. Accuracy threshold at 0.\n\nWe need to produce code that prints total parameters and final accuracy. Ensure reproducible? They set torch.manual_seed(0) for data. For training, maybe set seed too? They ask generate data exactly like this. We can set torch.manual_seed(0) before data, but if we set again before training, it changes network init. We can keep seed as is. To be safe, set torch.manual_seed(0) at top, then generate data, then define model. The model init will use the same global RNG, which after data generation has advanced. That's fine. The data is exactly as specified if we call torch.manual_seed(0) before X. Then we can continue. However, to ensure reproducibility of training, we might set a separate seed? But then model init uses different seed. The problem says \"Generate the data exactly like this\" and then \"Write nn.Module...\" They likely want a script that does that. We can set torch.manual_seed(0) at top, then data, then model. That's fine.\n\nNeed to compute total trainable parameters: 2*16 + 16 = 48? Wait layers: 2→16: 2*16 + 16 bias = 48. 16→16: 16*16 + 16 = 272. 16→1: 16*1 + 1 = 17. Total = 337. Let's confirm: 48+272+17=337. Yes.\n\nCode:\n\nimport torch\nimport torch.nn as nn\n\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\nclass MLP(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.net = nn.Sequential(\n            nn.Linear(2, 16),\n            nn.ReLU(),\n            nn.Linear(16, 16),\n            nn.ReLU(),\n            nn.Linear(16, 1)\n        )\n    def forward(self, x):\n        return self.net(x)\n\nmodel = MLP()\nn_params = sum(p.numel() for p in model.parameters() if p.requires_grad)\nprint(f\"Total trainable parameters: {n_params}\")\n\ncriterion = nn.BCEWithLogitsLoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\nfor epoch in range(500):\n    optimizer.zero_grad()\n    logits = model(X)\n    loss = criterion(logits, y)\n    loss.backward()\n    optimizer.step()\n\nwith torch.no_grad():\n    logits = model(X)\n    preds = (logits > 0).float()\n    acc = (preds == y).float().mean().item()\n\nprint(f\"Final training accuracy: {acc:.4f}\")\n\nNeed to ensure BCEWithLogitsLoss works with y shape (400,1) and logits (400,1). Yes.\n\nWill it reach 0.95? Likely. But we need to be cautious: full-batch Adam lr 0.01, 500 epochs, with 337 parameters, 400 samples. The data is smooth; loss should go to near 0. Let's think about potential issues: The data has two separated clusters in the square: one in quadrant I (x>0,y>0) and quadrant III (x<0,y<0), with y=0 in the other two quadrants. The boundary is the axes. A ReLU network can approximate the XOR function. With 16 units each layer, it can easily shatter the data. Adam should converge.\n\nLet's maybe run a mental simulation? Not possible. But we can be confident. However, to be safe, maybe include a note that the code will reach target. The final answer should be just the code. The user asked \"Give complete runnable code.\" So we should output code block. Maybe include comments.\n\nLet's double-check the data generation: `X = torch.rand(400, 2) * 2 - 1` yields uniform [-1,1). `y = ((X[:,0]*X[:,1]) > 0).float().unsqueeze(1)` yields 1.0 in quadrants I and III, 0.0 elsewhere. This is the \"XOR\" on continuous features but with axes as boundary. A 2-layer ReLU network can learn this.\n\nPotential concern: With lr=0.01, 500 epochs, full batch, the loss may plateau at some local minimum? But the problem is simple. We can also consider that Adam's lr is high but with 500 epochs, it should be okay. There is no validation; training accuracy is on the same data. It should be 1.0.\n\nLet's ensure the model doesn't use any activation on output. We have linear 16→1 with no activation. Good.\n\nLet's verify parameter count: \n- Linear(2,16): weight 2*16=32, bias 16 => 48\n- Linear(16,16): 16*16=256 + 16 = 272\n- Linear(16,1): 16*1=16 + 1 = 17\nTotal 337. Good.\n\nPotential issue: `torch.manual_seed(0)` before data, then model init uses the same RNG. The data is exactly as specified. If we want to ensure the model init is also reproducible, we can set `torch.manual_seed(1)` before model init? But the problem says \"Generate the data exactly like this\" with seed 0. It doesn't say to not change seed after. However, if we set seed to 1 before model, then the data is still exactly as specified because we already generated it. But the model init would be different from what we might expect. The user likely doesn't care about model init, only that the training works. But to be safe, we can set seed 0 at top and then generate data, then maybe set `torch.manual_seed(42)` before model init to make training reproducible. But that might be overkill. The problem statement says \"PyTorch 2.x, CPU only. Generate the data exactly like this: ... Write an nn.Module ... Train it ...\" So the code should include the data generation as given. I think setting `torch.manual_seed(0)` at the beginning is enough. The model init will use the RNG state after data generation, which is fine. If we want to ensure reproducibility of model initialization, we could set `torch.manual_seed(0)` again before defining model, but then data would still be the same? Let's think: if we call torch.manual_seed(0) at top, generate X, then call torch.manual_seed(0) again, the RNG resets, so the model init would be deterministic, but the data remains the same because we already created tensors. That is actually fine. But it might be confusing. The problem didn't ask for reproducibility of model. It's fine either way.\n\nI'll write the code with a single seed at top, and no additional seed. That's the most straightforward.\n\nLet's also include `import torch.nn as nn` and maybe `torch.set_printoptions`? Not needed.\n\nLet's consider if `BCEWithLogitsLoss` with full batch and Adam lr 0.01, 500 epochs will produce NaN? Unlikely. But we can add a gradient clipping? Not needed.\n\nLet's think about the final accuracy threshold at logit 0. Since the data is exactly separable, the model should classify all points correctly. However, the decision boundary is at x*y > 0. The network might need to learn to output >0 in those quadrants and <0 in others. With ReLU, the function is piecewise linear. It can represent the sign of x*y? Actually, the product is not linear, but can be represented as a combination of ReLU units. For example, in quadrant I, x>0,y>0, we want output 1; in quadrant III, x<0,y<0, also 1. A simple way: the function can be approximated by a combination of indicators of the signs. With enough hidden units, yes.\n\nLet's perhaps write a more explicit model with two layers as required. The problem says \"layers 2 → 16 → 16 → 1, ReLU between layers, no activation on the output.\" So the architecture is exactly that. Good.\n\nNow, is there any risk that full-batch Adam with lr=0.01 might not converge because the loss landscape is not smooth? It should. Let's do a quick mental check: The initial loss is around ln(2) ≈ 0.693. With 500 epochs, Adam should reduce it to near zero. The target is 0.95 accuracy. Even if it only reaches 0.95, that's fine. But we need to be sure it doesn't get stuck at, say, 0.90. I'm confident.\n\nLet's maybe add a small epsilon to the accuracy? No.\n\nI will produce the code. Maybe include a `if __name__ == \"__main__\":`? Not necessary. Just plain script.\n\nLet's ensure the code is CPU only. It uses no CUDA.\n\nLet's write:\n\n```python\nimport torch\nimport torch.nn as nn\n\n# Set seed and generate data exactly as specified\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\n# Define the model\nclass MLP(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.net = nn.Sequential(\n            nn.Linear(2, 16),\n            nn.ReLU(),\n            nn.Linear(16, 16),\n            nn.ReLU(),\n            nn.Linear(16, 1)\n        )\n    def forward(self, x):\n        return self.net(x)\n\nmodel = MLP()\n\n# Total trainable parameters\nn_params = sum(p.numel() for p in model.parameters() if p.requires_grad)\nprint(f\"Total trainable parameters: {n_params}\")\n\n# Loss and optimizer\ncriterion = nn.BCEWithLogitsLoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\n# Full-batch training\nfor epoch in range(500):\n    optimizer.zero_grad()\n    logits = model(X)\n    loss = criterion(logits, y)\n    loss.backward()\n    optimizer.step()\n\n# Evaluate\nwith torch.no_grad():\n    logits = model(X)\n    preds = (logits > 0).float()\n    accuracy = (preds == y).float().mean().item()\n\nprint(f\"Final training accuracy: {accuracy:.4f}\")\n```\n\nThat should be it. But let's verify the parameter count printed will be 337. Good.\n\nOne more thought: The data generation uses `torch.rand(400, 2) * 2 - 1`, which creates X in [-1, 1). y uses `X[:,0] * X[:,1] > 0`. For X in [-1,1), the product can be zero? The probability of exactly zero is zero because continuous. So no edge cases. Good.\n\nLet's think about potential issue with `BCEWithLogitsLoss` and the final accuracy. If the model predicts exactly 0 for some points, then `(logits > 0)` is False, and `(logits > 0).float()` gives 0. If y is 1, that would be wrong. But with enough capacity, it should not be exactly zero. It might be close, but threshold at 0 is fine. If logits are exactly 0 due to symmetry, could be wrong. But unlikely.\n\nLet's perhaps consider if the network can represent the function with ReLU and 16 units. The function f(x,y) = sign(xy) can be approximated by a sum of ReLUs. For example, we can create units that detect x>0, x<0, y>0, y<0, and combine. With 16 units, we can have 4 units for each sign? Actually, a single ReLU can detect x>0: ReLU(x). Similarly ReLU(-x) for x<0. So with two hidden layers, we can do: first layer compute ReLU(x), ReLU(-x), ReLU(y), ReLU(-y) (and maybe combinations). Then second layer can combine these to produce the desired output. For instance, output 1 when (x>0 and y>0) or (x<0 and y<0). That can be done with products of these indicators, which are nonlinear. With ReLU, the product of indicators is not directly representable, but the second layer can approximate it with a linear combination of the first-layer activations. Since the first layer gives the sign indicators, the second layer can learn to weight them appropriately. For example, define a1 = ReLU(x), a2 = ReLU(-x), a3 = ReLU(y), a4 = ReLU(-y). The desired output for positive region is 1 if a1>0 and a3>0. But a1 and a3 are continuous in (0,1] and [0,1). The product a1*a3 is not linear. However, with 16 units in the second layer, we can approximate the product by a sum of ReLU of linear combinations, or simply the network can learn to approximate the function with a piecewise linear function. Since the function is piecewise constant (with boundaries at axes), and ReLU networks can approximate discontinuous functions to arbitrary precision with enough width, but with only 16 units, maybe it's tight but should be enough because the data is only 400 points. The function is not continuous, but it can be represented exactly by a network with a finite number of ReLU units? Actually, a ReLU network with L hidden layers can represent any continuous piecewise linear function, but our target is discontinuous (jump at axes). A finite ReLU network is continuous (since ReLU is continuous and composition of continuous functions is continuous). Wait, this is a crucial point! A neural network with ReLU activations and a linear output is a continuous function of the input. The target function y = 1 if x*y > 0, else 0, is discontinuous along the axes (where x=0 or y=0). The data points are random continuous, so none lie exactly on the axes, but the function is discontinuous in the domain. A continuous network cannot exactly represent a discontinuous function, but it can approximate it arbitrarily well in L∞? Actually, a continuous function on a compact set can be uniformly approximated by continuous piecewise linear functions, but the target is not continuous. The best a continuous function can do is to be close to the step function, but there will be a boundary layer where the function transitions. On a finite set of points that are away from the axes, the network can classify them correctly by setting the decision boundary near the axes. Since the data is random, the points are not exactly on the axes, but the boundary is at the axes. The network can learn a decision boundary that is slightly inside the quadrants, e.g., x > 0.01 and y > 0.01 for quadrant I, etc. But wait, the condition is x*y > 0. If we set threshold at 0, the network can output >0 for all points with x>0,y>0 and x<0,y<0, and <0 for others. Since the points are finite, we can place the boundary such that no points are misclassified. The network is continuous, but the decision boundary (where logits=0) can be a curve that separates the points. The points in quadrant I are all with x>0,y>0, and quadrant III are x<0,y<0. The points in quadrant II and IV are in the other quadrants. We can choose a decision boundary that is not exactly the axes but a curve that goes between the points. Since the points are random, there is a gap between the quadrants? Actually, the axes are boundaries. The points are uniformly distributed in [-1,1]^2. The closest points to the axes are at distance O(1/N) from the axes. For N=400, there are points within about 1/20 of the axes. A continuous function can have a boundary that is a straight line at x=0, but to be continuous and output >0 on both sides? Wait, a continuous function that is >0 on both sides of the boundary would have to cross zero at the boundary. But it can be >0 for x>0,y>0 and x<0,y<0, and <0 for the others. The decision boundary is where logits=0. The boundary must pass through the axes. Since the network is continuous, the set where logits=0 is a curve. It can pass through the axes. For example, logits = x*y. That is continuous and positive in quadrants I and III, negative in II and IV. But x*y is not a ReLU network with 16 units. However, a ReLU network can approximate x*y well on the domain [-1,1]^2 with enough units. With 16 units, can it approximate x*y to within the classification margin? The classification margin: we need logits >0 for positive and <0 for negative. If we approximate x*y, then the logits will be close to x*y. Since the smallest absolute value of x*y among the data points? The minimum |x*y| is the minimum of |x_i*y_i|. For uniform points, the minimum is on the order of 1/N^2? Actually, the distribution of x*y in the square. The minimum |x*y| among 400 points: the closest point to an axis. The minimum of |x| is on the order of 1/(2*sqrt(N))? For N points uniform, the minimum of |x| is about 1/(2N) in expectation? Actually, for uniform on [-1,1], the CDF of |x| is F(t)=t for t in [0,1] (since |x| ~ Uniform(0,1)). The minimum of 400 samples is about 1/(2*400)=0.00125. Similarly for y. So the minimum |x*y| could be as small as (0.00125)^2 ≈ 1.6e-6 if the same point has both small. But it's more likely that the minimum |x*y| is around (1/(2N))^2? Actually, we need the product. The minimum of |x*y| is the minimum over points of |x_i*y_i|. Since |x| and |y| are independent, the CDF of |x*y| is P(|x*y| ≤ t) = 1 - (1 - t)^2? Let's compute: P(|x*y| > t) = P(|x| > t and |y| > t) for t<1? Actually, |x*y| = |x||y|. For t in [0,1], P(|x||y| > t) = ∫_{0}^{1} P(|y| > t/u) du? Not trivial. But roughly, the minimum |x*y| is of order 1/N^2? Let's approximate: For a point to have |x*y| ≤ ε, the area in the square where |x||y| ≤ ε is about 2ε log(1/ε) + O(ε). For 400 points, the expected number with |x*y| ≤ ε is 400 * area. Setting 400 * 2ε log(1/ε) ≈ 1, so ε log(1/ε) ≈ 1/800 ≈ 0.00125. Solving, ε ≈ 0.00125 / log(1/0.00125) ≈ 0.00125 / 6.68 ≈ 0.000187. So the minimum |x*y| is around 2e-4. So a network that approximates x*y to within, say, 1e-4 would be able to classify all points correctly if the sign of x*y is correct. But can a 16-unit ReLU network approximate x*y to 1e-4 on the square? That might be difficult. But the network doesn't need to approximate x*y globally; it just needs to be positive on the positive quadrants and negative on the negative ones. The boundary can be more flexible. With 16 units, the network can have a decision boundary that is a polygon. It can separate the two sets of points. Since the points are linearly non-separable (XOR), a linear boundary cannot separate them. But a 2-layer network with 16 units can create a piecewise linear decision boundary with many segments. It can separate the four quadrants? Actually, the positive set is the union of two quadrants, which is not convex. A single linear boundary cannot separate them, but a nonlinear boundary can. With 16 ReLUs in the first hidden layer, the decision boundary is a polygon with up to 32 vertices? Actually, a ReLU network with one hidden layer of 16 units and linear output has a decision boundary that is a piecewise linear function with at most 16 linear regions? The first layer creates 16 features, each is a ReLU of a linear function. The decision boundary is where a linear combination of these features equals 0. This can create a polygon with up to 16 edges? In 2D, each ReLU introduces a ridge; the decision boundary can have at most 2n edges? For n=16, it can be quite complex. With two hidden layers, even more. So it should be able to separate the data.\n\nLet's consider if there is any known issue: The \"XOR\" problem is classically solvable by a 2-layer network with 2 hidden units (for a single hidden layer with sigmoid). But with ReLU and 16 units, it's definitely solvable. The training with Adam lr=0.01 for 500 epochs should converge. The loss should go to near zero.\n\nI'm confident.\n\nLet's perhaps include a `torch.use_deterministic_algorithms`? Not needed.\n\nWe can also set `torch.manual_seed(0)` again before model init to make the training deterministic and avoid any potential RNG state issue. But the data is already generated. If we set the seed again, the model init will be from the beginning of the RNG, not the current state. The problem doesn't specify the model init seed. It's fine either way. I'll just use a single seed at the top.\n\nOne more consideration: The user might run the code and want to see that it reaches 0.95. If for some reason it doesn't, they might think the code is wrong. To be extra safe, we could use a learning rate schedule or increase epochs, but the problem explicitly says Adam(lr=0.01) for 500 epochs. So we must stick to that. I'll trust it.\n\nLet's maybe run a quick mental simulation of the first few epochs? Not necessary.\n\nLet's ensure the code prints the total number of trainable parameters and the final training accuracy. The problem says \"Print the total number of trainable parameters and the final training accuracy (threshold at logit 0).\" So our print statements do that.\n\nLet's also consider if the final accuracy should be computed after the last epoch. Yes.\n\nLet's check if `preds == y` works with shapes: preds (400,1), y (400,1). Yes.\n\nLet's finalize.\n\nWait, one more thing: The data generation uses `X = torch.rand(400, 2) * 2 - 1`. This creates a tensor on CPU. Good.\n\nThe model's forward returns logits of shape (400,1). BCEWithLogitsLoss expects same shape for input and target, both (400,1). Good.\n\nLet's also ensure the model's `__init__` has no activation on output. We have Linear(16,1) as the last layer, no activation after it. Good.\n\nI'll now provide the final answer.\n",
+ "content": "```python\nimport torch\nimport torch.nn as nn\n\n# Set seed and generate data exactly as specified\ntorch.manual_seed(0)\nX = torch.rand(400, 2) * 2 - 1\ny = ((X[:, 0] * X[:, 1]) > 0).float().unsqueeze(1)\n\n# Define the MLP: 2 -> 16 -> 16 -> 1, ReLU between layers, no activation on output\nclass MLP(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.net = nn.Sequential(\n            nn.Linear(2, 16),\n            nn.ReLU(),\n            nn.Linear(16, 16),\n            nn.ReLU(),\n            nn.Linear(16, 1)\n        )\n\n    def forward(self, x):\n        return self.net(x)\n\nmodel = MLP()\n\n# Total number of trainable parameters\nn_params = sum(p.numel() for p in model.parameters() if p.requires_grad)\nprint(f\"Total trainable parameters: {n_params}\")\n\n# Loss and optimizer\ncriterion = nn.BCEWithLogitsLoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=0.01)\n\n# Full-batch training for 500 epochs\nfor _ in range(500):\n    optimizer.zero_grad()\n    logits = model(X)\n    loss = criterion(logits, y)\n    loss.backward()\n    optimizer.step()\n\n# Evaluate final training accuracy (threshold at logit 0)\nwith torch.no_grad():\n    logits = model(X)\n    preds = (logits > 0).float()\n    accuracy = (preds == y).float().mean().item()\n\nprint(f\"Final training accuracy: {accuracy:.4f}\")\n```",
+ "usage": {
+  "completion_tokens": 5667,
+  "prompt_tokens": 174,
+  "total_tokens": 5841,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 174,
+  "prompt_ms": 2108.19,
+  "prompt_per_token_ms": 12.116034482758621,
+  "prompt_per_second": 82.53525536123404,
+  "predicted_n": 5667,
+  "predicted_ms": 595767.94,
+  "predicted_per_token_ms": 105.14788916343099,
+  "predicted_per_second": 9.510414407327794
+ },
+ "tokens": {
+  "reasoning_tokenized": 5317,
+  "content_tokenized": 347,
+  "completion_tokens_usage": 5667,
+  "prompt_tokens_usage": 174,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.111,
+  "to_first_reasoning": 2.111,
+  "to_first_answer_token": 560.34,
+  "to_final_answer": 597.88
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26556
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26599
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26643
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26641
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26613
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26581
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26556
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26623
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26630
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26625
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26601
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26613
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26601
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26619
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26628
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26641
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26629
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26623
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26618
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26637
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26656
+  },
+  {
+   "t_s": 201.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26638
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26668
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26773
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26761
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26759
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26752
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26752
+  },
+  {
+   "t_s": 271.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 281.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 301.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26775
+  },
+  {
+   "t_s": 311.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26762
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26761
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 342.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 352.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 372.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 382.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 392.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  },
+  {
+   "t_s": 402.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26772
+  },
+  {
+   "t_s": 412.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26760
+  },
+  {
+   "t_s": 422.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26719
+  },
+  {
+   "t_s": 432.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26672
+  },
+  {
+   "t_s": 442.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26686
+  },
+  {
+   "t_s": 452.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26689
+  },
+  {
+   "t_s": 462.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26695
+  },
+  {
+   "t_s": 472.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 482.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 492.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 502.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26714
+  },
+  {
+   "t_s": 512.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26714
+  },
+  {
+   "t_s": 522.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26706
+  },
+  {
+   "t_s": 532.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26707
+  },
+  {
+   "t_s": 542.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26696
+  },
+  {
+   "t_s": 552.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 562.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 572.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 582.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26744
+  },
+  {
+   "t_s": 592.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  }
+ ]
+}

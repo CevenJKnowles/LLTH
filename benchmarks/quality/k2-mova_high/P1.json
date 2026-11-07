@@ -1,0 +1,127 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1006,
+ "started_at": "2026-10-30T15:36:51",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to provide code using pandas 2.x. Use pivot_table or unstack. Show resulting frame. Let's compute.\n\nData:\n\ncity A months 1,2,3? Actually rows: month 1: A 10, B 20. month2: A 30, C 40. month3: B 50, A 60.\n\nPivot: month rows, city columns.\n\nMonth1: A=10, B=20, C=0 (missing)\nMonth2: A=30, B=0, C=40\nMonth3: A=60, B=50, C=0\n\nTotal row sum: month1 sum=30, month2=70, month3=110.\n\nShow frame with columns A,B,C,total.\n\nLet's produce code:\n\n```\npivot = (\n    df.pivot_table(index=\"month\", columns=\"city\", values=\"sales\", aggfunc=\"sum\", fill_value=0)\n      .reindex(columns=sorted(df[\"city\"].unique()))  # ensure order A,B,C\n      .reset_index()\n)\npivot[\"total\"] = pivot[[\"A\",\"B\",\"C\"]].sum(axis=1)\n```\n\nBut after reset_index, month column name is \"month\". Then add total.\n\nPrint pivot.\n\nResult:\n\n```\n   month   A   B   C  total\n0      1  10  20   0     30\n1      2  30   0  40     70\n2      3  60  50   0    110\n```\n\nMake sure order of columns: city alphabetical.\n\nProvide final answer with code and printed output.\n",
+ "content": "**Code (pandas 2.x)**\n\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\n# 1️⃣ Pivot to month × city, filling missing cells with 0\npivot = (\n    df.pivot_table(\n        index=\"month\",\n        columns=\"city\",\n        values=\"sales\",\n        aggfunc=\"sum\",          # one value per (month, city) pair\n        fill_value=0,             # missing combinations become 0\n    )\n    # make sure the city columns appear in alphabetical order (A, B, C)\n    .reindex(columns=sorted(df[\"city\"].unique()))\n)\n\n# 2️⃣ Add a `total` column that is the row‑wise sum of the city columns\npivot[\"total\"] = pivot.sum(axis=1)\n\n# 3️⃣ (optional) reset the index so `month` becomes a regular column\nresult = pivot.reset_index()\n\nprint(result)\n```\n\n**Resulting DataFrame (as it would print)**\n\n```\n   month   A   B   C  total\n0      1  10  20   0     30\n1      2  30   0  40     70\n2      3  60  50   0    110\n```\n\nExplanation:\n\n* `pivot_table` reshapes the long table into a wide one (`month` as rows, `city` as columns).  \n* `fill_value=0` guarantees that a city with no sales in a given month gets a `0`.  \n* `reindex(columns=…)` forces a consistent column order (A, B, C) even if some cities are missing in a particular month.  \n* The `total` column is simply the sum across the city columns for each month.",
+ "usage": {
+  "completion_tokens": 791,
+  "prompt_tokens": 157,
+  "total_tokens": 948,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 157,
+  "prompt_ms": 2075.789,
+  "prompt_per_token_ms": 13.221585987261149,
+  "prompt_per_second": 75.63389149860606,
+  "predicted_n": 791,
+  "predicted_ms": 82061.621,
+  "predicted_per_token_ms": 103.87546962025317,
+  "predicted_per_second": 9.626911951934266
+ },
+ "tokens": {
+  "reasoning_tokenized": 345,
+  "content_tokenized": 443,
+  "completion_tokens_usage": 791,
+  "prompt_tokens_usage": 157,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.078,
+  "to_first_reasoning": 2.078,
+  "to_first_answer_token": 37.33,
+  "to_final_answer": 84.14
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 4729,
+  "min_mem_available_mib": 26690
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26690
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26751
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26744
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26725
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4729,
+   "mem_available_mib": 26724
+  }
+ ]
+}

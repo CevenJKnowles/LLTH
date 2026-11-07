@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "",
+    "reasoning_content": "We need to produce three sentences, first sentence what it does, second audience, third install command. Plain wording, no marketing. Provide exactly three sentences. Ensure pip install gridhop. Let's craft.</ifm|think>gridhop converts CSV timetables into ICS calendar files. It is intended for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.</ifm|think>gridhop converts CSV timetables into ICS calendar files. It is intended for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`."
+   }
+  }
+ ],
+ "created": 1793844418,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 122,
+  "prompt_tokens": 87,
+  "total_tokens": 209,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-EwKVl1xlAZoiTn57KiRUUWigI0PkbzvX",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 59.214,
+  "prompt_per_token_ms": 0.6806206896551724,
+  "prompt_per_second": 1469.2471375012665,
+  "predicted_n": 122,
+  "predicted_ms": 2006.543,
+  "predicted_per_token_ms": 16.583,
+  "predicted_per_second": 60.30271965265634
+ }
+}

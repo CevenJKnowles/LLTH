@@ -1,0 +1,184 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1013,
+ "started_at": "2026-10-30T21:42:44",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Input: 20 GB/day gzipped JSONL (hourly files).\n*   Hardware: 1 Server (4 CPU, 16 GB RAM, 2 TB Disk).\n*   Constraint: No GPU, No Cloud.\n*   Requirements:\n    *   Daily aggregates (per user, per event type) by 06:00.\n    *   Retention: 60 days for raw logs.\n    *   Model Retraining: Weekly, using last 30 days of aggregates.\n    *   Restartability: Must be able to resume/re-run failed hours without re-processing completed ones.\n*   Deliverables: Stages, storage format/layout, memory management, scheduling, failure detection, estimates (time/disk).\n\n    *   *Ingestion/Extraction:* Decompress gzipped JSONL $\\rightarrow$ intermediate format.\n    *   *Transformation/Aggregation (The Core):* Group by User + Event Type $\\rightarrow$ Daily Aggregates.\n    *   *Retention/Cleanup:* Delete logs $> 60$ days.\n    *   *Training:* Weekly job $\\rightarrow$ Scikit-learn model.\n\n    *   JSONL is slow to parse for heavy aggregation.\n    *   Since we need to group by user/event type, we need something efficient.\n    *   Parquet is the industry standard for analytical workloads. It's compressed and columnar.\n    *   However, for *intermediate* hourly processing, simple uncompressed/lightly compressed CSV or even a temporary SQLite DB could work. But Parquet is better for the long-term \"Aggregates\" storage.\n\n    *   `raw_logs/YYYY/MM/DD/HH/*.jsonl.gz` (Source)\n    *   `processed_hourly/YYYY/MM/DD/HH/data.parquet` (Intermediate, allows restartability)\n    *   `aggregates/YYYY-MM-DD/agg_data.parquet` (Final Daily Aggregates)\n    *   `models/YYYY-MM-DD_model.joblib` (Weekly Model)\n\n    *   *Constraint:* 16 GB RAM.\n    *   *Problem:* 20 GB of gzipped JSONL likely expands to 100-200 GB of raw text. We can't load it all.\n    *   *Strategy:*\n        1.  Process hour-by-hour (the source is already hourly).\n        2.  Use chunking/streaming.\n        3.  Convert JSONL to Parquet *per hour* first. This makes the \"re-runnable\" requirement easy. If hour 5 fails, you only re-run hour 5.\n        4.  For daily aggregation: Load hourly Parquet files one by one or in small batches. Since we need \"per user, per event type,\" we can use a \"Map-Reduce\" style approach:\n            *   Step A: Convert JSONL to Parquet (Hourly).\n            *   Step B: Group-by/Aggregate per hour into a small intermediate summary (e.g., sum counts per user/event).\n            *   Step C: Aggregate these small summaries into the final daily file.\n\n    *   *Hourly Job (Cron: Every hour or after file arrival):*\n        1. Check if `processed_hourly/HH/data.parquet` exists. If yes, skip.\n        2. Read `.jsonl.gz` $\\rightarrow$ Parse $\\rightarrow$ Write `.parquet`.\n    *   *Daily Job (Cron: 02:00 AM):*\n        1. Read all `processed_hourly/today/` Parquet files.\n        2. Perform aggregation.\n        3. Write `aggregates/today/`.\n        4. Cleanup: Delete `raw_logs/` older than 60 days.\n    *   *Weekly Job (Cron: Sunday 03:00 AM):*\n        1. Load `aggregates/` for last 30 days.\n        2. Train model.\n        3. Save model.\n\n    *   *Detection:* Check exit codes of scripts. Log status to a simple `manifest.log` or use file existence (idempotency).\n    *   *Restartability:* The \"check if file exists\" strategy (Idempotency) is best. If hour 03 fails, hour 04 still runs. When 03 is fixed, re-run 03. The daily aggregator only runs once all hourly files for that day exist.\n\n    *   *Disk:*\n        *   Raw logs (60 days): 20 GB * 60 = 1.2 TB.\n        *   Parquet (Intermediate): 20 GB * 60 (compressed) or ~100 GB * 60 (uncompressed)? Let's say 40 GB * 60 = 2.4 TB? Wait, that's too much.\n        *   *Optimization:* We don't need to keep *all* hourly Parquet files for 60 days. We only need the *raw* logs for 60 days. Once an hour is converted to Parquet and the daily aggregate is done, we can delete the *uncompressed* raw text? No, the requirement says \"raw logs are kept for 60 days\".\n        *   Let's re-calculate:\n            *   Raw: 20 GB * 60 = 1.2 TB.\n            *   Parquet (Hourly): Let's assume 1/4 size of raw (because it's compressed/columnar). 5 GB * 24 * 60 = 7.2 TB? Still too much.\n            *   *Strategy Change:* The intermediate Parquet files should only be kept for the current month or until the daily aggregate is confirmed. Actually, once the Daily Aggregate is created, the intermediate hourly Parquet files for that day can be deleted to save space, provided we can always reconstruct them from raw logs if needed.\n            *   *Refined Disk Plan:*\n                *   Raw (60 days): 1.2 TB.\n                *   Daily Aggregates (30 days for training + buffer): 20 GB (uncompressed) * 30 = 600 GB.\n                *   Total: ~1.8 TB. This fits in 2 TB.\n\n    *   *Time:*\n        *   20 GB JSONL $\\rightarrow$ Parquet (Hourly): 20 GB is roughly 1 hour of data. A single core can process ~1-2 GB/hour. 4 cores can do it easily. Total daily processing $\\rightarrow$ ~2-3 hours.\n\n    *   Stage 1: Ingestion (Hourly).\n    *   Stage 2: Daily Aggregation (Nightly).\n    *   Stage 3: Retention/Cleanup (Nightly).\n    *   Stage 4: Training (Weekly).\n    *   Storage Layout (Hierarchy).\n    *   Memory (Streaming/Chunking).\n    *   Scheduling & Failures (Cron + Idempotency).\n    *   Estimates.\n\n    *   *Self-Correction during drafting:* I initially thought about keeping all hourly Parquet files, but that breaks the 2TB limit. I must emphasize that the Daily Aggregate is the \"source of truth\" for the model, and intermediate files are transient or replaced by raw logs.\n\n    *   *Wait, the prompt says \"raw logs are kept for 60 days then deleted\".*\n    *   *And \"re-runnable without reprocessing hours that already finished\".*\n    *   If I delete the hourly parquet after the daily is done, I can still re-run if the daily fails. If the raw logs are still there, I can always rebuild. This is a very robust design.",
+ "content": "This design focuses on **idempotency** (the ability to run the same process multiple times with the same result) and **checkpointing** (storing intermediate state) to meet the constraints of limited RAM and the requirement for restartability.\n\n### 1. Processing Stages\n\n1.  **Stage 1: Hourly Ingestion (The \"Extractor\")**\n    *   **Frequency:** Run every hour.\n    *   **Action:** Pick up the new `.jsonl.gz` file for the previous hour. Decompress it and convert it into a **Parquet** file. \n    *   **Purpose:** Converts heavy, slow-to-parse JSON into a memory-efficient, columnar format. This acts as a checkpoint.\n\n2.  **Stage 2: Daily Aggregation (The \"Reducer\")**\n    *   **Frequency:** Daily at 02:00.\n    *   **Action:** Scan all hourly Parquet files produced in the last 24 hours. Perform a group-by operation on `user_id` and `event_type`. Calculate the required aggregates (e.g., counts, sums, or last-seen timestamps).\n    *   **Output:** A single Parquet file containing the daily summary for all users.\n\n3.  **Stage 3: Maintenance (The \"Janitor\")**\n    *   **Frequency:** Daily at 04:00.\n    *   **Action:** Delete `raw_logs/` files older than 60 days. Delete intermediate hourly Parquet files older than 2 days (once the daily aggregate is safely written).\n\n4.  **Stage 4: Model Training (The \"Learner\")**\n    *   **Frequency:** Weekly (e.g., Sunday at 05:00).\n    *   **Action:** Load the last 30 days of Daily Aggregates Parquet files into memory (using chunking/streaming) and train the scikit-learn classifier.\n\n### 2. Storage Format & Directory Layout\n\nTo ensure restartability and organization, we use a hierarchical structure:\n\n*   `/data/raw_logs/YYYY/MM/DD/HH/event_data.jsonl.gz` (Input)\n*   `/data/intermediate/YYYY/MM/DD/HH/event_data.parquet` (Checkpoint: intermediate)\n*   `/data/aggregates/YYYY-MM-DD.parquet` (Final Result)\n*   `/data/models/weekly_model_YYYY-MM-DD.joblib` (Output)\n\n**Format Choice:** **Parquet** is used for all intermediate and final data. It is highly compressed, supports schema enforcement, and allows \"predicate pushdown\" (reading only the columns needed), which is critical for staying under the 16 GB RAM limit.\n\n### 3. Memory Management (Staying under 16 GB)\n\nEven though 20 GB of raw logs expands significantly when uncompressed, we will never load a whole day into RAM:\n\n*   **Streaming Decompression:** Read JSONL files line-by-line (streaming) during the Ingestion stage. Never `file.read()`.\n*   **Chunked Processing:** During the Daily Aggregation, instead of loading all hourly files, we use a **\"Merge-Sort\" style aggregation**:\n    1.  Aggregate each hour's Parquet file into a temporary \"hourly summary\" file.\n    2.  Combine these small summary files to produce the final daily aggregate.\n*   **Columnar Loading:** When training the model, we only load the specific columns required for the features (e.g., `user_id`, `event_count`), drastically reducing the memory footprint.\n\n### 4. Scheduling & Failure Detection\n\n*   **Scheduling:** Use `cron`.\n    *   `0 * * * * /bin/bash /path/to/ingest_hour.sh` (Hourly)\n    *   `0 2 * * * /bin/bash /path/to/aggregate_day.sh` (Daily)\n    *   `0 4 * * * /bin/bash /path/to/cleanup.sh` (Daily)\n    *   `0 5 * * 0 /bin/bash /path/to/train_model.sh` (Weekly)\n*   **Detection & Restartability (Idempotency):**\n    *   Each script will check for the existence of its output file before starting. For example, `ingest_hour.sh` checks if `/intermediate/HH/event_data.parquet` already exists. If it does, it skips the work.\n    *   This allows you to restart the whole pipeline after a crash. It will \"fast-forward\" through the hours that already completed and only process the missing/failed files.\n    *   **Logging:** All scripts redirect `stdout` and `stderr` to a log file with timestamps. A simple cron job can monitor the exit code of the previous night's aggregation and alert if it was non-zero.\n\n### 5. Rough Estimates\n\n*   **Disk Usage:**\n    *   **Raw Logs:** 20 GB/day $\\times$ 60 days = **~1.2 TB**.\n    *   **Aggregates:** (Assuming ~100MB per day) $\\times$ 30 days = **~3 GB**.\n    *   **Intermediate Parquet:** Negligible (we delete these after 2 days).\n    *   **Total:** ~1.21 TB (Well within the 2 TB limit).\n*   **Processing Time:**\n    *   **Hourly Ingestion:** Converting 20 GB/day $\\rightarrow$ ~1.6 GB/hour. On 4 cores, unzipping and converting to Parquet should take **15–20 minutes** per hour.\n    *   **Daily Aggregation:** Processing 24 small Parquet files is computationally light. Expected time: **< 30 minutes**.\n    *   **Training:** Depends on the number of users, but with 30 days of aggregated data (not raw data), scikit-learn should finish in **under 1 hour**.",
+ "usage": {
+  "completion_tokens": 3045,
+  "prompt_tokens": 204,
+  "total_tokens": 3249,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 204,
+  "prompt_ms": 1525.938,
+  "prompt_per_token_ms": 7.480088235294118,
+  "prompt_per_second": 133.68826256374768,
+  "predicted_n": 3045,
+  "predicted_ms": 173171.555,
+  "predicted_per_token_ms": 56.889472733245725,
+  "predicted_per_second": 17.57794459950423
+ },
+ "tokens": {
+  "reasoning_tokenized": 1708,
+  "content_tokenized": 1332,
+  "completion_tokens_usage": 3045,
+  "prompt_tokens_usage": 204,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.706,
+  "to_first_reasoning": 1.706,
+  "to_first_answer_token": 98.549,
+  "to_final_answer": 174.704
+ },
+ "peaks": {
+  "gpu_temp_c": 80,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26268
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26268
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26318
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26331
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26284
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26330
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26328
+  }
+ ]
+}

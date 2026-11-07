@@ -1,0 +1,95 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1017,
+ "started_at": "2026-11-05T04:56:04",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to answer: model 7B bfloat16 on GPU with 12GB. KV cache 0.5 MB per token per sequence. Want 4096 token context, batch sizes 1,2,4. Activations small ignore. Which batch size should I use, and memory left over?\n\nCompute memory usage.\n\nModel weight size: 7B parameters * 2 bytes (bfloat16) = 14 GB. That's already exceeds 12 GB GPU memory! Wait bfloat16 is 2 bytes per param, so 7B*2 = 14GB. That's larger than 12GB. So impossible to fit weights alone. But perhaps they assume 7B model in bf16 can be loaded on 12GB? Actually 7B in fp16 is 14GB, but many GPUs with 12GB may run with offload or use 4-bit quant etc. Since quantization not allowed, we need to say cannot fit. But maybe they think 7B in bf16 ~ 14GB, but GPU has 12GB. So no batch size works; you need more memory or use mixed precision with 8-bit? But they said quantisation not an option.\n\nBut maybe they think KV cache is 0.5 MB per token per sequence. For 4096 tokens: 0.5 MB * 4096 = 2,048 MB ≈ 2 GB per sequence. That's huge. Add activation small. So total per sequence ~2GB. For batch size 1: ~2GB (plus model 14GB) >12GB. So no.\n\nThus answer: none; cannot fit model weight alone. So maybe they need to use offloading to CPU or reduce batch size? But batch size doesn't affect weight memory, only KV cache grows linearly with batch size. So batch size 1 is minimal KV, but still not enough.\n\nCompute: total memory needed for batch size 1: model 14GB + KV 2GB = 16GB. For batch 2: 14GB + 4GB = 18GB. Batch 4: 14GB + 8GB = 22GB.\n\nThus none fit 12GB. Could use 8-bit quantization (but not allowed). Or use 7B model with bf16 but offload to CPU and use paged attention etc. But given constraints, cannot.\n\nThus answer: no batch size works; need more VRAM or use quantization.\n\nProvide explanation.</ifm|think>**Short answer:**  \nNone of the batch sizes (1, 2 or 4) will work on a 12 GB GPU when the 7 B‑parameter model is stored in bfloat16 and the KV cache for a 4 096‑token context is also taken into account.  \n\n---\n\n### Why the model alone does not fit\n\n| Item | Size |\n|------|------|\n| 7 B parameters × 2 bytes (bfloat16) | **≈ 14 GB** |\n| VRAM available | **12 GB** |\n| KV cache (0.5 MiB per token) | 0.5 MiB × 4096 ≈ 2 GB (≈ 2 GiB) |\n\nThe model weights by themselves already occupy **≈ 14 GB**, which exceeds the 12 GB VRAM you have. No batch size can reduce that footprint because the weights are resident in GPU memory regardless of how many sequences you process.\n\n---\n\n### Total memory needed (ignoring the tiny activation tensors)\n\n| Batch size | KV cache (GiB) | Total VRAM (GiB) |\n|------------|----------------|-------------------|\n| 1 | 2.0 | **≈ 16.0** |\n| 2 | 4.0 | **≈ 18.0** |\n| 4 | 8.0 | **≈ 22.0** |\n\nEven for batch 1 the sum (model + KV) is about **16 GiB**, still ~4 GiB more than you have.\n\n---\n\n### What you can do\n\n| Option | Effect on memory |\n|--------|------------------|\n| **Use a smaller model** (e.g., 3 B‑parameter) | Fits the 12 GB budget comfortably. |\n| **Enable 8‑bit or 4‑bit quantisation** | Reduces the weight footprint to ~4 GB (8‑bit) or ~2 GB (4‑bit). This is the only practical way to keep a 7 B model on 12 GB without off‑loading. |\n| **Off‑load weights to CPU/HBM and use paged attention** (e.g., “GPU‑CPU unified memory”) | Technically possible, but it turns the run into a slower “CPU‑resident” inference loop; the KV cache still needs to stay in GPU memory, and you’ll need a large amount of host memory. |\n| **Use a 16 GB‑plus GPU** | Then you can run the 7 B model in bf16 (14 GB) plus a modest KV cache; you’d have to shrink the context length accordingly. |\n\n---\n\n### Bottom line\n\nWith a **12 GB GPU, bfloat16 storage, no quantisation, and a 4 096‑token KV cache**, there is **no batch size (1, 2, 4) that satisfies the memory constraint**. You must either:\n\n1. Reduce model size, **or**\n2. Quantise the weights (even though you said quantisation isn’t an option), **or**\n3. Move to a larger GPU, **or**\n4. Switch to a CPU‑off‑load strategy that sacrifices speed for the 7 B model.\n\nIf you relax one of those constraints (e.g., allow 8‑bit quantisation), the KV cache can be accommodated and the remaining memory can be used for activations and any extra safety margin.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 1241,
+  "prompt_tokens": 152,
+  "total_tokens": 1393,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 152,
+  "prompt_ms": 142.536,
+  "prompt_per_token_ms": 0.9377368421052632,
+  "prompt_per_second": 1066.3972610428243,
+  "predicted_n": 1241,
+  "predicted_ms": 28237.75,
+  "predicted_per_token_ms": 22.772379032258065,
+  "predicted_per_second": 43.912847163814405
+ },
+ "tokens": {
+  "reasoning_tokenized": 1240,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 1241,
+  "prompt_tokens_usage": 152,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.146,
+  "to_first_reasoning": 0.146,
+  "to_first_answer_token": null,
+  "to_final_answer": 28.384
+ },
+ "peaks": {
+  "gpu_temp_c": 88,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22078
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22078
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22299
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22311
+  }
+ ]
+}

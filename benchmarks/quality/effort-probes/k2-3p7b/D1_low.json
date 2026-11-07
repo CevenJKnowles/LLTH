@@ -1,0 +1,36 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "`x.nbytes` reports `51,328,000` bytes (5.12e7 bytes); that is `4,889.375 MiB` (≈4.89 GiB). `x[:, ::2].T` has shape `(512, 25000)`; `x[:, ::2]` is a view."
+   }
+  }
+ ],
+ "created": 1793844525,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 72,
+  "prompt_tokens": 86,
+  "total_tokens": 158,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-Jz94aNJ7JJ0E67YttXpzVIZshzv0hjqp",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 86,
+  "prompt_ms": 366.496,
+  "prompt_per_token_ms": 4.261581395348837,
+  "prompt_per_second": 234.65467563083908,
+  "predicted_n": 72,
+  "predicted_ms": 1259.761,
+  "predicted_per_token_ms": 17.743112676056338,
+  "predicted_per_second": 56.35989683757475
+ }
+}

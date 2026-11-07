@@ -1,0 +1,21 @@
+# Models are large (tens of GB) and are downloaded by the installer, never committed
+/models/
+
+# llama.cpp is its own repository; the installer fetches the pinned commit
+llama.cpp/
+
+# Private reference with system details (never published)
+docs/local/
+
+# Editors, operating system, Python
+.vscode/
+.idea/
+.DS_Store
+.directory
+__pycache__/
+*.pyc
+.venv/
+
+# Scratch
+*.tmp
+*.bak

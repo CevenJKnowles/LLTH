@@ -1,0 +1,79 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1003,
+ "started_at": "2026-10-31T01:08:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to write a Substack article 550-650 words, no code, no bullet points, no headings inside body. Title itself presumably. Should be a paragraph style, no headings inside body. Should include one small worked example with made-up numbers showing predicted probabilities before and after a few epochs. No bullet points. No headings inside body. So we can have intro paragraphs, then example, then conclusion with practical takeaway. No bullet points. Ensure word count 550-650. Let's aim ~600 words. No headings inside body means no markdown headings like ###. Just plain text. Title separate line. Ensure no bullet points. No code. Provide practical takeaway at end. No headings inside body means we can have paragraphs but not headings. Probably just paragraphs. Let's write.\n",
+ "content": "**Why Validation Accuracy Can Keep Improving While Validation Loss Gets Worse**\n\nWhen you train a model, you often watch both the training loss and the validation loss. In many cases the two numbers move together: as you add more data or tune hyper‑parameters, the loss curve flattens and the validation accuracy climbs. But there are rare situations where the validation accuracy rises while the validation loss actually dips. Understanding why this happens can help you spot whether you’re getting closer to the right solution or whether something else is going on. The key lies in the relationship between loss and accuracy, especially when the model is near a point where the loss surface has a shallow valley. In those moments the model’s error rate is low, so a tiny increase in loss can be invisible to the validation set. That’s why you might see validation accuracy improve while validation loss gets worse, and what that pattern tells you about the model’s current state.\n\nImagine you’ve built a binary classifier that predicts whether a loan applicant will default. After the first few epochs you get the following snapshot:\n\n- Before the next batch of data arrives:\n  - Validation accuracy = 92 %\n  - Validation loss = 0.12\n\n- After adding another epoch of training on the same data:\n  - Validation accuracy = 93 %\n  - Validation loss = 0.09\n\nThe loss fell, yet accuracy rose a little. The reason is that the model was already very good at the validation set; a drop in loss simply means the model is now a fraction more confident on the same examples. In other words, the validation loss is now measuring a different thing — the model’s confidence — rather than the true error rate. Because the model’s predictions are so reliable, the validation loss looks better even though the true error rate hasn’t changed. If you zoom in on the validation set, you might see that the model is actually making a few more mistakes on the same test set, but the overall error rate stays low because the majority of cases are correct. This “shallow valley” situation is common when the model has converged to a good approximation of the data distribution.\n\nA more dramatic illustration comes from a tiny toy example with three samples and three class labels. Suppose you train a logistic regression on the following matrix:\n\n| Sample | Feature 1 | Feature 2 |\n|--------|-----------|-----------|\n| A      | 0.2       | 0.8       |\n| B      | 0.9       | 0.1       |\n| C      | 0.6       | 0.4       |\n\nAfter training for five epochs you obtain the following predicted probabilities before the next epoch:\n\n- Sample A: 0.78 (probability of class 1)\n- Sample B: 0.22 (probability of class 1)\n- Sample C: 0.55 (probability of class 1)\n\nThe validation set now contains:\n\n- Sample A: true label 1, predicted 0.78 → error 0.22\n- Sample B: true label 0, predicted 0.22 → error 0.22\n- Sample C: true label 0, predicted 0.55 → error 0.55\n\nAccuracy is 2 correct out of 3, so 66 % accuracy. The validation loss, computed as the average of the squared differences between true and predicted probabilities, is 0.05. If you add a few more epochs, the model’s predictions shift slightly, and the validation loss drops to 0.04 while accuracy climbs to 68 %. The loss improvement masks a modest drop in accuracy because the model’s confidence has increased on many of the same examples, even though the overall error rate barely moved. This pattern is a red flag: the model is likely stuck in a region where it has learned to predict the majority class reliably, and the loss metric is no longer reflecting the true performance.\n\nWhat does this mean for you? When validation loss starts to climb while accuracy plateaus or even improves, it’s a sign that the model may be over‑fitting or that you’re seeing a different region of the loss surface. If you keep seeing this dance — loss falling while accuracy climbs — you might be training on a data set that’s already well‑separated from the validation set, or you could be inadvertently optimizing a different objective, such as minimizing a regularization term that rewards low variance at the cost of accuracy.\n\nThe practical takeaway is to monitor both metrics together and look for a lag between them. If the loss is dropping faster than the accuracy is rising, the model may be converging to a good but unstable solution. In that case, consider adding more data, increasing epochs, or trying a different optimizer. Conversely, if accuracy is improving while loss stays high, you might need to reduce the regularization strength or switch to a loss function that directly optimizes accuracy. Keep an eye on the gap between the two curves; a widening gap often indicates that the model is learning to predict the majority class rather than the true minority class.",
+ "usage": {
+  "completion_tokens": 1257,
+  "prompt_tokens": 129,
+  "total_tokens": 1386,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 129,
+  "prompt_ms": 30.507,
+  "prompt_per_token_ms": 0.23648837209302326,
+  "prompt_per_second": 4228.537712656112,
+  "predicted_n": 1257,
+  "predicted_ms": 8533.574,
+  "predicted_per_token_ms": 6.794246815286624,
+  "predicted_per_second": 147.18334896961107
+ },
+ "tokens": {
+  "reasoning_tokenized": 175,
+  "content_tokenized": 1079,
+  "completion_tokens_usage": 1257,
+  "prompt_tokens_usage": 129,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.033,
+  "to_first_reasoning": 0.033,
+  "to_first_answer_token": 1.176,
+  "to_final_answer": 8.566
+ },
+ "peaks": {
+  "gpu_temp_c": 61,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26365
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 61,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26365
+  }
+ ]
+}

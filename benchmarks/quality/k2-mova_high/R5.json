@@ -1,0 +1,451 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1015,
+ "started_at": "2026-10-30T16:46:13",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to design routing layer. Need to present rules in priority order, quota mechanism, fallback path, log fields, examples. Must be readable, deterministic. No learned classifier. Decision under 5 ms. 30B quota at most 20% per calendar day. Flag force 30B. If 30B unavailable, still answer (fallback). Need to define fields.\n\nWe need to produce a clear plan.\n\nConsiderations:\n\n- Inputs: request metadata: user_id, session_id, request_id, timestamp, language, length (approx tokens), request_type (e.g., chat, summarization, code), sensitivity (PII?), urgency, flags, previous usage, model availability status, etc.\n\n- Rules priority order: highest precedence first.\n\n- Rule 0: system-level overrides (maintenance, global fallback, quota disabled).\n\n- Rule 1: Force 30B flag set? But quota may prevent; if quota not available, fallback. But priority order: maybe force flag is checked first but quota overrides? Actually constraint says request can carry flag that forces 30B model. But 30B may serve at most 20% per day. So if quota exhausted, we cannot honor forced? The problem says \"a request can carry a flag that forces the 30B model\". It doesn't say quota is exempt. Need to decide. We can interpret that force flag requests still count against quota; if quota exhausted, fallback. Could also have separate \"force bypass quota\" flag? Not specified. Better to treat force as high priority but still subject to quota. Or define separate flag \"force_30b_no_quota\" for admin? But not asked. So keep simple: force flag triggers 30B if quota available; otherwise fallback.\n\n- Rule 2: If 30B unavailable (health check fails) -> fallback.\n\n- Rule 3: Quota check: if today's count >= 20% of total requests (or of projected total?), then route to 1B.\n\nBut quota mechanism: at most 20% of requests over any calendar day. Need to track daily count. Decision under 5ms: use in-memory counter, updated atomically, maybe with Redis but in-memory is faster. At start of day reset. Count total requests? We need to know denominator. Could track total requests and count of 30B; enforce ratio <=0.2. Simpler: precompute daily 30B cap = floor(0.2 * expected_total) but expected_total unknown. Could use fixed cap based on historical max, or track ratio incrementally. To guarantee <=20%, we can track total requests and 30B count; allow 30B only if (30B_count / total_requests) < 0.2. But total_requests includes current request. So decision: if 30B_count + 1 <= 0.2 * (total_requests + 1) -> allow. Equivalent to 30B_count < 0.2 * total_requests + (0.2 - 1)?? Let's derive.\n\nLet T = number of requests before current, C = number of 30B before current. Current request considered. After routing, if we route to 30B, new counts T' = T+1, C' = C+1. Need C' <= 0.2 * T'. So C+1 <= 0.2*(T+1) => C+1 <= 0.2T + 0.2 => C <= 0.2T - 0.8. Since C and T integers, we can compute allowed if (C + 1) <= floor(0.2 * (T + 1)). Or simpler: maintain a daily budget B = floor(0.2 * expected_total). But expected_total unknown. Use ratio-based dynamic cap.\n\nBetter: Use a deterministic algorithm: At request time, compute current usage rate U = C / T (if T>0). If U < 0.2, allow 30B; else 1B. But need to ensure exact <=20% at end. Using threshold on current ratio may allow final ratio slightly above 20%? Example: T=9, C=1, U=0.111, allow 30B -> T=10, C=2, U=0.2. Fine. If T=19, C=3 (0.1579), allow -> T=20, C=4, U=0.2. If T=99, C=19 (0.1919), allow -> T=100, C=20, U=0.2. If T=199, C=39 (0.1959), allow -> T=200, C=40, U=0.2. So if we allow when C < 0.2 * T, i.e., C < 0.2T, then after increment C+1 <= 0.2T? Need to check edge. Let's simulate worst-case: T=4, C=0, 0 < 0.8, allow -> C=1, T=5, U=0.2. OK. T=5, C=1, 1 < 1.0? No, 1 < 1.0 false, so not allow. So cap is 1/5. Good. T=6, C=1, 1 < 1.2 true, allow -> C=2, T=7, U=0.2857 > 0.2! Wait, 2/7=0.2857. So ratio check \"C < 0.2T\" allowed because 1 < 1.2. After increment, ratio exceeds 0.2. So need stricter condition: C+1 <= 0.2*(T+1). Equivalent to C <= 0.2T - 0.8. Since C integer, C <= floor(0.2T - 0.8). Or C < 0.2T - 0.8 + 1? Let's use integer formula: allow 30B if (C + 1) * 5 <= (T + 1). Because 0.2 = 1/5. So condition: 5*(C+1) <= T+1. Equivalent to 5C + 5 <= T + 1 => 5C + 4 <= T. So T >= 5C + 4. For T=4, C=0: 4 >= 4 true, allow -> C=1, T=5, check 5 >= 5*1+4=9? No. Wait, after routing, T=5, C=1, condition for next? Let's test. If we use condition T >= 5C + 4 before request. For T=4, C=0: 4 >= 4 true, allow. After: T=5, C=1. Next request T=5, C=1: 5 >= 5*1+4=9 false, so no more 30B. That yields 1/5 ratio, exactly 20%. Good. For T=9, C=1: 9 >= 5+4=9 true, allow -> T=10, C=2. Next: 10 >= 5*2+4=14 false. So 2/10=20%. Good. So condition works.\n\nBut we need to handle start of day reset. T and C are counts for current calendar day (UTC maybe). Decision under 5ms: maintain in-memory atomic counters. Use lock-free atomic operations. That's fast.\n\nNow rules priority order:\n\nWe need to define all inputs and logic.\n\nPotential rules:\n\n0. System Maintenance / Emergency Fallback: If routing service is in maintenance mode, route all to 1B (or to a static fallback). But not necessary.\n\n1. If `force_30b` flag is true:\n   - If 30B is available and quota allows -> route to 30B.\n   - Else -> fallback to 1B (log reason).\n\n2. If `model_30b_health` is false (unavailable):\n   - Route to 1B (log reason).\n\n3. If `request_type` is in `high_quality_types` (e.g., complex reasoning, code generation, long-form summarization) and `language` in `supported_languages` and `input_length` > threshold (e.g., > 500 tokens) and `user_tier` is premium? Could define. Need to be readable. But we must ensure deterministic. Let's define categories.\n\nMaybe simpler: Route to 30B only if all of the following:\n- No force flag (or force flag but quota allows)\n- 30B available\n- Quota allows\n- Request matches \"slow\" criteria: e.g., `complexity_score` high, `content_length` > 300 tokens, `user_tier` == 'enterprise', `previous_30b_success`? Hmm.\n\nBut need to be readable and deterministic. We can define rule: \"If request contains any of the following signals, prefer 30B: long-form request (> 1000 chars), complex task type (e.g., 'analysis', 'code', 'translation'), or user explicitly opted for high-quality.\" But must be deterministic. We can use fields.\n\nNeed to avoid learned classifier. Use simple thresholds.\n\nLet's define:\n\n- `request_type` in {'long_form_qa', 'code_generation', 'document_analysis', 'math_reasoning'}\n- `content_length` >= 800 characters (or tokens)\n- `user_tier` in {'enterprise', 'premium'} maybe? But could be all users. Let's include `user_tier` as a field.\n\nBut the problem doesn't specify fields. We can define a set of fields in the log record, which implies what fields exist.\n\nLet's decide on fields:\n\n- `request_id` (string)\n- `timestamp` (ISO 8601)\n- `user_id` (string)\n- `user_tier` (enum: 'free', 'premium', 'enterprise')\n- `request_type` (enum)\n- `content_length` (int, chars)\n- `language` (ISO code)\n- `flags` (list, e.g., ['force_30b', 'debug'])\n- `quota_used_today` (int, number of 30B requests so far today)\n- `total_requests_today` (int)\n- `rule_fired` (string, e.g., 'R1_force_quota_exceeded')\n- `model_selected` (enum: 'fast_1b', 'slow_30b', 'fallback_fast_1b')\n- `fallback_reason` (optional)\n- `decision_latency_ms` (float)\n\nNow rules:\n\nWe need priority order. Let's write:\n\nR0. Global fallback: If routing service is in `maintenance_mode` or `circuit_breaker_open`, route all to 1B. (Not mentioned but good.)\n\nR1. If `flags` contains `force_30b`:\n   - If `slow_model_available` == true AND `quota_allows` == true:\n        Route to 30B (rule \"R1_force_quota_ok\")\n     Else:\n        Route to 1B (rule \"R1_force_quota_denied\" or \"R1_force_fallback\")\n\nR2. If `slow_model_available` == false:\n   - Route to 1B (rule \"R2_slow_unavailable\")\n\nR3. Quota check: If `quota_allows` == false:\n   - Route to 1B (rule \"R3_quota_exhausted\")\n\nR4. Request classification: If request meets \"slow-worthy\" criteria:\n   - Route to 30B (rule \"R4_slow_worthy\")\n\nR5. Default: Route to 1B (rule \"R5_default\")\n\nBut priority order: R1 before R2? If force flag and slow unavailable, R1 would try 30B but unavailable, then fallback. So R1 should include availability check. So order:\n\n- R1: Force flag set? If yes, check availability and quota; route to 30B if both true, else fallback to 1B. This covers slow unavailable and quota exhausted for forced requests.\n\n- R2: Slow model unavailable (no force flag) -> fallback.\n\n- R3: Quota exhausted (no force flag) -> fallback.\n\n- R4: Slow-worthy criteria -> 30B.\n\n- R5: Default -> 1B.\n\nBut note: R1 and R2 overlap? If force flag set and slow unavailable, R1 will route to 1B and log \"R1_force_fallback_unavailable\". That's fine. R2 only applies when no force flag. Good.\n\nNeed to define \"quota_allows\" function. We can define a function `quota_allows()` that returns true if `T >= 5*C + 4` (where T=total requests today, C=30B count today). This is integer arithmetic, fast.\n\nBut careful: In R1, we check quota_allows before incrementing? The routing decision uses current counts; after decision, we increment counters accordingly. For forced 30B, if quota allows, we increment C and T. For non-forced 30B, same.\n\nBut for forced requests when quota does not allow, we fallback to 1B. Should we still count the forced request in T? Yes, T increments for every request. So quota check should use T_current and C_current. Condition for allowing 30B: T_current >= 5*C_current + 4. Because after increment, T' = T+1, C' = C+1, need T' >= 5*C' + 4? Wait, we derived condition T >= 5C + 4 ensures after increment C+1 <= 0.2*(T+1). Let's re-derive:\n\nWe want C' <= 0.2 * T' => C+1 <= 0.2*(T+1) => 5*(C+1) <= T+1 => 5C + 5 <= T + 1 => 5C + 4 <= T. Yes. So condition T >= 5C + 4.\n\nSo `quota_allows()` returns `total_requests_today >= 5 * slow_count_today + 4`.\n\nAt start of day, T=0, C=0: 0 >= 4 false, so no 30B until T reaches 4? Wait, first request: T=0, C=0, condition false, so quota does not allow 30B? That would mean first request cannot use 30B? Let's test: If we route first request to 30B, then T=1, C=1, ratio=1, >20%. So indeed we cannot have 30B until we have enough total requests to keep ratio <=20%. For first 4 requests, we must use 1B. At T=4, C=0, condition 4 >= 4 true, so 5th request can be 30B, leading to T=5, C=1, ratio=20%. Then no more until T grows. This is correct for strict daily cap. But maybe we want to allow early 30B if we know total will be high. But constraint says at most 20% per calendar day, so this is safe. However, if total requests is low (e.g., only 5 requests all day), we could only serve 1 request on 30B. That's fine.\n\nBut is that too restrictive? Maybe we can use a smoother approach: allow 30B if current ratio < 20% and also projected? But deterministic and simple. The integer condition is fine.\n\nAlternative: Precompute daily cap as floor(0.2 * expected_daily_total) from historical data, but that's not deterministic from input? It uses config. Could be acceptable. But problem says \"every rule must be readable and give the same result for the same input\". Using historical average as config is okay. But then quota mechanism needs to know expected total. Could use fixed cap e.g., 20% of max capacity. But daily total unknown. The ratio-based approach is fully deterministic based on counts.\n\nWe'll use ratio-based condition.\n\nNow define \"slow-worthy\" criteria. Need readable. Let's define:\n\nA request is \"slow-worthy\" if ALL of the following are true:\n- `request_type` in `SLOW_TYPES` = {'long_form_qa', 'code_generation', 'document_analysis', 'math_reasoning', 'complex_reasoning'}\n- `content_length` >= 800 (characters)\n- `user_tier` in `SLOW_TIERS` = {'premium', 'enterprise'}\n- `language` in `SLOW_LANGS` = {'en', 'es', 'fr', 'de', 'ja', 'zh'} (maybe all supported)\n- Not `flags` contains `force_1b` (optional)\n\nBut we also need to handle force flag priority. If force_30b is set, it overrides classification. If force_1b is set, maybe should override to 1B? Not specified. We can add `force_1b` as a flag that forces 1B even if slow-worthy. But not required. Let's include it for completeness.\n\nNow fallback path: If 30B unavailable or quota exhausted, route to 1B. Additionally, if 1B is also unavailable? Not specified, but \"request must still be answered\" means if 1B unavailable too, maybe static response? But constraint says local models, so assume 1B always available. But we can define a last-resort static fallback? Not needed.\n\nNow log record fields. Need to include rule that fired. Also include decision latency. Also include counters.\n\nLet's design log record as JSON:\n\n{\n  \"request_id\": \"req_123\",\n  \"timestamp\": \"2025-06-11T14:23:45.123Z\",\n  \"user_id\": \"user_42\",\n  \"user_tier\": \"premium\",\n  \"request_type\": \"document_analysis\",\n  \"content_length\": 1200,\n  \"language\": \"en\",\n  \"flags\": [\"force_30b\"],\n  \"total_requests_today\": 150,\n  \"slow_count_today\": 30,\n  \"quota_allows\": true,\n  \"rule_fired\": \"R4_slow_worthy\",\n  \"model_selected\": \"slow_30b\",\n  \"fallback_reason\": null,\n  \"decision_latency_ms\": 1.2\n}\n\nNow examples:\n\nExample 1: Force flag set, quota allows, slow available. Request ID req1, flags=['force_30b'], content_length=200, user_tier='free', request_type='chitchat'. Rule R1_fire_quota_ok -> 30B.\n\nExample 2: No force flag, slow-worthy criteria met, quota allows, slow available. req2, flags=[], content_length=2000, request_type='document_analysis', user_tier='enterprise'. Rule R4_slow_worthy -> 30B.\n\nExample 3: No force flag, slow-worthy criteria met, but quota exhausted. Suppose T=99, C=20? Let's compute. Condition T >= 5C+4. If C=20, T must be >= 104. So if T=99, C=20, condition 99 >= 104 false, so quota not allows. So req3 would go to 1B. Rule R3_quota_exhausted.\n\nExample 4: Force flag set, slow unavailable. req4, flags=['force_30b'], slow_available=false. Rule R1_force_fallback_unavailable -> 1B.\n\nExample 5: No force, not slow-worthy (short chitchat), rule R5_default -> 1B.\n\nNeed three examples. We'll pick three.\n\nNow need to present in final answer: rules in priority order, quota mechanism, fallback path, log fields, examples.\n\nLet's write clearly.\n\nAlso mention performance: counters in-memory, atomic operations, no external calls, decision <5ms.\n\nLet's craft final response.\n",
+ "content": "## Routing Layer Design\n\n### Overview\n\nThe router is a stateless decision service that inspects each request’s metadata, applies a fixed ordered list of rules, and returns a model choice. All counters are kept in memory (e.g., `AtomicInteger` in Java) and reset at the start of each UTC calendar day. No external I/O occurs during the decision, so latency is sub-millisecond.\n\n---\n\n### 1. Inputs (fields available to the router)\n\n| Field | Type | Description |\n|-------|------|-------------|\n| `request_id` | string | Unique request ID |\n| `timestamp` | ISO 8601 | Arrival time |\n| `user_id` | string | User identifier |\n| `user_tier` | enum | `free`, `premium`, `enterprise` |\n| `request_type` | enum | e.g., `chitchat`, `long_form_qa`, `code_generation`, `document_analysis`, `math_reasoning` |\n| `content_length` | int | Length of the user message in characters |\n| `language` | string | ISO 639-1 code |\n| `flags` | set | e.g., `force_30b`, `force_1b`, `debug` |\n| `slow_available` | bool | Health check: is the 30B model currently up? |\n| `total_requests_today` | int | Counter, incremented on every request |\n| `slow_count_today` | int | Counter, incremented only when 30B is selected |\n\n---\n\n### 2. Rules in Priority Order\n\n#### R0 – Global Maintenance Fallback\nIf the router itself is in `maintenance_mode` or `circuit_breaker_open` is true, route **all** requests to `fast_1b`.  \n*Rule fired:* `R0_maintenance`\n\n#### R1 – Forced 30B Flag\nIf `flags` contains `force_30b`:\n- If `slow_available` is true **and** `quota_allows()` is true → route to `slow_30b`.  \n  *Rule fired:* `R1_force_quota_ok`\n- Else → route to `fast_1b` (fallback).  \n  *Rule fired:* `R1_force_fallback` (reason: `slow_unavailable` or `quota_exhausted`)\n\n#### R2 – Slow Model Unavailable (no force flag)\nIf `slow_available` is false → route to `fast_1b`.  \n*Rule fired:* `R2_slow_unavailable`\n\n#### R3 – Quota Exhausted (no force flag)\nIf `quota_allows()` is false → route to `fast_1b`.  \n*Rule fired:* `R3_quota_exhausted`\n\n#### R4 – Slow‑worthy Request\nIf **all** of the following are true:\n- `request_type` ∈ `{'long_form_qa', 'code_generation', 'document_analysis', 'math_reasoning', 'complex_reasoning'}`\n- `content_length` ≥ 800\n- `user_tier` ∈ `{'premium', 'enterprise'}`\n- `language` ∈ `{'en', 'es', 'fr', 'de', 'ja', 'zh'}`\n- `flags` does **not** contain `force_1b`\n\n→ route to `slow_30b`.  \n*Rule fired:* `R4_slow_worthy`\n\n#### R5 – Default\nEverything else → route to `fast_1b`.  \n*Rule fired:* `R5_default`\n\n---\n\n### 3. Quota Mechanism\n\nThe 30B model may serve at most **20 %** of requests in a calendar day.  \nLet:\n\n- `T` = `total_requests_today` (requests seen so far today)\n- `C` = `slow_count_today` (30B selections so far today)\n\nA new request **may** use 30B only if:\n\n```\nT >= 5 * C + 4\n```\n\nThis is integer arithmetic, evaluated in <1 µs.  \nAfter the decision:\n\n- If 30B is selected, increment both `T` and `C`.\n- If 1B is selected, increment only `T`.\n\n**Why this works:**  \nIf we allow the 30B request, the new counts will be `T' = T+1`, `C' = C+1`.  \nThe condition guarantees `C+1 <= 0.2 * (T+1)`, so the daily ratio never exceeds 20 %.  \nAt the start of each UTC day, both counters reset to 0.\n\n---\n\n### 4. Fallback Path\n\nIf the 30B model is requested but cannot serve (quota exhausted, health check failed, or forced flag with no quota), the router falls back to the 1B model. The request is **always answered**; no request is dropped.  \nIf the 1B model were also unavailable (not in the problem scope), a static “service unavailable” message would be returned, but this path is assumed never to trigger.\n\n---\n\n### 5. Log Record Fields\n\nEvery decision is logged with the following JSON fields:\n\n```json\n{\n  \"request_id\": \"req_abc123\",\n  \"timestamp\": \"2025-06-11T14:23:45.123Z\",\n  \"user_id\": \"user_42\",\n  \"user_tier\": \"enterprise\",\n  \"request_type\": \"document_analysis\",\n  \"content_length\": 1200,\n  \"language\": \"en\",\n  \"flags\": [\"force_30b\"],\n  \"slow_available\": true,\n  \"total_requests_today\": 150,\n  \"slow_count_today\": 30,\n  \"quota_allows\": true,\n  \"rule_fired\": \"R1_force_quota_ok\",\n  \"model_selected\": \"slow_30b\",\n  \"fallback_reason\": null,\n  \"decision_latency_ms\": 1.2\n}\n```\n\n- `rule_fired` – the exact rule string that matched (e.g., `R4_slow_worthy`).\n- `model_selected` – `fast_1b`, `slow_30b`, or `fallback_fast_1b`.\n- `fallback_reason` – `null` when no fallback occurred; otherwise `quota_exhausted` or `slow_unavailable`.\n- `decision_latency_ms` – measured wall‑clock time of the router decision.\n\n---\n\n### 6. Example Requests\n\n#### Example 1 – Forced 30B, quota available\n- **Input:** `flags=['force_30b']`, `slow_available=true`, `T=99`, `C=19`  \n  (`99 >= 5*19+4 = 99` → true)  \n- **Rule fired:** `R1_force_quota_ok`  \n- **Route:** `slow_30b`  \n- **After:** `T=100`, `C=20`\n\n#### Example 2 – Slow‑worthy, no force flag\n- **Input:** `request_type='document_analysis'`, `content_length=2000`, `user_tier='enterprise'`, `language='en'`, `flags=[]`, `slow_available=true`, `T=500`, `C=100`  \n  (`500 >= 5*100+4 = 504` → false)  \n- **Rule fired:** `R3_quota_exhausted`  \n- **Route:** `fast_1b` (fallback because quota is exhausted)\n\n#### Example 3 – Default short chitchat\n- **Input:** `request_type='chitchat'`, `content_length=50`, `user_tier='free'`, `flags=[]`, `slow_available=true`, `T=1000`, `C=200`  \n  (`1000 >= 5*200+4 = 1004` → false)  \n- **Rule fired:** `R5_default`  \n- **Route:** `fast_1b`\n\n---\n\n### Performance Notes\n\n- All rule checks are simple integer/string comparisons.\n- Counters are in‑memory atomics; no Redis or DB access.\n- Decision latency is typically **< 1 ms**, well under the 5 ms budget.\n- Logging is asynchronous (buffered) so it never blocks the decision path.",
+ "usage": {
+  "completion_tokens": 5978,
+  "prompt_tokens": 174,
+  "total_tokens": 6152,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 174,
+  "prompt_ms": 2127.06,
+  "prompt_per_token_ms": 12.22448275862069,
+  "prompt_per_second": 81.8030521000818,
+  "predicted_n": 5978,
+  "predicted_ms": 622835.75,
+  "predicted_per_token_ms": 104.20541241425464,
+  "predicted_per_second": 9.596430519603283
+ },
+ "tokens": {
+  "reasoning_tokenized": 4249,
+  "content_tokenized": 1726,
+  "completion_tokens_usage": 5978,
+  "prompt_tokens_usage": 174,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.131,
+  "to_first_reasoning": 2.131,
+  "to_first_answer_token": 443.937,
+  "to_final_answer": 624.968
+ },
+ "peaks": {
+  "gpu_temp_c": 80,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26695
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26719
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26697
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26719
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26718
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26715
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26695
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26711
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26719
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26715
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26725
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 201.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26715
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 281.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 301.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 311.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 341.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 351.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 372.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 382.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 392.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 402.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26708
+  },
+  {
+   "t_s": 412.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26767
+  },
+  {
+   "t_s": 422.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26754
+  },
+  {
+   "t_s": 432.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 442.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 452.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 462.2,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  },
+  {
+   "t_s": 472.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 482.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 492.3,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 502.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 512.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 522.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 532.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26728
+  },
+  {
+   "t_s": 542.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 552.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26774
+  },
+  {
+   "t_s": 562.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26763
+  },
+  {
+   "t_s": 572.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 582.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 592.7,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26777
+  },
+  {
+   "t_s": 602.7,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 612.7,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26743
+  },
+  {
+   "t_s": 622.8,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  }
+ ]
+}

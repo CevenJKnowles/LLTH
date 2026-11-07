@@ -1,0 +1,330 @@
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=30 (experts of 30 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:17:16+02:00  gpu_temp_before=42  mem_available_MiB=23782  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3788
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 30 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q8_0 |   q8_0 |   1 |           pp512 |        405.70 ± 6.09 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q8_0 |   q8_0 |   1 |           tg128 |         20.25 ± 1.59 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2323 gpu_temp_C=54 sm_clock_min_MHz=300 sm_clock_max_MHz=1935 power_max_W=78 mem_available_min_MiB=23270 samples=31 exit=0
+end: 2026-10-24T20:17:48+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=30 (experts of 30 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:18:08+02:00  gpu_temp_before=49  mem_available_MiB=24015  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4161
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 30 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |        390.67 ± 2.20 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         19.91 ± 1.05 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2517 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=84 mem_available_min_MiB=23352 samples=47 exit=0
+end: 2026-10-24T20:18:56+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=28 (experts of 28 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:19:27+02:00  gpu_temp_before=55  mem_available_MiB=24064  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3486
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 28 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q8_0 |   q8_0 |   1 |           pp512 |        420.27 ± 3.55 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q8_0 |   q8_0 |   1 |           tg128 |         21.10 ± 1.55 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3143 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=77 mem_available_min_MiB=23575 samples=25 exit=0
+end: 2026-10-24T20:19:52+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=28 (experts of 28 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:20:18+02:00  gpu_temp_before=55  mem_available_MiB=24055  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4024
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 28 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |        399.05 ± 2.74 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         20.24 ± 0.98 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3347 gpu_temp_C=74 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=86 mem_available_min_MiB=23402 samples=45 exit=0
+end: 2026-10-24T20:21:04+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=26 (experts of 26 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:22:04+02:00  gpu_temp_before=55  mem_available_MiB=24042  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3935
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 26 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q8_0 |   q8_0 |   1 |           pp512 |        438.36 ± 5.83 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q8_0 |   q8_0 |   1 |           tg128 |         23.13 ± 1.34 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3957 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=86 mem_available_min_MiB=23439 samples=24 exit=0
+end: 2026-10-24T20:22:29+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=26 (experts of 26 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:23:04+02:00  gpu_temp_before=55  mem_available_MiB=24061  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3636
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 26 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |        417.52 ± 2.59 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         21.99 ± 0.76 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4161 gpu_temp_C=73 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=94 mem_available_min_MiB=23373 samples=43 exit=0
+end: 2026-10-24T20:23:49+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=24 (experts of 24 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:24:49+02:00  gpu_temp_before=55  mem_available_MiB=24038  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4014
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 24 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q8_0 |   q8_0 |   1 |           pp512 |        463.06 ± 7.39 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q8_0 |   q8_0 |   1 |           tg128 |         24.73 ± 1.26 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4777 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=93 mem_available_min_MiB=23507 samples=22 exit=0
+end: 2026-10-24T20:25:12+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=24 (experts of 24 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:25:57+02:00  gpu_temp_before=55  mem_available_MiB=24070  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4008
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 24 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |        438.99 ± 1.36 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         23.27 ± 0.68 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4981 gpu_temp_C=73 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=88 mem_available_min_MiB=23383 samples=41 exit=0
+end: 2026-10-24T20:26:39+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=22 (experts of 22 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:27:44+02:00  gpu_temp_before=55  mem_available_MiB=24001  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3874
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 22 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q8_0 |   q8_0 |   1 |           pp512 |        491.43 ± 7.67 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q8_0 |   q8_0 |   1 |           tg128 |         26.85 ± 0.93 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5591 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=80 mem_available_min_MiB=23590 samples=21 exit=0
+end: 2026-10-24T20:28:06+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q8_0  ncmoe=22 (experts of 22 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:28:46+02:00  gpu_temp_before=55  mem_available_MiB=24069  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4103
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 22 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+CUDA error: out of memory
+  current device: 0, in function alloc at $LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:646
+  cuMemCreate(&handle, reserve_size, &prop, 0)
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+$LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:110: CUDA error
+[New LWP 153809]
+[New LWP 153797]
+[New LWP 153793]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+0x00007f154caa0952 in ?? () from /usr/lib/libc.so.6
+#0  0x00007f154caa0952 in ?? () from /usr/lib/libc.so.6
+#1  0x00007f154cb0550b in wait4 () from /usr/lib/libc.so.6
+#2  0x00007f15587883eb in ggml_print_backtrace () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#3  0x00007f1558788550 in ggml_abort () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#4  0x00007f1554100541 in ggml_cuda_error(char const*, char const*, char const*, int, char const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#5  0x00007f155411b38d in ggml_cuda_pool_vmm::alloc(unsigned long, unsigned long*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#6  0x00007f1554997199 in void launch_mul_mat_q<(ggml_type)2, 128, false, (ggml_prec)30>(ggml_backend_cuda_context&, mmq_args const&, CUstream_st*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#7  0x00007f1554158e41 in ggml_cuda_mul_mat_q(ggml_backend_cuda_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor const*, ggml_tensor*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#8  0x00007f155411760f in ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context*, ggml_cgraph*, bool, bool, void const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#9  0x00007f1554118112 in ggml_backend_cuda_graph_compute(ggml_backend*, ggml_cgraph*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#10 0x00007f15587a7037 in ggml_backend_sched_graph_compute_async () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#11 0x00007f1557e299ab in llama_context::graph_compute(ggml_cgraph*, bool) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#12 0x00007f1557e2d7f6 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#13 0x00007f1557e371e6 in llama_context::decode(llama_batch_ext const&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#14 0x00007f155886e3fb in test_prompt(llama_context*, int, int, int) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#15 0x00007f155887e4fc in llama_bench(int, char**) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#16 0x00007f154ca27781 in ?? () from /usr/lib/libc.so.6
+#17 0x00007f154ca278b9 in __libc_start_main () from /usr/lib/libc.so.6
+#18 0x0000557029b03075 in _start ()
+[Inferior 1 (process 153782) detached]
+peaks: vram_MiB=5743 gpu_temp_C=61 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=49 mem_available_min_MiB=23512 samples=6 exit=134
+end: 2026-10-24T20:28:53+02:00
+
+ncmoe=22, KV=q8_0: did not complete at depth 8192; the q8_0 sweep stops here.
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=30 (experts of 30 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:29:13+02:00  gpu_temp_before=54  mem_available_MiB=24001  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4027
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 30 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q4_0 |   q4_0 |   1 |           pp512 |        404.12 ± 7.46 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q4_0 |   q4_0 |   1 |           tg128 |         20.20 ± 1.54 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2297 gpu_temp_C=65 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=81 mem_available_min_MiB=23576 samples=26 exit=0
+end: 2026-10-24T20:29:40+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=30 (experts of 30 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:30:10+02:00  gpu_temp_before=55  mem_available_MiB=24081  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3553
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 30 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |       382.42 ± 11.94 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         30 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         18.79 ± 1.01 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2399 gpu_temp_C=74 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=83 mem_available_min_MiB=23495 samples=48 exit=0
+end: 2026-10-24T20:30:59+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=28 (experts of 28 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:32:05+02:00  gpu_temp_before=55  mem_available_MiB=23932  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4039
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 28 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q4_0 |   q4_0 |   1 |           pp512 |        413.86 ± 6.11 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q4_0 |   q4_0 |   1 |           tg128 |         20.73 ± 1.50 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3117 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=79 mem_available_min_MiB=23442 samples=26 exit=0
+end: 2026-10-24T20:32:32+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=28 (experts of 28 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:33:07+02:00  gpu_temp_before=55  mem_available_MiB=24043  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4084
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 28 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        400.72 ± 2.55 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         28 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         20.11 ± 0.88 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3229 gpu_temp_C=74 sm_clock_min_MHz=300 sm_clock_max_MHz=1860 power_max_W=89 mem_available_min_MiB=23459 samples=46 exit=0
+end: 2026-10-24T20:33:54+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=26 (experts of 26 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:34:59+02:00  gpu_temp_before=55  mem_available_MiB=23994  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3986
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 26 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q4_0 |   q4_0 |   1 |           pp512 |        440.62 ± 7.10 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q4_0 |   q4_0 |   1 |           tg128 |         22.91 ± 1.23 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3931 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=83 mem_available_min_MiB=23576 samples=24 exit=0
+end: 2026-10-24T20:35:24+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=26 (experts of 26 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:36:09+02:00  gpu_temp_before=55  mem_available_MiB=24053  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3614
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 26 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        420.68 ± 2.48 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         26 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         21.78 ± 0.66 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4043 gpu_temp_C=73 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=97 mem_available_min_MiB=23459 samples=43 exit=0
+end: 2026-10-24T20:36:54+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=24 (experts of 24 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:37:59+02:00  gpu_temp_before=55  mem_available_MiB=24026  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4076
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 24 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q4_0 |   q4_0 |   1 |           pp512 |        462.50 ± 8.36 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q4_0 |   q4_0 |   1 |           tg128 |         24.08 ± 1.06 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4751 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=81 mem_available_min_MiB=23569 samples=23 exit=0
+end: 2026-10-24T20:38:23+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=24 (experts of 24 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:39:03+02:00  gpu_temp_before=55  mem_available_MiB=24072  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3817
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 24 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        442.68 ± 4.86 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         24 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         23.26 ± 0.58 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4863 gpu_temp_C=72 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=87 mem_available_min_MiB=23474 samples=41 exit=0
+end: 2026-10-24T20:39:46+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=22 (experts of 22 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:40:46+02:00  gpu_temp_before=55  mem_available_MiB=24066  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4129
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 22 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q4_0 |   q4_0 |   1 |           pp512 |        492.01 ± 8.79 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q4_0 |   q4_0 |   1 |           tg128 |         26.54 ± 0.90 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5565 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=79 mem_available_min_MiB=23448 samples=21 exit=0
+end: 2026-10-24T20:41:08+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=22 (experts of 22 of 30 layers on the CPU)  depth=8192
+start: 2026-10-24T20:41:53+02:00  gpu_temp_before=55  mem_available_MiB=24068  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4037
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 22 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        463.70 ± 1.73 |
+| gemma4 26B.A4B Q4_0            |  13.43 GiB |    25.23 B | CUDA       |  99 |         22 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         25.30 ± 0.46 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5677 gpu_temp_C=72 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=93 mem_available_min_MiB=23417 samples=39 exit=0
+end: 2026-10-24T20:42:33+02:00
+
+### Gemma-4-26B-A4B Q4_0  KV=q4_0  ncmoe=20 (experts of 20 of 30 layers on the CPU)  depth=0
+start: 2026-10-24T20:43:38+02:00  gpu_temp_before=55  mem_available_MiB=23835  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3587
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 20 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 5587.90 MiB on device 0: cudaMalloc failed: out of memory
+ggml_backend_buft_alloc_buffer_n_default: failed to allocate CUDA0 buffer of size 5859337984
+llama_model_load: error loading model: unable to allocate CUDA0 buffer
+llama_model_load_from_file_impl: failed to load model
+llama_bench: error: failed to load model '$LLTH_HOME/models/google/gemma-4-26B-A4B-it-qat-q4_0-gguf/gemma-4-26B_q4_0-it.gguf'
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+peaks: vram_MiB=163 gpu_temp_C=55 sm_clock_min_MHz=300 sm_clock_max_MHz=810 power_max_W=9 mem_available_min_MiB=23548 samples=2 exit=1
+end: 2026-10-24T20:43:41+02:00
+
+ncmoe=20, KV=q4_0: did not load or complete at depth 0; the q4_0 sweep stops here.
+DONE (ncmoe sweep gemma-4-26b-a4b)

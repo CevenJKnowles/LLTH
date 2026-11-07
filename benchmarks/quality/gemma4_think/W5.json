@@ -1,0 +1,754 @@
+{
+ "id": "W5",
+ "title": "Full cover letter from a fact list",
+ "prompt_text": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1005,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1005,
+ "started_at": "2026-10-30T21:03:57",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Experience: 2 years as a Data Scientist at [Retailer].\n*   Achievement: Demand-forecasting model improved stock accuracy by 11%.\n*   Career Break: 8-month break in 2024 for caring responsibilities.\n*   Teaching: Designed and taught a six-week internal Python course to twelve colleagues.\n*   Target Role: Junior Machine Learning Engineer at [Renewable Energy Company].\n*   Requirements: PyTorch (user has used in personal projects) and German at B2 level (user has C1).\n\n    *   Length: 120 to 200 words.\n    *   Content: Use *only* the provided facts.\n    *   Career Break: Mention honestly in a single sentence.\n    *   PyTorch: Do *not* claim professional experience (mention personal projects only).\n    *   Tone: No superlatives or intensifiers (e.g., best, most, passionate, extremely).\n    *   Format: No bullet points.\n    *   Names: No invented names for employer, applicant, retailer, or projects; use placeholders in square brackets [ ].\n\n    *   *Salutation:* Dear [Hiring Manager],\n    *   *Intro:* I am applying for the Junior Machine Learning Engineer position at [Renewable Energy Company].\n    *   *Experience:* I worked for two years as a data scientist at [Retailer]. During this time, my demand-forecasting model improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n    *   *Career Break:* In 2024, I took an eight-month career break for caring responsibilities.\n    *   *Skills:* I have used PyTorch in personal projects. My German language level is C1.\n    *   *Closing:* Thank you for your consideration. [Applicant Name]\n\n    *   *Check word count:* Currently around 100 words. Needs to be 120-200.\n    *   *Check intensifiers/superlatives:* \"Improved stock accuracy by 11 per cent\" is factual. No \"best\", \"most\", \"passionate\", \"extremely\".\n    *   *Check PyTorch:* \"I have used PyTorch in personal projects.\" (Correct, does not claim professional experience).\n    *   *Check German:* \"I speak German at a C1 level.\" (Correct).\n    *   *Check Career Break:* \"In 2024, I took an eight-month career break for caring responsibilities.\" (One sentence, honest).\n    *   *Check Facts:* Only use provided facts.\n\n    *   *Draft 2 (Expanding to meet word count):*\n        Dear [Hiring Manager],\n\n        I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked for two years as a data scientist at [Retailer], where I developed a demand-forecasting model that improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\n        In 2024, I took an eight-month career break for caring responsibilities.\n\n        Regarding the requirements mentioned in the advertisement, I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to discussing how my background in data science and my technical skills can support [Renewable Energy Company].\n\n        Sincerely,\n\n        [Applicant Name]\n\n    *   *Word Count Check:*\n        1. Dear (1)\n        2. [Hiring (2)\n        3. Manager], (3)\n        4. I (4)\n        5. am (5)\n        6. writing (6)\n        7. to (7)\n        8. apply (8)\n        9. for (9)\n        10. the (10)\n        11. Junior (11)\n        12. Machine (12)\n        13. Learning (13)\n        14. Engineer (14)\n        15. role (15)\n        16. at (16)\n        17. [Renewable (17)\n        18. Energy (18)\n        19. Company]. (19)\n        20. I (20)\n        21. worked (21)\n        22. for (22)\n        23. two (23)\n        24. years (24)\n        25. as (25)\n        26. a (26)\n        27. data (27)\n        28. scientist (28)\n        29. at (29)\n        30. [Retailer], (30)\n        31. where (31)\n        32. I (32)\n        33. developed (33)\n        34. a (34)\n        35. demand-forecasting (35)\n        36. model (36)\n        37. that (37)\n        38. improved (38)\n        39. stock (39)\n        40. accuracy (40)\n        41. by (41)\n        42. 11 (42)\n        43. per (43)\n        44. cent. (44)\n        45. Additionally, (45)\n        46. I (46)\n        47. designed (47)\n        48. and (48)\n        49. taught (49)\n        50. a (50)\n        51. six-week (51)\n        52. internal (52)\n        53. Python (53)\n        54. course (54)\n        55. to (55)\n        56. twelve (56)\n        57. colleagues. (57)\n        58. In (58)\n        59. 2024, (59)\n        60. I (60)\n        61. took (61)\n        62. an (62)\n        63. eight-month (63)\n        64. career (64)\n        65. break (65)\n        66. for (66)\n        67. caring (67)\n        68. responsibilities. (68)\n        69. Regarding (69)\n        70. the (70)\n        71. requirements (71)\n        72. mentioned (72)\n        73. in (73)\n        74. the (74)\n        75. advertisement, (75)\n        76. I (76)\n        77. have (77)\n        78. used (78)\n        79. PyTorch (79)\n        80. in (80)\n        81. personal (81)\n        82. projects (82)\n        83. and (83)\n        84. I (84)\n        85. speak (85)\n        86. German (86)\n        87. at (87)\n        88. a (88)\n        89. C1 (89)\n        90. level. (90)\n        91. I (91)\n        92. look (92)\n        93. forward (93)\n        94. to (94)\n        95. discussing (95)\n        96. how (96)\n        97. my (97)\n        98. background (98)\n        99. in (99)\n        100. data (100)\n        101. science (101)\n        102. and (102)\n        103. my (103)\n        104. technical (104)\n        105. skills (105)\n        106. can (106)\n        107. support (107)\n        108. [Renewable (108)\n        109. Energy (109)\n        110. Company]. (110)\n        111. Sincerely, (111)\n        112. [Applicant (112)\n        113. Name] (113)\n\n    *Wait, word count is too low (113 words).* I need to reach 120-200.\n\n    *Draft 3 (Expanding slightly while staying within rules):*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I worked for two years as a data scientist at [Retailer]. During this time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    I am aware that this role requires PyTorch and German language skills. I have used PyTorch in personal projects, and I speak German at a C1 level. I look forward to discussing my application with you.\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count Check:*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. During\n    32. this\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. that\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. I\n    72. am\n    73. aware\n    74. that\n    75. this\n    76. role\n    77. requires\n    78. PyTorch\n    79. and\n    80. German\n    81. language\n    82. skills.\n    83. I\n    84. have\n    85. used\n    86. PyTorch\n    87. in\n    88. personal\n    89. projects,\n    90. and\n    91. I\n    92. speak\n    93. German\n    94. at\n    95. a\n    96. C1\n    97. level.\n    98. I\n    99. look\n    100. forward\n    101. to\n    102. discussing\n    103. my\n    104. application\n    105. with\n    106. you.\n    107. Sincerely,\n    108. [Applicant\n    109. Name]\n\n    Still too low (~110 words). Let's add some more detail from the facts without using superlatives.\n\n    *Facts to utilize:*\n    - 2 years as data scientist at [Retailer].\n    - demand-forecasting model improved stock accuracy by 11 per cent.\n    - 8-month career break in 2024 for caring responsibilities.\n    - designed and taught a six-week internal Python course to twelve colleagues.\n    - Junior Machine Learning Engineer role at [Renewable Energy Company].\n    - PyTorch (personal projects) and German (C1).\n\n    *Revised Draft 4:*\n    Dear [Hiring Manager],\n\n    I am writing to express my interest in the Junior Machine Learning Engineer position at [Renewable Energy Company]. I spent two years working as a data scientist at [Retailer]. During that period, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    The job description mentions requirements for PyTorch and German. I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to discussing my background and how it relates to this role at [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count Check (Manual Count):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. express\n    9. my\n    10. interest\n    11. in\n    12. the\n    13. Junior\n    14. Machine\n    15. Learning\n    16. Engineer\n    17. position\n    18. at\n    19. [Renewable\n    20. Energy\n    21. Company].\n    22. I\n    23. spent\n    24. two\n    25. years\n    26. working\n    27. as\n    28. a\n    29. data\n    30. scientist\n    31. at\n    32. [Retailer].\n    33. During\n    34. that\n    35. period,\n    36. I\n    37. developed\n    38. a\n    39. demand-forecasting\n    40. model\n    41. that\n    42. improved\n    43. stock\n    44. accuracy\n    45. by\n    46. 11\n    47. per\n    48. cent.\n    49. Additionally,\n    50. I\n    51. designed\n    52. and\n    53. taught\n    54. a\n    55. six-week\n    56. internal\n    57. Python\n    58. course\n    59. to\n    60. twelve\n    61. colleagues.\n    62. In\n    63. 2024,\n    64. I\n    65. took\n    66. an\n    67. eight-month\n    68. career\n    69. break\n    70. for\n    71. caring\n    72. responsibilities.\n    73. The\n    74. job\n    75. description\n    76. mentions\n    77. requirements\n    78. for\n    79. PyTorch\n    80. and\n    81. German.\n    82. I\n    83. have\n    84. used\n    85. PyTorch\n    86. in\n    87. personal\n    88. projects\n    89. and\n    90. I\n    91. speak\n    92. German\n    93. at\n    94. a\n    95. C1\n    96. level.\n    97. I\n    98. look\n    99. forward\n    100. to\n    101. discussing\n    102. my\n    103. background\n    104. and\n    105. how\n    106. it\n    107. relates\n    108. to\n    109. this\n    110. role\n    111. at\n    112. [Renewable\n    113. Energy\n    114. Company].\n    115. Sincerely,\n    116. [Applicant\n    117. Name]\n\n    Wait, I am still under 120 words. Let's see where I can add more text using *only* the facts.\n\n    Facts:\n    - 2 years as data scientist at [Retailer].\n    - demand-forecasting model improved stock accuracy by 11 per cent.\n    - 8-month career break in 2024 for caring responsibilities.\n    - designed and taught a six-week internal Python course to twelve colleagues.\n    - Junior Machine Learning Engineer role at [Renewable Energy Company].\n    - PyTorch (personal projects) and German (C1).\n\n    Let's try a different phrasing to bulk it up without adding new info or superlatives.\n\n    *Draft 5:*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked as a data scientist at [Retailer] for two years. During this time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    Regarding your requirements, I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to discussing how my experience as a data scientist at [Retailer] can contribute to the work done at [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count (Draft 5):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. role\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. as\n    23. a\n    24. data\n    25. scientist\n    26. at\n    27. [Retailer]\n    28. for\n    29. two\n    30. years.\n    31. During\n    32. this\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. that\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. Regarding\n    72. your\n    73. requirements,\n    74. I\n    75. have\n    76. used\n    77. PyTorch\n    78. in\n    79. personal\n    80. projects\n    81. and\n    82. I\n    83. speak\n    84. German\n    85. at\n    86. a\n    87. C1\n    88. level.\n    89. I\n    90. look\n    91. forward\n    92. to\n    93. discussing\n    94. how\n    95. my\n    96. experience\n    97. as\n    98. a\n    99. data\n    100. scientist\n    101. at\n    102. [Retailer]\n    103. can\n    104. contribute\n    105. to\n    106. the\n    107. work\n    108. done\n    109. at\n    110. [Renewable\n    111. Energy\n    112. Company].\n    113. Sincerely,\n    114. [Applicant\n    115. Name]\n\n    Still only 115 words. I need to be between 120 and 200.\n\n    Let's add:\n    \"The role at [Renewable Energy Company] is the Junior Machine Learning Engineer position.\" -> Too repetitive.\n\n    Let's try adding a sentence about the course or the model.\n    \"The six-week course focused on Python and was taught to twelve colleagues.\" -> Still just rearranging.\n\n    Let's look at the facts again.\n    - \"demand-forecasting model improved stock accuracy by 11 per cent\"\n    - \"designed and taught a six-week internal Python course to twelve colleagues\"\n    - \"eight-month career break in 2024 for caring responsibilities\"\n\n    Let's re-structure.\n\n    *Draft 6:*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I worked as a data scientist at [Retailer] for two years. While there, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    I am aware that this role requires PyTorch and German. I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to discussing how my experience at [Retailer] and my technical skills can assist [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count (Draft 6):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. as\n    23. a\n    24. data\n    25. scientist\n    26. at\n    27. [Retailer]\n    28. for\n    29. two\n    30. years.\n    31. While\n    32. there,\n    33. I\n    34. developed\n    35. a\n    36. demand-forecasting\n    37. model\n    38. that\n    39. improved\n    40. stock\n    41. accuracy\n    42. by\n    43. 11\n    44. per\n    45. cent.\n    46. Additionally,\n    47. I\n    48. designed\n    49. and\n    50. taught\n    51. a\n    52. six-week\n    53. internal\n    54. Python\n    55. course\n    56. to\n    57. twelve\n    58. colleagues.\n    59. In\n    60. 2024,\n    61. I\n    62. took\n    63. an\n    64. eight-month\n    65. career\n    66. break\n    67. for\n    68. caring\n    69. responsibilities.\n    70. I\n    71. am\n    72. aware\n    73. that\n    74. this\n    75. role\n    76. requires\n    77. PyTorch\n    78. and\n    79. German.\n    80. I\n    81. have\n    82. used\n    83. PyTorch\n    84. in\n    85. personal\n    86. projects\n    87. and\n    88. I\n    89. speak\n    90. German\n    91. at\n    92. a\n    93. C1\n    94. level.\n    95. I\n    96. look\n    97. forward\n    98. to\n    99. discussing\n    100. how\n    101. my\n    102. experience\n    103. at\n    104. [Retailer]\n    105. and\n    106. my\n    107. technical\n    108. skills\n    109. can\n    110. assist\n    111. [Renewable\n    112. Energy\n    113. Company].\n    114. Sincerely,\n    115. [Applicant\n    116. Name]\n\n    Still not hitting 120. This is tricky. I must use *only* the facts.\n    Facts:\n    - 2 years data scientist [Retailer]\n    - demand-forecasting model improved stock accuracy by 11%\n    - 8-month career break 2024 caring\n    - designed/taught 6-week Python course to 12 colleagues\n    - Applying for Junior ML Engineer at [Renewable Energy Company]\n    - PyTorch (personal) + German (C1)\n\n    Let's try to be more verbose with the phrasing of the facts.\n\n    *Draft 7:*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I was a data scientist at [Retailer] for two years. During my time there, I developed a demand-forecasting model which improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    I have used PyTorch in personal projects, and I speak German at a C1 level. I look forward to the possibility of discussing my background and my experience at [Retailer] with you at [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word count (Draft 7):*\n    1. Dear (1)\n    2. [Hiring (2)\n    3. Manager], (3)\n    4. I (4)\n    5. am (5)\n    6. writing (6)\n    7. to (7)\n    8. apply (8)\n    9. for (9)\n    10. the (10)\n    11. Junior (11)\n    12. Machine (12)\n    13. Learning (13)\n    14. Engineer (14)\n    15. position (15)\n    16. at (16)\n    17. [Renewable (17)\n    18. Energy (18)\n    19. Company]. (19)\n    20. I (20)\n    21. was (21)\n    22. a (22)\n    23. data (23)\n    24. scientist (24)\n    25. at (25)\n    26. [Retailer] (26)\n    27. for (27)\n    28. two (28)\n    29. years. (29)\n    30. During (30)\n    31. my (31)\n    32. time (32)\n    33. there, (33)\n    34. I (34)\n    35. developed (35)\n    36. a (36)\n    37. demand-forecasting (37)\n    38. model (38)\n    39. which (39)\n    40. improved (40)\n    41. stock (41)\n    42. accuracy (42)\n    43. by (43)\n    44. 11 (44)\n    45. per (45)\n    46. cent. (46)\n    47. I (47)\n    48. also (48)\n    49. designed (49)\n    50. and (50)\n    51. taught (51)\n    52. a (52)\n    53. six-week (53)\n    54. internal (54)\n    55. Python (55)\n    56. course (56)\n    57. to (57)\n    58. twelve (58)\n    59. colleagues. (59)\n    60. In (60)\n    61. 2024, (61)\n    62. I (62)\n    63. took (63)\n    64. an (64)\n    65. eight-month (65)\n    66. career (66)\n    67. break (67)\n    68. for (68)\n    69. caring (69)\n    70. responsibilities. (70)\n    71. I (71)\n    72. have (72)\n    73. used (73)\n    74. PyTorch (74)\n    75. in (75)\n    76. personal (76)\n    77. projects, (77)\n    78. and (78)\n    79. I (79)\n    80. speak (80)\n    81. German (81)\n    82. at (82)\n    83. a (83)\n    84. C1 (84)\n    85. level. (85)\n    86. I (86)\n    87. look (87)\n    88. forward (88)\n    89. to (89)\n    90. the (90)\n    91. possibility (91)\n    92. of (92)\n    93. discussing (93)\n    94. my (94)\n    95. background (95)\n    96. and (96)\n    97. my (97)\n    98. experience (98)\n    99. at (99)\n    100. [Retailer] (100)\n    101. with (101)\n    102. you (102)\n    103. at (103)\n    104. [Renewable (104)\n    105. Energy (105)\n    106. Company]. (106)\n    107. Sincerely, (107)\n    108. [Applicant (108)\n    109. Name] (109)\n\n    Still 109. I need 11 more words to hit the minimum.\n    The constraint \"use these facts, and these facts only\" is very restrictive. I cannot add \"I am a hard worker\" or \"I am excited\".\n\n    Let's look at the facts again.\n    Can I expand the career break sentence? No, it must be a single sentence.\n    Can I expand the PyTorch/German sentence?\n    \"I have used PyTorch in personal projects, and I speak German at a C1 level.\"\n    How about the intro?\n    \"I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company].\" (16 words)\n    \"I worked for two years as a data scientist at [Retailer].\" (12 words)\n    \"In that role, I developed a demand-forecasting model which improved stock accuracy by 11 per cent.\" (16 words)\n    \"I also designed and taught a six-week internal Python course to twelve colleagues.\" (14 words)\n    \"In 2024, I took an eight-month career break for caring responsibilities.\" (12 words)\n    \"I have used PyTorch in personal projects, and I speak German at a C1 level.\" (15 words)\n    \"I look forward to the opportunity to discuss my background at [Retailer] and my skills for the position at [Renewable Energy Company].\" (23 words)\n\n    Let's count this:\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. In\n    32. that\n    33. role,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. which\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. I\n    72. have\n    73. used\n    74. PyTorch\n    75. in\n    76. personal\n    77. projects,\n    78. and\n    79. I\n    80. speak\n    81. German\n    82. at\n    83. a\n    84. C1\n    85. level.\n    86. I\n    87. look\n    88. forward\n    89. to\n    90. the\n    91. opportunity\n    92. to\n    93. discuss\n    94. my\n    95. background\n    96. at\n    97. [Retailer]\n    98. and\n    99. my\n    100. skills\n    101. for\n    102. the\n    103. position\n    104. at\n    105. [Renewable\n    106. Energy\n    107. Company].\n    108. Sincerely,\n    109. [Applicant\n    110. Name]\n\n    Still 110. I am failing to reach 120. Let's re-read carefully.\n    Is there anything I can add?\n    \"The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent.\"\n    \"They designed and taught a six-week internal Python course to twelve colleagues.\"\n    \"They took an eight-month career break in 2024 for caring responsibilities.\"\n    \"The applicant has used PyTorch only in personal projects and speaks German at C1.\"\n    \"They are applying for a Junior Machine Learning Engineer role at a renewable-energy company.\"\n\n    Okay, let's try to make it more verbose by expanding the sentence structure of the facts themselves.\n\n    *Draft 8:*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I worked for a period of two years as a data scientist at [Retailer]. In that role, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background at [Retailer] and how it relates to this role at [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count (Draft 8):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. a\n    24. period\n    25. of\n    26. two\n    27. years\n    28. as\n    29. a\n    30. data\n    31. scientist\n    32. at\n    33. [Retailer].\n    34. In\n    35. that\n    36. role,\n    37. I\n    38. developed\n    39. a\n    40. demand-forecasting\n    41. model\n    42. that\n    43. improved\n    44. stock\n    45. accuracy\n    46. by\n    47. 11\n    48. per\n    49. cent.\n    50. I\n    51. also\n    52. designed\n    53. and\n    54. taught\n    55. a\n    56. six-week\n    57. internal\n    58. Python\n    59. course\n    60. to\n    61. twelve\n    62. colleagues.\n    63. In\n    64. 2024,\n    65. I\n    66. took\n    67. an\n    68. eight-month\n    69. career\n    70. break\n    71. for\n    72. caring\n    73. responsibilities.\n    74. I\n    75. have\n    76. used\n    77. PyTorch\n    78. in\n    79. personal\n    80. projects\n    81. and\n    82. I\n    83. speak\n    84. German\n    85. at\n    86. a\n    87. C1\n    88. level.\n    89. I\n    90. look\n    91. forward\n    92. to\n    93. the\n    94. opportunity\n    95. to\n    96. discuss\n    97. my\n    98. background\n    99. at\n    100. [Retailer]\n    101. and\n    102. how\n    103. it\n    104. relates\n    105. to\n    106. the\n    107. role\n    108. at\n    109. [Renewable\n    110. Energy\n    111. Company].\n    112. Sincerely,\n    113. [Applicant\n    114. Name]\n\n    Still 114. I need 6 more words. This is incredibly difficult given \"only these facts\".\n\n    Let's see:\n    \"I worked for a period of two years as a data scientist at [Retailer].\" (15 words)\n    \"I designed and taught a six-week internal Python course to twelve colleagues.\" (14 words)\n    \"I have used PyTorch in personal projects and I speak German at a C1 level.\" (15 words)\n\n    Wait, let's try to expand the PyTorch sentence or the intro.\n    \"I am writing to you to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company].\" (19 words)\n    \"Regarding the requirements, I have used PyTorch in personal projects and I speak German at a C1 level.\" (18 words)\n\n    Let's try this:\n\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I worked for two years as a data scientist at [Retailer]. During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    Regarding the requirements for the role, I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background at [Retailer] and my skills with you.\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Counting again:*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. During\n    32. that\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. that\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. Regarding\n    72. the\n    73. requirements\n    74. for\n    75. the\n    76. role,\n    77. I\n    78. have\n    79. used\n    80. PyTorch\n    81. in\n    82. personal\n    83. projects\n    84. and\n    85. I\n    86. speak\n    87. German\n    88. at\n    89. a\n    90. C1\n    91. level.\n    92. I\n    93. look\n    94. forward\n    95. to\n    96. the\n    97. opportunity\n    98. to\n    99. discuss\n    100. my\n    101. background\n    102. at\n    103. [Retailer]\n    104. and\n    105. my\n    106. skills\n    107. with\n    108. you.\n    109. Sincerely,\n    110. [Applicant\n    111. Name]\n\n    I'm at 111. I need to add 9 more words.\n    What if I say:\n    \"I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company].\" (17)\n    \"I worked as a data scientist at [Retailer] for a period of two years.\" (14)\n    \"During that time, I developed a demand-forecasting model which improved stock accuracy by 11 per cent.\" (16)\n    \"I also designed and taught a six-week internal Python course to twelve colleagues.\" (14)\n    \"In 2024, I took an eight-month career break for caring responsibilities.\" (12)\n    \"I have used PyTorch in personal projects and I speak German at a C1 level.\" (15)\n    \"I look forward to discussing how my experience can benefit [Renewable Energy Company].\" (14)\n    \"Sincerely, [Applicant Name]\" (4)\n    17+14+16+14+12+15+14+4 = 116.\n\n    Still just short. Let's look at the facts again.\n    \"They are applying for a Junior Machine Learning Engineer role at a renewable-energy company.\"\n\n    Wait, I can expand the German and PyTorch sentence using the prompt's specific phrasing.\n    \"Regarding the requirements, I have used PyTorch in personal projects and I speak German at a C1 level.\" (18)\n\n    Let's try:\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company]. I worked as a data scientist at [Retailer] for a period of two years. During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    As per the job advert, I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background and my experience at [Retailer] with you.\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Counting (Draft 9):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. position\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. as\n    23. a\n    24. data\n    25. scientist\n    26. at\n    27. [Retailer]\n    28. for\n    29. a\n    30. period\n    31. of\n    32. two\n    33. years.\n    34. During\n    35. that\n    36. time,\n    37. I\n    38. developed\n    39. a\n    40. demand-forecasting\n    41. model\n    42. that\n    43. improved\n    44. stock\n    45. accuracy\n    46. by\n    47. 11\n    48. per\n    49. cent.\n    50. I\n    51. also\n    52. designed\n    53. and\n    54. taught\n    55. a\n    56. six-week\n    57. internal\n    58. Python\n    59. course\n    60. to\n    61. twelve\n    62. colleagues.\n    63. In\n    64. 2024,\n    65. I\n    66. took\n    67. an\n    68. eight-month\n    69. career\n    70. break\n    71. for\n    72. caring\n    73. responsibilities.\n    74. As\n    75. per\n    76. the\n    77. job\n    78. advert,\n    79. I\n    80. have\n    81. used\n    82. PyTorch\n    83. in\n    84. personal\n    85. projects\n    86. and\n    87. I\n    88. speak\n    89. German\n    90. at\n    91. a\n    92. C1\n    93. level.\n    94. I\n    95. look\n    96. forward\n    97. to\n    98. the\n    99. opportunity\n    100. to\n    101. discuss\n    102. my\n    103. background\n    104. and\n    105. my\n    106. experience\n    107. at\n    108. [Retailer]\n    109. with\n    110. you.\n    111. Sincerely,\n    112. [Applicant\n    113. Name]\n\n    I am consistently hitting 110-115. This is due to the strictness of \"only these facts\". I need to find ways to use the words in the facts to hit 120.\n\n    Let's look at \"improved stock accuracy by 11 per cent\".\n    \"improved stock accuracy by 11 per cent\" (7 words)\n    \"I developed a demand-forecasting model that improved stock accuracy by 11 per cent.\" (14 words)\n\n    Let's try to expand:\n    \"I worked for two years as a data scientist at [Retailer].\" (12)\n    \"During my two years as a data scientist at [Retailer], I developed a demand-forecasting model that improved stock accuracy by 11 per cent.\" (24)\n\n    Let's try this:\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked for two years as a data scientist at [Retailer]. During this time, I developed a demand-forecasting model which improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    Regarding the requirements, I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background and my experience at [Retailer] with you.\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Count:*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. role\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. During\n    32. this\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. which\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. Additionally,\n    48. I\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. Regarding\n    72. the\n    73. requirements,\n    74. I\n    75. have\n    76. used\n    77. PyTorch\n    78. in\n    79. personal\n    80. projects\n    81. and\n    82. I\n    83. speak\n    84. German\n    85. at\n    86. a\n    87. C1\n    88. level.\n    89. I\n    90. look\n    91. forward\n    92. to\n    93. the\n    94. opportunity\n    95. to\n    96. discuss\n    97. my\n    98. background\n    99. and\n    100. my\n    101. experience\n    102. at\n    103. [Retailer]\n    104. with\n    105. you.\n    106. Sincerely,\n    107. [Applicant\n    108. Name]\n\n    Still 108. This is the maximum word count possible without adding non-fact words. I must look for \"hidden\" words in the facts.\n    \"Junior Machine Learning Engineer role\"\n    \"renewable-energy company\"\n    \"eight-month career break\"\n\n    Wait, \"per cent\" can be \"percent\". \"six-week\" is one word? \"demand-forecasting\" is one word?\n\n    Let's try adding more of the context from the facts.\n    \"The job advert asks for PyTorch and German at B2 level. I speak German at a C1 level and have used PyTorch in personal projects.\"\n\n    Let's try this structure:\n\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked for two years as a data scientist at [Retailer]. During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. I also designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    The advertisement asks for PyTorch and German at B2 level. I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background and how I can contribute to [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Counting (Draft 10):*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. role\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. During\n    32. that\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. that\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. The\n    72. advertisement\n    73. asks\n    74. for\n    75. PyTorch\n    76. and\n    77. German\n    78. at\n    79. B2\n    80. level.\n    81. I\n    82. have\n    83. used\n    84. PyTorch\n    85. in\n    86. personal\n    87. projects\n    88. and\n    89. I\n    90. speak\n    91. German\n    92. at\n    93. a\n    94. C1\n    95. level.\n    96. I\n    97. look\n    98. forward\n    99. to\n    100. the\n    101. opportunity\n    102. to\n    103. discuss\n    104. my\n    105. background\n    106. and\n    107. how\n    108. I\n    109. can\n    110. contribute\n    111. to\n    112. [Renewable\n    113. Energy\n    114. Company].\n    115. Sincerely,\n    116. [Applicant\n    117. Name]\n\n    I am at 117 words. I am so close. I just need 3 more words.\n    \"how I can contribute to [Renewable Energy Company].\"\n    \"how my background can contribute to [Renewable Energy Company].\"\n    \"how I can contribute to the work at [Renewable Energy Company].\" (adds \"the work at\" -> +3 words)\n\n    Let's try:\n    \"I look forward to the opportunity to discuss my background and how I can contribute to the work at [Renewable Energy Company].\"\n\n    Let's count again.\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. role\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. for\n    23. two\n    24. years\n    25. as\n    26. a\n    27. data\n    28. scientist\n    29. at\n    30. [Retailer].\n    31. During\n    32. that\n    33. time,\n    34. I\n    35. developed\n    36. a\n    37. demand-forecasting\n    38. model\n    39. that\n    40. improved\n    41. stock\n    42. accuracy\n    43. by\n    44. 11\n    45. per\n    46. cent.\n    47. I\n    48. also\n    49. designed\n    50. and\n    51. taught\n    52. a\n    53. six-week\n    54. internal\n    55. Python\n    56. course\n    57. to\n    58. twelve\n    59. colleagues.\n    60. In\n    61. 2024,\n    62. I\n    63. took\n    64. an\n    65. eight-month\n    66. career\n    67. break\n    68. for\n    69. caring\n    70. responsibilities.\n    71. The\n    72. advertisement\n    73. asks\n    74. for\n    75. PyTorch\n    76. and\n    77. German\n    78. at\n    79. B2\n    80. level.\n    81. I\n    82. have\n    83. used\n    84. PyTorch\n    85. in\n    86. personal\n    87. projects\n    88. and\n    89. I\n    90. speak\n    91. German\n    92. at\n    93. a\n    94. C1\n    95. level.\n    96. I\n    97. look\n    98. forward\n    99. to\n    100. the\n    101. opportunity\n    102. to\n    103. discuss\n    104. my\n    105. background\n    106. and\n    107. how\n    108. I\n    109. can\n    110. contribute\n    111. to\n    112. the\n    113. work\n    114. at\n    115. [Renewable\n    116. Energy\n    117. Company].\n    118. Sincerely,\n    119. [Applicant\n    120. Name]\n\n    Wait, 120! Exactly on the bottom limit. Let me double-check the count one more time.\n    1(Dear) 2([Hiring) 3(Manager],) 4(I) 5(am) 6(writing) 7(to) 8(apply) 9(for) 10(the) 11(Junior) 12(Machine) 13(Learning) 14(Engineer) 15(role) 16(at) 17([Renewable) 18(Energy) 19(Company].) 20(I) 21(worked) 22(for) 23(two) 24(years) 25(as) 26(a) 27(data) 28(scientist) 29(at) 30([Retailer].) 31(During) 32(that) 33(time,) 34(I) 35(developed) 36(a) 37(demand-forecasting) 38(model) 39(that) 40(improved) 41(stock) 42(accuracy) 43(by) 44(11) 45(per) 46(cent.) 47(I) 48(also) 49(designed) 50(and) 51(taught) 52(a) 53(six-week) 54(internal) 55(Python) 56(course) 57(to) 58(twelve) 59(colleagues.) 60(In) 61(2024,) 62(I) 63(took) 64(an) 65(eight-month) 66(career) 67(break) 68(for) 69(caring) 70(responsibilities.) 71(The) 72(advertisement) 73(asks) 74(for) 75(PyTorch) 76(and) 77(German) 78(at) 79(B2) 80(level.) 81(I) 82(have) 83(used) 84(PyTorch) 85(in) 86(personal) 87(projects) 88(and) 89(I) 90(speak) 91(German) 92(at) 93(a) 94(C1) 95(level.) 96(I) 97(look) 98(forward) 99(to) 100(the) 101(opportunity) 102(to) 103(discuss) 104(my) 105(background) 106(and) 107(how) 108(I) 109(can) 110(contribute) 111(to) 112(the) 113(work) 114(at) 115([Renewable) 116(Energy) 117(Company].) 118(Sincerely,) 119([Applicant) 120(Name])\n\n    Wait, 120. That's the minimum. I'll add a few more to be safe (e.g. 130) because I might have miscounted or word-count algorithms differ (hyphenated words).\n\n    *Refining for Safety (aim for 140):*\n    \"I look forward to the opportunity to discuss my background and how I can contribute to the work at [Renewable Energy Company].\"\n    Let's change \"I worked for two years as a data scientist at [Retailer]\" to \"I worked as a data scientist at [Retailer] for a period of two years.\" (Adds 3 words).\n    Let's change \"I developed a demand-forecasting model that improved stock accuracy by 11 per cent\" to \"I developed a demand-forecasting model which improved stock accuracy by 11 per cent.\" (No change).\n    Let's change \"I also designed and taught a six-week internal Python course to twelve colleagues.\" to \"Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\" (Adds 1 word).\n\n    *Revised Draft (Final Check):*\n    Dear [Hiring Manager],\n\n    I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked as a data scientist at [Retailer] for a period of two years. During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\n    In 2024, I took an eight-month career break for caring responsibilities.\n\n    The advertisement asks for PyTorch and German at B2 level. I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background and how I can contribute to the work at [Renewable Energy Company].\n\n    Sincerely,\n\n    [Applicant Name]\n\n    *Word Count Check:*\n    1. Dear\n    2. [Hiring\n    3. Manager],\n    4. I\n    5. am\n    6. writing\n    7. to\n    8. apply\n    9. for\n    10. the\n    11. Junior\n    12. Machine\n    13. Learning\n    14. Engineer\n    15. role\n    16. at\n    17. [Renewable\n    18. Energy\n    19. Company].\n    20. I\n    21. worked\n    22. as\n    23. a\n    24. data\n    25. scientist\n    26. at\n    27. [Retailer]\n    28. for\n    29. a\n    30. period\n    31. of\n    32. two\n    33. years.\n    34. During\n    35. that\n    36. time,\n    37. I\n    38. developed\n    39. a\n    40. demand-forecasting\n    41. model\n    42. that\n    43. improved\n    44. stock\n    45. accuracy\n    46. by\n    47. 11\n    48. per\n    49. cent.\n    50. Additionally,\n    51. I\n    52. designed\n    53. and\n    54. taught\n    55. a\n    56. six-week\n    57. internal\n    58. Python\n    59. course\n    60. to\n    61. twelve\n    62. colleagues.\n    63. In\n    64. 2024,\n    65. I\n    66. took\n    67. an\n    68. eight-month\n    69. career\n    70. break\n    71. for\n    72. caring\n    73. responsibilities.\n    74. The\n    75. advertisement\n    76. asks\n    77. for\n    78. PyTorch\n    79. and\n    80. German\n    81. at\n    82. B2\n    83. level.\n    84. I\n    85. have\n    86. used\n    87. PyTorch\n    88. in\n    89. personal\n    90. projects\n    91. and\n    92. I\n    93. speak\n    94. German\n    95. at\n    96. a\n    97. C1\n    98. level.\n    99. I\n    100. look\n    101. forward\n    102. to\n    103. the\n    104. opportunity\n    105. to\n    106. discuss\n    107. my\n    108. background\n    109. and\n    110. how\n    111. I\n    112. can\n    113. contribute\n    114. to\n    115. the\n    116. work\n    117. at\n    118. [Renewable\n    119. Energy\n    120. Company].\n    121. Sincerely,\n    122. [Applicant\n    123. Name]\n\n    *Perfect.*\n\n    *Wait, let me check the rules one more time:*\n    - 120 to 200 words. (Currently 123)\n    - Only use provided facts. (Yes)\n    - Career break in one sentence, honest. (Yes)\n    - Do not claim professional PyTorch experience. (Yes, says \"in personal projects\")\n    - No superlatives or intensifiers (best, most, passionate, extremely). (Yes)\n    - No bullet points. (Yes)\n    - No invented names; use [ ]. (Yes)\n\n    Wait, I used \"Additionally\". Is \"Additionally\" an intensifier? No, it's an adverb used as a transition.\n    \"improved stock accuracy by 11 per cent\" - factual.\n    \"designed and taught\" - factual.\n    \"Junior Machine Learning Engineer role\" - factual.\n    \"six-week internal Python course\" - factual.\n    \"twelve colleagues\" - factual.\n\n    One potential issue: \"improved stock accuracy by 11 per cent\" is a fact. Is \"improved\" an intensifier? No, it's the verb describing the change. \"improved\" is the baseline fact provided.\n\n    Let's double-check \"Additionally\".\n    \"Additionally\" is a transition. \"also\" is a transition.\n    \"During that time\" is a temporal phrase.\n\n    Is there any superlative in \"the Junior Machine Learning Engineer role\"? No, that's the job title.\n\n    Check for \"extremely, most, best, passionate\".\n    None found.\n\n    Final check of facts:\n    - 2 years as data scientist at [Retailer]: Yes.\n    - demand-forecasting model improved stock accuracy by 11 per cent: Yes.\n    - 8-month career break in 2024 for caring responsibilities: Yes.\n    - designed and taught a six-week internal Python course to twelve colleagues: Yes.\n    - Applying for Junior ML Engineer at [Renewable Energy Company]: Yes.\n    - PyTorch in personal projects: Yes.\n    - German at C1: Yes.\n\n    Let's re-verify word count one last time.\n    Dear (1) [Hiring (2) Manager], (3) I (4) am (5) writing (6) to (7) apply (8) for (9) the (10) Junior (11) Machine (12) Learning (13) Engineer (14) role (15) at (16) [Renewable (17) Energy (18) Company]. (19) I (20) worked (21) as (22) a (23) data (24) scientist (25) at (26) [Retailer] (27) for (28) a (29) period (30) of (31) two (32) years. (33) During (34) that (35) time, (36) I (37) developed (38) a (39) demand-forecasting (40) model (41) that (42) improved (43) stock (44) accuracy (45) by (46) 11 (47) per (48) cent. (49) Additionally, (50) I (51) designed (52) and (53) taught (54) a (55) six-week (56) internal (57) Python (58) course (59) to (60) twelve (61) colleagues. (62) In (63) 2024, (64) I (65) took (66) an (67) eight-month (68) career (69) break (70) for (71) caring (72) responsibilities. (73) The (74) advertisement (75) asks (76) for (77) PyTorch (78) and (79) German (80) at (81) B2 (82) level. (83) I (84) have (85) used (86) PyTorch (87) in (88) personal (89) projects (90) and (91) I (92) speak (93) German (94) at (95) a (96) C1 (97) level. (98) I (99) look (100) forward (101) to (102) the (103) opportunity (104) to (105) discuss (106) my (107) background (108) and (109) how (110) I (111) can (112) contribute (113) to (114) the (115) work (116) at (117) [Renewable (118) Energy (119) Company]. (120) Sincerely, (121) [Applicant (122) Name] (123).\n\n    Wait, \"11 per cent\" is 3 words? Or 2? Usually \"percent\" is one, \"per cent\" is two. The prompt says \"11 per cent\". I will use \"per cent\".\n    \"six-week\" is one word.\n    \"eight-month\" is one word.\n    \"demand-forecasting\" is one word.\n\n    Let me recount very carefully.\n    Dear [Hiring Manager], (3)\n    I am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. (16)\n    I worked as a data scientist at [Retailer] for a period of two years. (14)\n    During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. (16)\n    Additionally, I designed and taught a six-week internal Python course to twelve colleagues. (14)\n    In 2024, I took an eight-month career break for caring responsibilities. (12)\n    The advertisement asks for PyTorch and German at B2 level. (11)\n    I have used PyTorch in personal projects and I speak German at a C1 level. (15)\n    I look forward to the opportunity to discuss my background and how I can contribute to the work at [Renewable Energy Company]. (21)\n    Sincerely, (1)\n    [Applicant Name] (2)\n    Total: 3+16+14+16+14+12+11+15+21+1+2 = 124.\n\n    This is safe.\n\n    One final check: \"The applicant has used PyTorch only in personal projects\". I have written \"I have used PyTorch in personal projects\". I have not claimed professional experience. Correct.\n\n    Is \"Additionally\" an intensifier? No. Is \"opportunity\" an intensifier? No. Is \"improved\" an intensifier? No.\n    Is \"11 per cent\" a fact? Yes.\n    Is \"twelve colleagues\" a fact? Yes.\n    Is \"six-week\" a fact? Yes.\n\n    The word count looks good.",
+ "content": "Dear [Hiring Manager],\n\nI am writing to apply for the Junior Machine Learning Engineer role at [Renewable Energy Company]. I worked as a data scientist at [Retailer] for a period of two years. During that time, I developed a demand-forecasting model that improved stock accuracy by 11 per cent. Additionally, I designed and taught a six-week internal Python course to twelve colleagues.\n\nIn 2024, I took an eight-month career break for caring responsibilities.\n\nThe advertisement asks for PyTorch and German at B2 level. I have used PyTorch in personal projects and I speak German at a C1 level. I look forward to the opportunity to discuss my background and how I can contribute to the work at [Renewable Energy Company].\n\nSincerely,\n\n[Applicant Name]",
+ "usage": {
+  "completion_tokens": 18831,
+  "prompt_tokens": 217,
+  "total_tokens": 19048,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 217,
+  "prompt_ms": 1555.903,
+  "prompt_per_token_ms": 7.170059907834101,
+  "prompt_per_second": 139.46884863645099,
+  "predicted_n": 18831,
+  "predicted_ms": 1132385.867,
+  "predicted_per_token_ms": 60.13732697822624,
+  "predicted_per_second": 16.628607393242923
+ },
+ "tokens": {
+  "reasoning_tokenized": 18656,
+  "content_tokenized": 170,
+  "completion_tokens_usage": 18831,
+  "prompt_tokens_usage": 217,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.73,
+  "to_first_reasoning": 1.73,
+  "to_first_answer_token": 1123.126,
+  "to_final_answer": 1133.95
+ },
+ "peaks": {
+  "gpu_temp_c": 81,
+  "gpu_mem_mib": 5161,
+  "min_mem_available_mib": 26263
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26264
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26278
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26264
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26274
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26322
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 281.8,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 301.8,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 311.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 341.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 352.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 372.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 382.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 392.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 402.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 412.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 422.2,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 432.2,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 442.2,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26314
+  },
+  {
+   "t_s": 452.3,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26277
+  },
+  {
+   "t_s": 462.3,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 472.3,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 482.4,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 492.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 502.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 512.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 522.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26277
+  },
+  {
+   "t_s": 532.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 542.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 552.6,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 562.6,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 572.6,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 582.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 592.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26281
+  },
+  {
+   "t_s": 602.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 612.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 622.8,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 632.8,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 642.8,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 652.9,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 662.9,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 672.9,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 683.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 693.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 703.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 713.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 723.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 733.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 743.2,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 753.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 763.2,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 773.3,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 783.3,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 793.3,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26281
+  },
+  {
+   "t_s": 803.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 813.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 823.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 833.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 843.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 853.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 863.6,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 873.6,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 883.6,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 893.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26275
+  },
+  {
+   "t_s": 903.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 913.7,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 923.8,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 933.8,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 943.8,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 953.9,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26320
+  },
+  {
+   "t_s": 963.9,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 973.9,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 984.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 994.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 1004.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 1014.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 1024.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 1034.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 1044.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 1054.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 1064.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 1074.3,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26284
+  },
+  {
+   "t_s": 1084.3,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 1094.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 1104.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26263
+  },
+  {
+   "t_s": 1114.4,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26277
+  },
+  {
+   "t_s": 1124.5,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26307
+  }
+ ]
+}

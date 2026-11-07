@@ -1,0 +1,91 @@
+{
+ "id": "P5",
+ "title": "Keras classifier, compile and parameter count",
+ "prompt_text": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1010,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1010,
+ "started_at": "2026-10-30T22:54:51",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants a Keras 3 Sequential model with:\n - Input: 10 features\n - Dense(32, activation=\"relu\")\n - Dropout(0.2)\n - Dense(3, activation=\"softmax\")\n - Labels are integers 0, 1, 2 (sparse integer labels)\n \n They want:\n 1. Model definition\n 2. Compile call with correct loss\n 3. What model.count_params() will return\n \n Since labels are integers (not one-hot), the correct loss is sparse_categorical_crossentropy.\n \n For model.count_params():\n Input layer: 10 input features -> no trainable params (or rather, the input is just the input shape, no weights)\n Dense(32): \n   - Weight matrix: input_dim × output_dim = 10 × 32 = 320\n   - Bias vector: 32\n   - Total: 352\n Dropout(0.2): no trainable params (or rather, dropout doesn't have trainable parameters)\n Dense(3):\n   - Weight matrix: 32 × 3 = 96\n   - Bias vector: 3\n   - Total: 99\n \n Total trainable params: 352 + 99 = 451\n Total params (including non-trainable): 451 (since dropout doesn't have non-trainable params, just the weights)\n \n Wait, let me check: Dense(32) with input shape (None, 10):\n - kernel shape: (10, 32) = 320 weights\n - bias shape: (32) = 32 biases\n Total: 352\n \n Dense(3) with input shape (None, 32):\n - kernel shape: (32, 3) = 96 weights\n - bias shape: (3) = 3 biases\n Total: 99\n \n Total: 352 + 99 = 451\n \n So model.count_params() returns 451.\n \n The code:\n ```python\n import tensorflow as tf\n from tensorflow import keras\n \n model = keras.Sequential([\n     keras.layers.Dense(32, activation=\"relu\", input_shape=(10,)),\n     keras.layers.Dropout(0.2),\n     keras.layers.Dense(3, activation=\"softmax\"),\n ])\n \n model.compile(\n     optimizer=\"adam\",\n     loss=\"sparse_categorical_crossentropy\",\n     metrics=[\"accuracy\"],\n )\n ```\n \n Note: If using tf.keras, it's the same API. The user specified Keras 3 with TF 2.x backend, so keras is the standalone Keras 3 API, which is what I wrote.\n \n The loss should be sparse_categorical_crossentropy since labels are integers 0, 1, 2.\n \n The count is 451.\n \n Let me double-check the math:\n 10 * 32 + 32 = 320 + 32 = 352\n 32 * 3 + 3 = 96 + 3 = 99\n 352 + 99 = 451\n \n Yes.\n \n I should provide the model definition, compile call, and state the count clearly.",
+ "content": "```python\nfrom tensorflow import keras\nfrom tensorflow import layers\n\nmodel = keras.Sequential([\n    layers.Dense(32, activation=\"relu\", input_shape=(10,)),\n    layers.Dropout(0.2),\n    layers.Dense(3, activation=\"softmax\"),\n])\n\nmodel.compile(\n    optimizer=\"adam\",\n    loss=\"sparse_categorical_crossentropy\",  # correct for integer labels 0, 1, 2\n    metrics=[\"accuracy\"],\n)\n```\n\n**`model.count_params()` returns: 451**\n\nHere's the breakdown:\n\n- **First Dense layer:** `10 × 32` weights + `32` biases = **352** params\n- **Dropout layer:** **0** params\n- **Second Dense layer:** `32 × 3` weights + `3` biases = **99** params\n\n**Total: 451**",
+ "usage": {
+  "completion_tokens": 786,
+  "prompt_tokens": 110,
+  "total_tokens": 896,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 110,
+  "prompt_ms": 165.503,
+  "prompt_per_token_ms": 1.5045727272727272,
+  "prompt_per_second": 664.6405201114179,
+  "predicted_n": 786,
+  "predicted_ms": 24437.397,
+  "predicted_per_token_ms": 31.13044203821656,
+  "predicted_per_second": 32.1228975410106
+ },
+ "tokens": {
+  "reasoning_tokenized": 613,
+  "content_tokenized": 171,
+  "completion_tokens_usage": 786,
+  "prompt_tokens_usage": 110,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.168,
+  "to_first_reasoning": 0.168,
+  "to_first_answer_token": 19.16,
+  "to_final_answer": 24.605
+ },
+ "peaks": {
+  "gpu_temp_c": 86,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26421
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 84,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26462
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 85,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26421
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 86,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26452
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "id": "R4",
+ "title": "Expected cost of a retry policy",
+ "prompt_text": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1014,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1014,
+ "started_at": "2026-11-05T04:47:44",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Let the cost be:\n\n- Each attempt costs 1 unit.\n- A penalty of 10 units is paid if all 3 attempts fail.\n\nOn each attempt, failure probability is 0.2, success probability is 0.8.\n\nExpected cost per call:\n\n\\[\nE = P(\\text{fail all 3}) \\cdot (3\\cdot1 + 10) + P(\\text{not all 3 fail}) \\cdot (1 + \\text{expected remaining attempts})\n\\]\n\nMore directly, expected cost = expected number of attempts + probability of penalty × 10.\n\n\\[\nP(\\text{fail all 3}) = 0.2^3 = 0.008\n\\]\n\nExpected number of attempts:\n\n\\[\nE[\\text{attempts}] = 1\\cdot P(\\text{success on 1st}) + 2\\cdot P(\\text{fail 1st, success 2nd}) + 3\\cdot P(\\text{fail first two, success 3rd}) + 3\\cdot P(\\text{fail all 3})\n\\]\n\n\\[\n= 1(0.8) + 2(0.2\\cdot 0.8) + 3(0.2^2 \\cdot 0.8) + 3(0.2^3)\n\\]\n\n\\[\n= 0.8 + 0.32 + 0.096 + 0.024 = 1.336\n\\]\n\nExpected penalty:\n\n\\[\n0.008 \\cdot 10 = 0.08\n\\]\n\nTotal expected cost:\n\n\\[\nE = 1.336 + 0.08 = 1.416\n\\]\n\nSo expected cost per call is 1.416 units.\n\nNow, with 4 attempts:\n\n\\[\nP(\\text{fail all 4}) = 0.2^4 = 0.0016\n\\]\n\nExpected attempts:\n\n\\[\nE[\\text{attempts}] = 1(0.8) + 2(0.16) + 3(0.032) + 4(0.008) + 4(0.0016)\n\\]\n\n\\[\n= 0.8 + 0.32 + 0.096 + 0.032 + 0.0064 = 1.2544\n\\]\n\nExpected penalty:\n\n\\[\n0.0016 \\cdot 10 = 0.016\n\\]\n\nTotal expected cost:\n\n\\[\nE_4 = 1.2544 + 0.016 = 1.2704\n\\]\n\nDifference:\n\n\\[\nE_4 - E_3 = 1.2704 - 1.416 = -0.1456\n\\]\n\nSo yes, raising the limit to 4 attempts lowers the expected cost by 0.1456 units.",
+ "usage": {
+  "completion_tokens": 567,
+  "prompt_tokens": 136,
+  "total_tokens": 703,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 136,
+  "prompt_ms": 106.782,
+  "prompt_per_token_ms": 0.7851617647058823,
+  "prompt_per_second": 1273.622895244517,
+  "predicted_n": 567,
+  "predicted_ms": 10445.797,
+  "predicted_per_token_ms": 18.455471731448764,
+  "predicted_per_second": 54.18447247251694
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 565,
+  "completion_tokens_usage": 567,
+  "prompt_tokens_usage": 136,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.128,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.128,
+  "to_final_answer": 10.556
+ },
+ "peaks": {
+  "gpu_temp_c": 72,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22313
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22313
+  }
+ ]
+}

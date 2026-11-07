@@ -1,0 +1,151 @@
+{
+ "id": "D3",
+ "title": "Compress a paragraph without losing facts (looks easy, is hard)",
+ "prompt_text": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1018,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1018,
+ "started_at": "2026-10-31T00:50:55",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants me to shorten the paragraph to at most 40 words, keeping all facts.\n\nOriginal facts:\n- tidelog is a small Python library\n- currently at version 0.4.2\n- purpose: read newline-delimited JSON log files\n- write them out again as Parquet files\n- so that they can be queried more efficiently\n- tested on files up to 8 GB in size\n- requires Python 3.10 or newer\n- only third-party dependency is pyarrow\n- released under MIT licence\n- maintainers publish a new release roughly every six weeks\n\nLet me draft a version:\n\n\"tidelog is a small Python library (v0.4.2) that reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, with pyarrow as sole dependency. MIT license; new releases roughly every six weeks.\"\n\nLet me count words:\ntidelog(1) is(2) a(3) small(4) Python(5) library(6) v0.4.2(7) that(8) reads(9) newline-delimited(10) JSON(11) log(12) files(13) and(14) writes(15) them(16) as(17) Parquet(18) files(19) for(20) efficient(21) querying.(22) Tested(23) on(24) files(25) up(26) to(27) 8(28) GB.(29) Requires(30) Python(31) 3.10,(32) with(33) pyarrow(34) as(35) sole(36) dependency.(37) MIT(38) license;(39) new(40) releases(41) roughly(42) every(43) six(44) weeks.(45)\n\nThat's 45 words. Need to reduce to 40.\n\nLet me try again:\n\n\"tidelog (v0.4.2) is a small Python library that reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) (v0.4.2)(2) is(3) a(4) small(5) Python(6) library(7) that(8) reads(9) newline-delimited(10) JSON(11) log(12) files(13) and(14) writes(15) them(16) as(17) Parquet(18) files(19) for(20) efficient(21) querying.(22) Tested(23) on(24) files(25) up(26) to(27) 8(28) GB.(29) Requires(30) Python(31) 3.10,(32) sole(33) dependency:(34) pyarrow.(35) MIT(36) license;(37) new(38) releases(39) roughly(40) every(41) six(42) weeks.(43)\n\nStill 43. Let me trim.\n\n\"tidelog v0.4.2 is a small Python library that reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2(2) is(3) a(4) small(5) Python(6) library(7) that(8) reads(9) newline-delimited(10) JSON(11) log(12) files(13) and(14) writes(15) them(16) as(17) Parquet(18) files(19) for(20) efficient(21) querying.(22) Tested(23) on(24) files(25) up(26) to(27) 8(28) GB.(29) Requires(30) Python(31) 3.10,(32) sole(33) dependency:(34) pyarrow.(35) MIT(36) license;(37) new(38) releases(39) roughly(40) every(41) six(42) weeks.(43)\n\nStill 43. The issue is \"newline-delimited JSON\" and the whole thing.\n\nLet me try a more aggressive compression:\n\n\"tidelog v0.4.2 is a small Python library that reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases every six weeks.\"\n\nThat's 41. Close.\n\n\"tidelog v0.4.2 reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2(2) reads(3) newline-delimited(4) JSON(5) log(6) files(7) and(8) writes(9) them(10) as(11) Parquet(12) files(13) for(14) efficient(15) querying.(16) Tested(17) on(18) files(19) up(20) to(21) 8(22) GB.(23) Requires(24) Python(25) 3.10,(26) sole(27) dependency:(28) pyarrow.(29) MIT(30) license;(31) new(32) releases(33) every(34) six(35) weeks.(36)\n\nThat's 36 words. \n\nWait, I removed \"is a small Python library\" and \"currently\". But the facts are all preserved:\n- tidelog (the name)\n- v0.4.2 (version)\n- reads newline-delimited JSON log files (purpose)\n- writes them as Parquet files (writes to Parquet)\n- for efficient querying (reason)\n- Tested on files up to 8 GB (tested up to 8GB)\n- Requires Python 3.10+, sole dependency pyarrow (Python 3.10+, pyarrow is the only third-party dependency)\n- MIT license (MIT license)\n- new releases every six weeks (roughly every six weeks)\n\nActually \"roughly\" was in the original. Let me check if I need it. \"currently publish a new release roughly every six weeks.\" I dropped \"roughly\". Is that a fact? The fact is \"new releases roughly every six weeks\". Hmm. I should probably keep \"roughly\" if possible.\n\nLet me try with \"roughly\":\n\n\"tidelog v0.4.2 reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2(2) reads(3) newline-delimited(4) JSON(5) log(6) files(7) and(8) writes(9) them(10) as(11) Parquet(12) files(13) for(14) efficient(15) querying.(16) Tested(17) on(18) files(19) up(20) to(21) 8(22) GB.(23) Requires(24) Python(25) 3.10,(26) sole(27) dependency:(28) pyarrow.(29) MIT(30) license;(31) new(32) releases(33) roughly(34) every(35) six(36) weeks.(37)\n\n37 words. Good.\n\nBut wait, I removed \"is a small Python library\" - is \"small Python library\" a fact? The original says \"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to...\" \n\nThe facts are:\n- It's a small Python library\n- Version 0.4.2\n- Purpose: read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently\n- Tested on files up to 8 GB\n- Requires Python 3.10 or newer\n- Only third-party dependency is pyarrow\n- Released under MIT licence\n- Maintainers currently publish a new release roughly every six weeks\n\nSo \"small Python library\" is a fact. Let me try to include it.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency:(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) roughly(38) every(39) six(40) weeks.(41)\n\n41 words. One too many.\n\nLet me try:\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency:(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) every(38) six(39) weeks.(40)\n\n40 words! \n\nBut I dropped \"roughly\". Is \"roughly every six weeks\" a distinct fact from \"every six weeks\"? The original says \"roughly every six weeks\". If I just say \"every six weeks\", is that losing the \"roughly\"? \n\nLet me see if I can squeeze \"roughly\" in without adding words.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency:(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) roughly(38) every(39) six(40) weeks.(41)\n\n41 words. Over.\n\nLet me try to combine differently.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases every ~six weeks.\"\n\nUsing \"~\" instead of \"roughly\" would be wrong. Or \"roughly\" could be dropped if \"every six weeks\" is acceptable. But the user said every fact must survive. Is \"roughly\" a fact? It's a qualifier. \n\nLet me try another approach:\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency pyarrow. MIT license; new releases roughly every six weeks.\"\n\n\"sole dependency\" instead of \"sole dependency:\" saves a word.\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) roughly(38) every(39) six(40) weeks.(41)\n\nStill 41.\n\nLet me try without the period after GB:\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nThat's still 41. The issue is the \"roughly\" word.\n\nLet me try:\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency pyarrow. MIT license; new releases every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) every(38) six(39) weeks.(40)\n\n40 words. But I dropped \"roughly\".\n\nHmm. Let me think about whether \"roughly\" is essential. The original says \"currently publish a new release roughly every six weeks\". The fact is the frequency is roughly every six weeks. \"Roughly\" conveys that it's not exactly six weeks. Is that a \"fact\"? It's a qualifier on the fact. \n\nThe instruction says \"Every fact in it must survive.\" The facts are more like: version, purpose, tested size, Python version requirement, dependency, license, release frequency. \"Roughly\" is a nuance. But to be safe, I should try to include it.\n\nLet me see if I can fit \"roughly\" by other cuts.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency pyarrow. MIT license; releases roughly every six weeks.\"\n\n\"releases\" instead of \"new releases\" saves a word.\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency(32) pyarrow.(33) MIT(34) license;(35) releases(36) roughly(37) every(38) six(39) weeks.(40)\n\n40 words! And I kept \"roughly\". But I changed \"new releases\" to \"releases\" - is that acceptable? The original fact is \"maintainers currently publish a new release roughly every six weeks\". The fact is about new releases being published. \"releases\" is close enough. Or I could use \"new releases\" and drop \"roughly\" - but I think keeping \"roughly\" is better for faithfulness.\n\nWait, but \"releases\" without \"new\" is slightly different. Let me see if I can keep \"new releases\" and find another cut.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8 GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8(26) GB.(27) Requires(28) Python(29) 3.10+,(30) sole(31) dependency:(32) pyarrow.(33) MIT(34) license;(35) new(36) releases(37) roughly(38) every(39) six(40) weeks.(41)\n\n41 words. The problem is the period after GB.\n\n\"tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.\"\n\n\"8GB\" instead of \"8 GB\" saves a word.\n\nCount:\ntidelog(1) v0.4.2,(2) a(3) small(4) Python(5) library,(6) reads(7) newline-delimited(8) JSON(9) log(10) files(11) and(12) writes(13) them(14) as(15) Parquet(16) files(17) for(18) efficient(19) querying.(20) Tested(21) on(22) files(23) up(24) to(25) 8GB.(26) Requires(27) Python(28) 3.10+,(29) sole(30) dependency:(31) pyarrow.(32) MIT(33) license;(34) new(35) releases(36) roughly(37) every(38) six(39) weeks.(40)\n\n40 words! And I have \"new releases roughly every six weeks\". \n\nWait, let me double check the count:\n1. tidelog\n2. v0.4.2,\n3. a\n4. small\n5. Python\n6. library,\n7. reads\n8. newline-delimited\n9. JSON\n10. log\n11. files\n12. and\n13. writes\n14. them\n15. as\n16. Parquet\n17. files\n18. for\n19. efficient\n20. querying.\n21. Tested\n22. on\n23. files\n24. up\n25. to\n26. 8GB.\n27. Requires\n28. Python\n29. 3.10+,\n30. sole\n31. dependency:\n32. pyarrow.\n33. MIT\n34. license;\n35. new\n36. releases\n37. roughly\n38. every\n39. six\n40. weeks.\n\nYes, 40 words. But \"8GB\" vs \"8 GB\" - the original says \"8 GB\". Is \"8GB\" acceptable? It's a minor formatting change, not losing a fact. The size is 8 GB. \n\nActually, let me check if the original had \"8 GB\" - yes: \"tested on files of up to 8 GB in size.\" So the fact is \"up to 8 GB\". In my version, \"up to 8GB\" preserves that.\n\nLet me verify all facts:\n1. \"tidelog is a small Python library\" ✓ (\"tidelog v0.4.2, a small Python library\")\n2. \"currently at version 0.4.2\" ✓ (v0.4.2)\n3. \"whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently\" ✓ (\"reads newline-delimited JSON log files and writes them as Parquet files for efficient querying\")\n4. \"It has been tested on files of up to 8 GB in size\" ✓ (\"Tested on files up to 8GB\")\n5. \"requires Python 3.10 or newer\" ✓ (\"Requires Python 3.10+\")\n6. \"only third-party dependency is pyarrow\" ✓ (\"sole dependency: pyarrow\")\n7. \"released under the MIT licence\" ✓ (\"MIT license;\")\n8. \"maintainers currently publish a new release roughly every six weeks\" ✓ (\"new releases roughly every six weeks\")\n\nAll facts preserved. 40 words. \n\nActually, one issue: I used \"library,\" with a comma after. That's fine.\n\nAnother thought: \"currently\" was dropped. Is \"currently\" a fact? The version is \"currently at version 0.4.2\" - but version 0.4.2 itself is the current version. The \"currently\" just means it's the present version. I think it's fine.\n\nLet me also check: \"read\" vs \"reads\" - the library \"reads\" (present tense), which is fine. \"write them out again\" - \"writes them as Parquet files\" captures the essence. \"again\" is dropped but \"as Parquet files\" captures the output format. \"so that they can be queried more efficiently\" → \"for efficient querying\". Good.\n\nI think this works. Let me present the final answer.",
+ "content": "tidelog v0.4.2, a small Python library, reads newline-delimited JSON log files and writes them as Parquet files for efficient querying. Tested on files up to 8GB. Requires Python 3.10+, sole dependency: pyarrow. MIT license; new releases roughly every six weeks.",
+ "usage": {
+  "completion_tokens": 5204,
+  "prompt_tokens": 140,
+  "total_tokens": 5344,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 140,
+  "prompt_ms": 115.214,
+  "prompt_per_token_ms": 0.8229571428571428,
+  "prompt_per_second": 1215.1301057163191,
+  "predicted_n": 5204,
+  "predicted_ms": 126144.493,
+  "predicted_per_token_ms": 24.24456909475303,
+  "predicted_per_second": 41.2463507225797
+ },
+ "tokens": {
+  "reasoning_tokenized": 5141,
+  "content_tokenized": 64,
+  "completion_tokens_usage": 5204,
+  "prompt_tokens_usage": 140,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.119,
+  "to_first_reasoning": 0.119,
+  "to_first_answer_token": 124.388,
+  "to_final_answer": 126.264
+ },
+ "peaks": {
+  "gpu_temp_c": 88,
+  "gpu_mem_mib": 4819,
+  "min_mem_available_mib": 26313
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26330
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 83,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26340
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 84,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26344
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 85,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26348
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 85,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 71.1,
+   "gpu_temp_c": 86,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26347
+  },
+  {
+   "t_s": 81.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26346
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26345
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26348
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26354
+  },
+  {
+   "t_s": 121.2,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26354
+  }
+ ]
+}

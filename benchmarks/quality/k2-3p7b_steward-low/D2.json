@@ -1,0 +1,83 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1017,
+ "started_at": "2026-11-05T04:47:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "ESCALATE",
+ "usage": {
+  "completion_tokens": 5,
+  "prompt_tokens": 152,
+  "total_tokens": 157,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 152,
+  "prompt_ms": 112.584,
+  "prompt_per_token_ms": 0.7406842105263158,
+  "prompt_per_second": 1350.1030341789242,
+  "predicted_n": 5,
+  "predicted_ms": 73.108,
+  "predicted_per_token_ms": 18.277,
+  "predicted_per_second": 54.71357443781802
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 3,
+  "completion_tokens_usage": 5,
+  "prompt_tokens_usage": 152,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.133,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.133,
+  "to_final_answer": 0.188
+ },
+ "peaks": {
+  "gpu_temp_c": 73,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22289
+ },
+ "samples": [
+  {
+   "t_s": 0.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22289
+  }
+ ]
+}

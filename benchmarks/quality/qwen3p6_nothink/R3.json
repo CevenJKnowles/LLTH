@@ -1,0 +1,168 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1013,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1013,
+ "started_at": "2026-10-30T20:18:17",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Here is a design for a robust, resource-efficient daily batch pipeline tailored to your constraints. This solution prioritizes low memory usage, fault tolerance, and simplicity by leveraging standard command-line tools and local file systems.\n\n### 1. Directory Layout & Storage Strategy\n\nTo minimize I/O overhead and ensure clear separation of concerns, organize the server into three distinct directories: `raw`, `staging`, and `prod`.\n\n*   **`/data/raw/`**: The drop zone for incoming hourly `.gz` files.\n    *   *Structure*: `/data/raw/YYYY/MM/DD/hh_YYYYMMDD_HH.jsonl.gz`\n    *   *Retention*: Automatically deleted after 60 days via a cleanup script.\n*   **`/data/staging/`**: Intermediate storage for processing. This is where we decompress and merge files to keep memory low.\n    *   *Structure*: `/data/staging/YYYY/MM/DD/batch_YYYYMMDD_HH.parquet` (one file per hour)\n    *   *Format*: **Parquet**. Unlike JSON, Parquet is columnar, compressed efficiently, and allows reading specific columns without loading the entire record into memory if processed correctly. However, for simplicity in this low-memory environment, we will process row-by-row using a streaming approach but store intermediate results in a lightweight format like SQLite or sorted CSVs to avoid RAM spikes.\n*   **`/data/prod/`**: The final storage for aggregates and model data.\n    *   *Aggregates*: `/data/prod/aggregates/YYYY/MM/DD/user_event_counts.parquet` (or SQLite DB)\n    *   *Model Artifacts*: `/data/prod/models/YYYY/MM/DD/model.joblib`\n    *   *Training Data*: `/data/prod/training_data/YYYY/MM/DD/feature_set.parquet`\n\n### 2. Core Processing Stages (The Pipeline)\n\nThe pipeline consists of four sequential stages, each designed to be idempotent and restartable.\n\n#### Stage 1: Ingestion & Decompression (Hourly)\n*   **Trigger**: Runs every hour via cron.\n*   **Action**: Move the hourly `.gz` file from `raw/` to `staging/decompressing/`. Decompress it into a temporary sorted text file or stream directly into the next stage.\n*   **Memory Control**: Do not load the entire 20GB/day (approx. 833MB/hour) into RAM. Use `gzip -dc` piped directly to the next command.\n*   **Fault Tolerance**: If the job fails, the file remains in `staging/decompressing/`. The next run detects this and resumes or restarts that hour’s processing.\n\n#### Stage 2: Streaming Aggregation (Hourly)\n*   **Trigger**: Runs every hour via cron, triggered after Stage 1 completes.\n*   **Action**: Read the decompressed stream line-by-line. For each event, update an in-memory dictionary keyed by `(user_id, event_type)`. Since we process hourly chunks, the memory footprint is bounded by the number of *active users per hour*, not total historical users.\n    *   *Critical Optimization*: If a single user has millions of events in one hour, use external sorting (e.g., `sort` command on disk) instead of keeping everything in RAM. Write intermediate counts to a temporary file: `user_id,event_type,count`.\n*   **Output**: A partial aggregate file for that hour: `/data/staging/YYYY/MM/DD/hourly_agg_YYYYMMDD_HH.csv`.\n*   **Memory Control**: By processing per-hour, we only hold one hour’s unique user-event pairs in memory. This keeps RAM usage well under 16GB even if there are thousands of users.\n\n#### Stage 3: Daily Merge & Final Aggregation (Daily at 05:00)\n*   **Trigger**: Runs once daily at 05:00 via cron.\n*   **Action**:\n    1.  Concatenate all `hourly_agg_*.csv` files for the previous day.\n    2.  Sort by `(user_id, event_type)` and sum counts using a streaming sort-and-merge approach (e.g., Unix `sort | uniq -c` or Python with external merge sort).\n    3.  Write the final daily aggregates to `/data/prod/aggregates/YYYY/MM/DD/final_agg.parquet`.\n*   **Restartability**: If this fails, it can be re-run at any time before 06:00 without reprocessing raw logs because hourly aggregations are already saved in `staging/`.\n\n#### Stage 4: Model Retraining (Weekly on Sunday at 02:00)\n*   **Trigger**: Runs weekly via cron.\n*   **Action**:\n    1.  Read the last 30 days of daily aggregates from `/data/prod/aggregates/`.\n    2.  Construct feature vectors for each user (e.g., total counts per event type over 30 days).\n    3.  Train the scikit-learn classifier.\n    4.  Save the model to `/data/prod/models/YYYY/MM/DD/model.joblib`.\n*   **Memory Control**: Load data in chunks or use a database (SQLite) to query features on demand rather than loading all 30 days into RAM at once.\n\n### 3. Memory Management Under 16 GB\n\n*   **Streaming Processing**: Never read the entire day’s 20GB file into memory. Use pipes (`|`) and generators to process data chunk-by-chunk.\n*   **External Sorting**: For aggregation, if the number of unique `(user_id, event_type)` pairs exceeds available RAM, write intermediate results to disk and use an external merge sort algorithm (available in Unix `sort` or Python’s `heapq.merge`).\n*   **Garbage Collection**: In Python scripts, explicitly call `gc.collect()` after processing each hourly chunk to free memory.\n*   **Parquet Compression**: Use `snappy` or `zstd` compression in Parquet files to reduce disk I/O and memory footprint when reading/writing.\n\n### 4. Scheduling & Fault Detection\n\n*   **Scheduler**: Use `cron` for simplicity. Define jobs with precise timing:\n    *   `0 * * * *`: Stage 1 (Ingestion)\n    *   `5 * * * *`: Stage 2 (Aggregation) – starts 5 mins after the hour to allow ingestion to finish.\n    *   `0 5 * * *`: Stage 3 (Daily Merge)\n    *   `0 2 * * 0`: Stage 4 (Weekly Training)\n*   **Failure Detection**:\n    *   **Exit Codes**: Each script must return a non-zero exit code on failure.\n    *   **Lock Files**: Use a simple lock file mechanism (e.g., `/tmp/pipeline.lock`) to prevent overlapping runs. If the lock file exists and is older than 24 hours, assume a crash and clean it up.\n    *   **Health Check Script**: A daily cron job at 06:30 checks if `/data/prod/aggregates/YYYY/MM/DD/final_agg.parquet` exists and has non-zero size. If not, send an alert (email/syslog).\n\n### 5. Rough Estimates\n\n*   **Processing Time**:\n    *   *Ingestion/Decompression*: ~10-15 minutes per hour (depending on disk I/O speed for HDD vs SSD).\n    *   *Aggregation*: ~2-5 minutes per hour (streaming dictionary updates are fast).\n    *   *Daily Merge*: ~10-20 minutes (sorting and merging 24 hourly files).\n    *   *Weekly Training*: ~30-60 minutes (depending on dataset size and model complexity).\n    *   *Total Daily Window*: All daily tasks complete well before 06:00, with a comfortable buffer.\n\n*   **Disk Use**:\n    *   *Raw Logs*: 20 GB/day * 60 days = 1.2 TB (within 2 TB limit).\n    *   *Staging*: Temporary files are deleted after aggregation. Peak usage ~1 hour of raw data (~833 MB) + compressed aggregates.\n    *   *Prod Aggregates*: Highly compressed Parquet files. Daily aggregate size is negligible compared to raw logs (<1 GB/day). 30 days of training data: <5 GB.\n    *   *Total Disk*: Well within 2 TB, with significant headroom for growth and OS overhead.\n\nThis design ensures that even if the server crashes at 04:00, the next day’s pipeline can resume from the last successful hourly aggregation without reprocessing raw logs, meeting the restartability requirement.",
+ "usage": {
+  "completion_tokens": 1893,
+  "prompt_tokens": 202,
+  "total_tokens": 2095,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 202,
+  "prompt_ms": 1405.523,
+  "prompt_per_token_ms": 6.958034653465346,
+  "prompt_per_second": 143.7187438412605,
+  "predicted_n": 1893,
+  "predicted_ms": 147969.352,
+  "predicted_per_token_ms": 78.20790274841438,
+  "predicted_per_second": 12.786431611865138
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 1892,
+  "completion_tokens_usage": 1893,
+  "prompt_tokens_usage": 202,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.408,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.408,
+  "to_final_answer": 149.378
+ },
+ "peaks": {
+  "gpu_temp_c": 74,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26181
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26257
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26194
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26181
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26214
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26245
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26219
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26208
+  },
+  {
+   "t_s": 71.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26206
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26215
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26198
+  },
+  {
+   "t_s": 101.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26225
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26222
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26213
+  },
+  {
+   "t_s": 131.5,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 141.5,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26232
+  }
+ ]
+}

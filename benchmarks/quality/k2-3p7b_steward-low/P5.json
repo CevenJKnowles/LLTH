@@ -1,0 +1,83 @@
+{
+ "id": "P5",
+ "title": "Keras classifier, compile and parameter count",
+ "prompt_text": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Keras 3 with the TensorFlow 2.x backend. I want a `Sequential` model for 10 input features: `Dense(32, activation=\"relu\")`, then `Dropout(0.2)`, then `Dense(3, activation=\"softmax\")`. My labels are integers 0, 1, 2, not one-hot. Give the model definition and the `compile` call with the correct loss, and tell me what `model.count_params()` will return."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1010,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1010,
+ "started_at": "2026-11-05T04:46:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "```python\nmodel = Sequential([\n    Dense(32, activation=\"relu\"),\n    Dropout(0.2),\n    Dense(3, activation=\"softmax\"),\n])\n\nmodel.compile(\n    optimizer=\"adam\",\n    loss=\"sparse_categorical_crossentropy\",\n    metrics=[\"accuracy\"],\n)\n```\n\nFor the specified architecture:\n\n- `Dense(32, activation=\"relu\")`: 10 × 32 = 320 weights + 32 biases = **352 params**\n- `Dropout(0.2)`: **0 params**\n- `Dense(3, activation=\"softmax\")`: 32 × 3 = 96 weights + 3 biases = **99 params**\n\nSo `model.count_params()` returns **451**.",
+ "usage": {
+  "completion_tokens": 144,
+  "prompt_tokens": 152,
+  "total_tokens": 296,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 152,
+  "prompt_ms": 104.918,
+  "prompt_per_token_ms": 0.69025,
+  "prompt_per_second": 1448.7504527345163,
+  "predicted_n": 144,
+  "predicted_ms": 2445.562,
+  "predicted_per_token_ms": 17.101832167832168,
+  "predicted_per_second": 58.47326708543885
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 142,
+  "completion_tokens_usage": 144,
+  "prompt_tokens_usage": 152,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.125,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.125,
+  "to_final_answer": 2.553
+ },
+ "peaks": {
+  "gpu_temp_c": 60,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22313
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22313
+  }
+ ]
+}

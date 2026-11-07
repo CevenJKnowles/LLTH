@@ -1,0 +1,84 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1001,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1001,
+ "started_at": "2026-10-30T20:02:43",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Gridhop converts CSV timetables into ICS calendar files. It is designed for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+ "usage": {
+  "completion_tokens": 44,
+  "prompt_tokens": 92,
+  "total_tokens": 136,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 92,
+  "prompt_ms": 1367.724,
+  "prompt_per_token_ms": 14.866565217391303,
+  "prompt_per_second": 67.26503300373467,
+  "predicted_n": 44,
+  "predicted_ms": 2262.143,
+  "predicted_per_token_ms": 52.60797674418605,
+  "predicted_per_second": 19.008524217965
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 43,
+  "completion_tokens_usage": 44,
+  "prompt_tokens_usage": 92,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.37,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.37,
+  "to_final_answer": 3.633
+ },
+ "peaks": {
+  "gpu_temp_c": 53,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26176
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 53,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26176
+  }
+ ]
+}

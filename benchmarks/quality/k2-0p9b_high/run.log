@@ -1,0 +1,36 @@
+[2026-10-31 01:08:04] run start: k2-0p9b_high, 2 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:08:05] W1: complete finish=stop reasoning_tok=154 answer_tok=49 total_tok=206 time=1.6s peak_temp=52 min_ram=26357
+[2026-10-31 01:08:20] P2: complete finish=stop reasoning_tok=1585 answer_tok=504 total_tok=2092 time=14.5s peak_temp=61 min_ram=26322
+[2026-10-31 01:08:20] run finished
+[2026-10-31 01:08:54] run start: k2-0p9b_high, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:08:54] W1: result exists, skipped
+[2026-10-31 01:08:56] W2: complete finish=stop reasoning_tok=171 answer_tok=130 total_tok=304 time=2.3s peak_temp=58 min_ram=26285
+[2026-10-31 01:09:05] W3: complete finish=stop reasoning_tok=175 answer_tok=1079 total_tok=1257 time=8.6s peak_temp=61 min_ram=26365
+[2026-10-31 01:09:37] W4: complete finish=None reasoning_tok=None answer_tok=0 total_tok=None time=32.1s peak_temp=65 min_ram=26319
+[2026-10-31 01:09:37] W5: error finish=None reasoning_tok=0 answer_tok=0 total_tok=None time=0.0s peak_temp=54 min_ram=26403 ERROR ConnectionRefusedError(111, 'Connection refused')
+[2026-10-31 01:09:37] run finished
+[2026-10-31 01:15:24] run start: k2-0p9b_high, 2 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:15:28] W4: complete finish=stop reasoning_tok=552 answer_tok=66 total_tok=618 time=4.4s peak_temp=52 min_ram=26210
+[2026-10-31 01:15:45] W5: complete finish=stop reasoning_tok=2239 answer_tok=173 total_tok=2415 time=17.1s peak_temp=61 min_ram=26287
+[2026-10-31 01:15:45] run finished
+[2026-10-31 01:16:24] run start: k2-0p9b_high, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:16:34] P1: complete finish=stop reasoning_tok=528 answer_tok=976 total_tok=1507 time=10.6s peak_temp=57 min_ram=26382
+[2026-10-31 01:16:34] P2: result exists, skipped
+[2026-10-31 01:16:42] P3: complete finish=stop reasoning_tok=617 answer_tok=513 total_tok=1133 time=7.9s peak_temp=64 min_ram=26230
+[2026-10-31 01:16:54] P4: complete finish=stop reasoning_tok=376 answer_tok=1327 total_tok=1706 time=12.0s peak_temp=70 min_ram=26249
+[2026-10-31 01:17:05] P5: complete finish=stop reasoning_tok=1343 answer_tok=150 total_tok=1496 time=10.5s peak_temp=70 min_ram=26283
+[2026-10-31 01:17:05] run finished
+[2026-10-31 01:18:59] run start: k2-0p9b_high, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:24:38] R1: complete finish=stop reasoning_tok=19121 answer_tok=3943 total_tok=23067 time=339.1s peak_temp=90 min_ram=26296
+[2026-10-31 01:25:00] R2: complete finish=stop reasoning_tok=1591 answer_tok=666 total_tok=2260 time=22.3s peak_temp=89 min_ram=26334
+[2026-10-31 01:25:26] R3: complete finish=stop reasoning_tok=129 answer_tok=2386 total_tok=2518 time=25.2s peak_temp=88 min_ram=26294
+[2026-10-31 01:33:02] R4: complete finish=stop reasoning_tok=23199 answer_tok=807 total_tok=24008 time=455.9s peak_temp=90 min_ram=25937
+[2026-10-31 01:33:27] R5: complete finish=stop reasoning_tok=231 answer_tok=2309 total_tok=2543 time=25.5s peak_temp=89 min_ram=26368
+[2026-10-31 01:33:27] run finished
+[2026-10-31 01:38:30] run start: k2-0p9b_high, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-31 01:38:34] D1: complete finish=stop reasoning_tok=558 answer_tok=22 total_tok=583 time=4.1s peak_temp=57 min_ram=26297
+[2026-10-31 01:38:47] D2: complete finish=stop reasoning_tok=859 answer_tok=960 total_tok=1821 time=12.7s peak_temp=67 min_ram=26289
+[2026-10-31 01:38:54] D3: complete finish=stop reasoning_tok=931 answer_tok=75 total_tok=1009 time=6.9s peak_temp=67 min_ram=26295
+[2026-10-31 01:39:05] D4: complete finish=stop reasoning_tok=823 answer_tok=773 total_tok=1599 time=11.2s peak_temp=73 min_ram=26170
+[2026-10-31 01:39:19] D5: complete finish=stop reasoning_tok=516 answer_tok=1380 total_tok=1899 time=13.6s peak_temp=75 min_ram=26257
+[2026-10-31 01:39:19] run finished

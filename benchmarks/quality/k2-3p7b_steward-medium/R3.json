@@ -1,0 +1,113 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1013,
+ "started_at": "2026-11-05T04:53:45",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user asks for design of a daily batch pipeline under constraints. Need to provide description: stages, storage format, directory layout, memory management, scheduling, failure detection, time estimates, disk usage. No code. Could be prose or numbered list. Provide a robust answer. Must ensure clarity. Provide stage breakdown: ingest, preprocess, aggregate, store, cleanup, train. Use incremental processing: hourly files, compute hourly aggregates then daily user/event type aggregates. Use compression (Parquet or columnar format, maybe .parquet with snappy). Memory: stream per hour files, use chunked reading, aggregate in pandas with chunked reading or using PySpark? No cloud. Use SQLite? Could use DuckDB as lightweight analytical DB. Or use plain files with columnar format and incremental merge. Use 4 cores, so parallelize across hours using multiprocessing or xargs. Memory: process each hour separately, write per-hour partial aggregates, then merge daily aggregates with external sort.\n\nScheduling: cron at 06:00 run a job that triggers pipeline, and hourly triggers ingestion and per-hour aggregation at e.g., 01:00 each hour. Use a simple log.\n\nFailure detection: check exit codes, monitor logs, a watchdog script that alerts (email, Slack, log). Use a DAG and record progress.\n\nDisk use: raw logs 20GB per day => 60 days => 1.2TB, but they keep only 60 days, need to keep raw logs. Also intermediate files compress maybe 1.5GB/day. Disk 2TB can hold 1.2TB raw + intermediate + model.\n\nTime estimates: processing 20GB/day; with 4 cores maybe ~1-2 hours for per-hour aggregation. Use chunk reading and parallelism: each hour file ~2GB; reading+parse maybe 0.5-1 min per hour, so total 20-40 min. Daily aggregation after merging hour aggregates is quick.\n\nMemory: each hour file processed in streaming fashion with pandas read_json lines, or using ijson to parse one line at a time, accumulate aggregates (dicts) per event type, not storing all rows. Keep aggregates in memory small.\n\nDirectory layout:\n\n/data/\n  raw/\n    2025-11-17/\n      01.jsonl.gz\n      ...\n  hourly/\n    2025-11-17_01/\n      aggregates.jsonl.gz\n  daily/\n    2025-11-17/\n      user_agg.parquet\n      event_agg.parquet\n  cleanup/\n    deleted_2025-10-18/\n    ...\n\nModel:\n  models/\n    weekly/\n      2025-11-10_model.pkl\n\nLogs:\n  logs/\n    pipeline.log\n\nDesign pipeline as separate scripts: ingest.py, hour_agg.py, daily_agg.py, cleanup.py, train_classifier.py, monitor.py.\n\nProvide details on restartability: store a manifest (state) with last processed hour; skip hours already done. Use atomic writes (temp file then rename). Use lock files.\n\nNow produce answer.</ifm|think>**Daily batch pipeline for 20 GB / day of gzipped JSON‑L logs on a single 4‑core/16 GB server**\n\n---\n\n## 1. High‑level flow  \n\n| Step | When (cron) | What it does | Output |\n|------|--------------|--------------|--------|\n| **A. Ingest** | Every hour (e.g. `0 30 *` for hour‑ending 00:00) | Copy the newest `*.jsonl.gz` from the “incoming” folder into the raw store and optionally decompress for local parsing (keep gz for retention). | Raw hourly files |\n| **B. Hour‑level aggregation** | Immediately after ingest (same hour) | Stream the hourly file, parse each line, keep only the fields needed for the daily aggregates (user id, event type, timestamp, any numeric counters). Write a compact “hour‑aggregate” file. | `hourly/<date>_<hour>/agg.jsonl.gz` |\n| **C. Daily aggregation** | Daily at 02:30 | Merge all hour‑aggregate files for the previous day into two Parquet tables: `user_daily.parquet` (one row per user) and `event_daily.parquet` (one row per event type). | `daily/<date>/user_daily.parquet`, `daily/<date>/event_daily.parquet` |\n| **D. Retention / cleanup** | Daily at 04:00 | Delete raw hourly files older than 60 days, archive hour‑aggregate files older than 30 days (only needed for the weekly retrain window). | Keeps only recent raw logs |\n| **E. Model retraining** | Weekly (Sunday 05:00) | Load the last 30 days of the two daily‑aggregate tables, train a scikit‑learn classifier (e.g. GradientBoosting) on the “target” column if one exists, and write the model. | `models/weekly/<date>.pkl` |\n| **F. Monitoring / failure handling** | Continuous (a watchdog script) | Verify that the previous stages exited 0, write a state manifest (`manifest.json`) that records the newest processed hour, and alert (email/Slack) on any non‑zero exit. | Logs, alerts |\n\nAll steps are **restart‑safe**: each stage writes its results to a new file with a temporary suffix (`.tmp`) and then atomically `rename`s it into place. The manifest stores the highest completed hour, so a crash after hour N simply resumes at hour N+1 without re‑processing earlier data.\n\n---\n\n## 2. Directory layout\n\n```\npipeline_root/\n├─ raw/                     # gzipped JSONL, retained 60 days\n│   └─ 2025-11-17/\n│       ├─ 01.jsonl.gz\n│       ├─ 02.jsonl.gz\n│       └─ …\n├─ hourly/                  # hour‑level aggregates (kept 30 days)\n│   └─ 2025-11-17_01/\n│       └─ agg.jsonl.gz\n├─ daily/                   # final per‑user & per‑event aggregates (Parquet)\n│   └─ 2025-11-17/\n│       ├─ user_daily.parquet\n│       └─ event_daily.parquet\n├─ models/\n│   └─ weekly/\n│       └─ 2025-11-10_classifier.pkl\n├─ manifest.json            # last processed hour + run status\n└─ logs/\n    ├─ pipeline.log\n    └─ alerts.log\n```\n\n*Parquet* is chosen because:\n* Columnar compression (snappy) makes the daily aggregates tiny (tens of MB for a day of events).\n* It can be read back quickly for the weekly retrain step.\n* No external service needed; DuckDB (installed locally) can read Parquet with minimal code, or pandas can use `pyarrow`.\n\n---\n\n## 3. Keeping memory < 16 GB  \n\n1. **Process one hour file at a time** – each file is ≈2 GB gzipped, 4–6 GB raw.  \n2. **Stream line‑by‑line** using `ijson` or a custom JSON decoder that yields one parsed object per line. No whole‑file DataFrame is built.  \n3. **Accumulate only aggregates** – keep a `dict` of counters per `(user, event_type)` while iterating; the number of distinct users per hour is far smaller than the raw volume (typically < 1 M rows).  \n4. **Parallelism** – a small process pool (size = number of cores, 4) runs one worker per hour file. Each worker uses the same memory budget (≈2 GB), so peak RAM stays < 16 GB.  \n5. **Write hourly aggregates** as soon as the file is finished; never hold them in memory beyond the aggregation step.\n\n---\n\n## 4. Scheduling (plain cron)\n\n```\n# Every hour – ingest the newest file\n0 30 * * * /usr/local/bin/ingest.sh\n\n# Daily – aggregate all completed hours into the daily tables\n30 2 * * * /usr/local/bin/daily_agg.sh\n\n# Daily – retain logs / delete old raw files\n0 4 * * * /usr/local/bin/cleanup.sh\n\n# Weekly (Sunday) – retrain classifier\n0 5 * * 0 /usr/local/bin/train_classifier.sh\n\n# Watchdog – check exit codes and alert\n*/10 * * * * /usr/local/bin/watchdog.sh\n```\n\nAll scripts log to `/pipeline_root/logs/pipeline.log`.  \n`watchdog.sh` reads the manifest and if any previous step failed, it sends an email (or Slack webhook) and optionally restarts the failed step.\n\n---\n\n## 5. Failure detection  \n\n* **Exit‑code check** – each stage returns `0` on success; the watchdog records the return code in the manifest.  \n* **Atomic writes** – a failed stage leaves only the `.tmp` file; the watchdog detects its absence and can retry without corrupting the final artifact.  \n* **State manifest** – contains `last_completed_hour` and `stage_status`. On restart, the scheduler simply runs the next stage; already‑completed hours are skipped because the hour‑aggregate file exists and its `mtime` is newer than the manifest.  \n* **Alerting** – on non‑zero exit the watchdog appends a line to `alerts.log` and triggers an email/Slack message containing the failing stage and the current timestamp.  \n\n---\n\n## 6. Rough time & disk estimates  \n\n| Item | Size (per day) | Processing time (4 cores) | Disk after 60 days |\n|------|----------------|---------------------------|--------------------|\n| Raw gzipped JSONL | 20 GB | – (only read) – | 20 GB × 60 = 1.2 TB |\n| Hour‑level aggregates | ~2 GB (gz) | 1–2 min per hour → ≈20 min/day | 2 GB × 30 = 0.6 TB |\n| Daily Parquet aggregates | < 0.1 GB (compressed) | < 5 min/day | negligible |\n| Intermediate model files | < 1 GB total | – | < 1 GB |\n| **Total raw+intermediate** | – | – | **≈2 TB** (fits on the 2 TB disk, leaving ~0 TB headroom; can compress raw files further if needed, or increase retention period). |\n\n*Processing time*  \n* Ingest + hourly aggregation: ~1 hour of wall‑clock (parallel across 4 cores).  \n* Daily merge of hour aggregates into Parquet: < 5 min.  \n* Cleanup and model retrain: < 10 min (model training on ~30 days of small tables is fast; scikit‑learn on ≤ 5 M rows runs in a few minutes).\n\n*Memory* stays under ~2 GB per worker, comfortably below the 16 GB limit.\n\n---\n\n## 7. Summary of the design  \n\n1. **Incremental ingestion** → hourly raw files kept 60 days.  \n2. **Streaming hour‑level aggregation** → compact per‑hour JSONL (gz) written atomically.  \n3. **Daily merge** of hour aggregates into Parquet user/event tables, ready by 06:00.  \n4. **Retention policy** deletes old raw logs automatically, preserving only the data needed for the 30‑day retrain window.  \n5. **Weekly model training** consumes the last 30 days of the Parquet tables, writes a single pickle per week.  \n6. **State manifest + watchdog** guarantee restartability and immediate failure alerts.  \n\nAll of this runs on the single 4‑core/16 GB server with no cloud dependencies, using only local storage and open‑source tools (Python, `ijson`, `pandas`/`pyarrow`, `duckdb`, `cron`, `scikit‑learn`).",
+ "content": "",
+ "usage": {
+  "completion_tokens": 2557,
+  "prompt_tokens": 233,
+  "total_tokens": 2790,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 233,
+  "prompt_ms": 172.944,
+  "prompt_per_token_ms": 0.7422489270386265,
+  "prompt_per_second": 1347.256915533352,
+  "predicted_n": 2557,
+  "predicted_ms": 58195.673,
+  "predicted_per_token_ms": 22.768260172143975,
+  "predicted_per_second": 43.92079115572733
+ },
+ "tokens": {
+  "reasoning_tokenized": 2557,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 2557,
+  "prompt_tokens_usage": 233,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.178,
+  "to_first_reasoning": 0.178,
+  "to_first_answer_token": null,
+  "to_final_answer": 58.374
+ },
+ "peaks": {
+  "gpu_temp_c": 87,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22295
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22295
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22298
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22324
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22315
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22369
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22383
+  }
+ ]
+}

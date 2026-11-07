@@ -1,0 +1,85 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1006,
+ "started_at": "2026-10-30T23:57:02",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce code using pandas 2.x to pivot sales by city and month, with zeros for missing combos, then add total column. Show resulting frame. Provide code and output.\n\nWe can use df.pivot_table(index='month', columns='city', values='sales', aggfunc='sum', fill_value=0, observed=False). Then add total column: df['total'] = df.sum(axis=1). Ensure index sorted maybe.\n\nLet's compute values:\n\nData:\n\nmonth 1: A=10, B=20\nmonth 2: A=30, C=40\nmonth 3: B=50, A=60\n\nPivot:\n\ncolumns order maybe sorted alphabetically: A, B, C.\n\nRows 1,2,3.\n\nValues:\n\nmonth 1: A=10, B=20, C=0\nmonth 2: A=30, B=0, C=40\nmonth 3: A=60, B=50, C=0\n\nAdd total:\n\nmonth1 total 30\nmonth2 total 70\nmonth3 total 110\n\nShow frame as printed. Index will be month values (int). Columns city names. total column.\n\nLet's produce code:\n\nimport pandas as pd\n\ndf = pd.DataFrame({...})\n\npivot = df.pivot_table(index='month', columns='city', values='sales',\n                        aggfunc='sum', fill_value=0, observed=False).reset_index()\npivot['total'] = pivot.sum(axis=1)\nprint(pivot)\n\nResult:\n\n   month  A  B  C  total\n0      1  10  20   0     30\n1      2  30   0  40     70\n2      3  60  50   0    110\n\nNeed to ensure column order maybe alphabetical. pivot_table will sort columns alphabetically by default? I think columns are sorted as they appear in data? Actually pivot_table sorts columns alphabetically. So order A, B, C. Good.\n\nLet's produce final answer with code and output.",
+ "content": "**Code (pandas 2.x)**  \n\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\n# pivot: rows = month, columns = city, values = summed sales\npivot = (\n    df.pivot_table(\n        index=\"month\",\n        columns=\"city\",\n        values=\"sales\",\n        aggfunc=\"sum\",\n        fill_value=0,          # missing combos become 0\n        observed=False         # keep all columns even if a category has no data\n    )\n)\n\n# put the month back as a normal column and add a total column\npivot = pivot.reset_index()\npivot[\"total\"] = pivot.sum(axis=1)\n\nprint(pivot)\n```\n\n**Output as printed**\n\n```\n   month  A  B  C  total\n0      1  10  20   0     30\n1      2  30   0  40     70\n2      3  60  50   0    110\n```\n\nEach row corresponds to a month, each column to a city, the cells contain the summed sales for that city‑month pair (0 when the city had no sales that month), and the final `total` column gives the row‑wise sum.",
+ "usage": {
+  "completion_tokens": 759,
+  "prompt_tokens": 157,
+  "total_tokens": 916,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 157,
+  "prompt_ms": 437.575,
+  "prompt_per_token_ms": 2.7871019108280253,
+  "prompt_per_second": 358.7956350339942,
+  "predicted_n": 759,
+  "predicted_ms": 13489.696,
+  "predicted_per_token_ms": 17.7964327176781,
+  "predicted_per_second": 56.19103647702661
+ },
+ "tokens": {
+  "reasoning_tokenized": 433,
+  "content_tokenized": 324,
+  "completion_tokens_usage": 759,
+  "prompt_tokens_usage": 157,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.44,
+  "to_first_reasoning": 0.44,
+  "to_first_answer_token": 8.033,
+  "to_final_answer": 13.929
+ },
+ "peaks": {
+  "gpu_temp_c": 64,
+  "gpu_mem_mib": 4819,
+  "min_mem_available_mib": 26178
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26178
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26387
+  }
+ ]
+}

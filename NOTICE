@@ -1,0 +1,17 @@
+LLTH, Liberated Local Thinking Harness
+Copyright 2026 Ceven Jupiter Knowles
+
+Licences in this repository
+  Code (scripts)                                Apache-2.0        see LICENSE
+  Documentation (README, ADRs, guides)          CC BY-NC 4.0      see LICENSE-DOCS
+  Benchmark data (raw logs, result tables)      CC BY 4.0         see LICENSE-DATA
+  Code samples inside documents follow the code licence.
+
+Third-party software and models (not part of this repository)
+  llama.cpp          MIT           Built from source and called; not relicensed or redistributed here.
+                                   https://github.com/ggml-org/llama.cpp
+  Models             Each model is downloaded from its publisher and keeps its own licence. The licence of each
+                     model was checked against its model card on 2026-10-27:
+                     K2 Horizon (0.9B, 3.7B, 7B, MoVA 36B-A4B)      Apache-2.0
+                     Gemma 4 26B-A4B                                Apache-2.0
+                     Qwen3.6-35B-A3B (GGUF by Unsloth)              Apache-2.0

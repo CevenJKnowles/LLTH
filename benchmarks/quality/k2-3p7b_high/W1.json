@@ -1,0 +1,79 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1001,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1001,
+ "started_at": "2026-10-30T23:49:41",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to write first three sentences of a README for gridhop, a CLI tool that converts CSV timetables into ICS calendar files. Sentence one: what it does. Sentence two: who it is for (people who receive timetables as spreadsheets and want them in a calendar app). Sentence three: how to install it (`pip install gridhop`). Plain wording, no marketing language.\n\nSo something like:\n\n\"Gridhop is a command‑line tool that reads CSV timetables and writes them out as .ics files for calendar apps. It is intended for anyone who gets schedules as spreadsheets and wants them directly in a calendar app. Install it with `pip install gridhop`.\"\n\nThat satisfies. Provide exactly three sentences. Use plain wording, no marketing. Should be fine.",
+ "content": "Gridhop is a command‑line tool that reads CSV timetables and writes them out as .ics calendar files. It is intended for anyone who receives schedules as spreadsheets and wants them directly in a calendar app. Install it with `pip install gridhop`.",
+ "usage": {
+  "completion_tokens": 209,
+  "prompt_tokens": 87,
+  "total_tokens": 296,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 405.863,
+  "prompt_per_token_ms": 4.665091954022989,
+  "prompt_per_second": 214.3580469271651,
+  "predicted_n": 209,
+  "predicted_ms": 3575.446,
+  "predicted_per_token_ms": 17.18964423076923,
+  "predicted_per_second": 58.174560600271974
+ },
+ "tokens": {
+  "reasoning_tokenized": 156,
+  "content_tokenized": 51,
+  "completion_tokens_usage": 209,
+  "prompt_tokens_usage": 87,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.408,
+  "to_first_reasoning": 0.408,
+  "to_first_answer_token": 3.096,
+  "to_final_answer": 3.983
+ },
+ "peaks": {
+  "gpu_temp_c": 56,
+  "gpu_mem_mib": 4817,
+  "min_mem_available_mib": 26328
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 4817,
+   "mem_available_mib": 26328
+  }
+ ]
+}

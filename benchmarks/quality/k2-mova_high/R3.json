@@ -1,0 +1,895 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1013,
+ "started_at": "2026-10-30T16:13:02",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need answer. Need design daily batch pipeline. Need be thorough. Need no code. Need include stages, storage format, directory layout, memory, scheduling, failure detection, rough estimates processing time/disk use. Conditions: 20GB/day gzipped JSONL event logs hourly in local dir. Server 4 cores 16GB. Need daily aggregates per user and per event type ready by 06:00. Raw logs 60 days then deleted. Scikit-learn classifier retrained weekly on last 30 days of aggregates. Restartable after crash without reprocessing hours already finished. Need maybe use SQLite/Parquet? Local, no cloud. Need design robust.\n\nLet's craft detailed architecture.\n\nInput: files in /data/raw/YYYY/MM/DD/hour=XX.jsonl.gz maybe. Need process hourly incremental. Output aggregates daily per user and per event type. Need \"daily aggregates\" likely table: date, user_id, event_type, count, sum fields maybe. Also per event type maybe date, event_type, count, distinct users? Need decide. Requirement: per user and per event type. Could store two tables: user_daily (date,user_id,event_type,event_count, maybe user metrics) and eventtype_daily (date,event_type,event_count,unique_users, first_seen? maybe). Also perhaps per user per event type exactly. \"per user and per event type\" could mean per user per event type counts. We'll implement.\n\nNeed memory under 16 GB. Processing 20GB gz daily = maybe 100-200 GB uncompressed. Need streaming with bounded memory. Use gzip decompression via Python gzip or zcat? Use streaming JSON lines. Use dictionary with keys (user,event) maybe huge but bounded by number of users; 20GB logs maybe 1B events, users maybe millions, memory could be large but manageable? Need avoid unbounded. Use SQLite or disk-based aggregation.\n\nNeed restartable per hour. Use state files with status. For each hourly input file, process once and write outputs. If crash after completing hour but before marking done, reprocessing would duplicate. Need use atomic file writes and status markers. For aggregate output, can write to per-hour partial files then merge into daily aggregate at end of day. But requirement \"restartable after a crash without reprocessing hours that already finished\" means we need track completed hours. If processing hour fails after writing partial output, we need not reprocess previous hours; we can skip them via status. But if an hour was \"finished\" and we didn't mark due to crash before marker, we might reprocess it. Need design status to be atomic. For each hour, write output to temp then move to completed dir. Then status marker can be just existence of completed output file. But if process completed output and crashed before marking? If output file exists in completed dir, can skip. Need no separate status. But if output is appended to aggregate and then status marker? We can have per-hour output files in \"processed\" dir; daily aggregate build at end of day from processed files. If crash during daily build after processing all hours, processed files remain, so skip all hours. But if crash after building daily aggregate, processed files maybe remain, next day could reprocess? Need daily aggregate stored separately, but for incremental daily build, we can use processed hourly files and rebuild daily aggregate; but if daily aggregate already exists, skip rebuild. Need \"without reprocessing hours that already finished\" - if hourly files are marked done, next run skips them. We can implement a \"completed\" directory containing a small status file per hour with hash or file path. If processing of an hour wrote completed output before status file, crash after output but before status could lead to reprocess; output duplicate. To avoid duplicate, we can write status file first? But status file before output can be lost? Better write output to temp then atomically rename to completed dir; the existence of completed output is the status. If crash before rename, output incomplete/temp can be ignored. If crash after rename, next run sees completed file and skips. This means no duplicate. Good.\n\nNeed process each hourly file: streaming JSON lines, parse event. Need aggregate per user/event type. Since output is per user per event type, we can aggregate in memory dictionary (user,event) counts. But number of users could be large. We can use SQLite or disk-based. But with 16GB, a hash map for millions of users is fine. Need estimate. 20GB gz JSONL: if average line 200 bytes uncompressed, 100M events/day; 25GB uncompressed. JSONL may have user id, event type, timestamp, metadata. 100M distinct user-event pairs? Could be millions, not billions. Python dict with tuple keys for millions uses maybe 1GB. Fine. But if many event types, manageable. Need use \"memory under 16 GB\" with safety. We'll design with bounded in-memory aggregation per hour? Wait hourly file is 20GB/day / 24 = ~0.8GB gz, maybe 4GB uncompressed per hour. Distinct user-event pairs per hour maybe lower. Dict in RAM fine. But if high cardinality (10M pairs), Python dict ~1GB. OK. Need maybe use SQLite to be safe. But simpler: use Python dict with key (user_id, event_type) and count; if memory exceeds threshold, use external sort? Need discuss. But likely acceptable. Need mention if cardinality too high, use SQLite or disk-based aggregation, but no code. The user wants design. We can include \"in-memory hash table; for very high cardinality, spill to SQLite or use key-value store, but 16GB enough.\" Need include memory.\n\nNeed output format: JSONL? But daily aggregates need efficient query and scikit-learn. Could store as Parquet? But no cloud services, but local disk, no need? Parquet with pandas/pyarrow maybe installed. Need \"storage format and directory layout\" specify. Could use Parquet for aggregates (columnar, compressed) and raw logs as gzip JSONL. For classifier training on last 30 days of aggregates, Parquet is good. But scikit-learn can use pandas DataFrame. Need maybe no code. Use `pyarrow`? Is that available? Probably yes. But no cloud services. Local disk can have Parquet. Alternatively use SQLite for aggregates to avoid external dependency. But scikit-learn training from SQLite may be slower. Need choose.\n\nNeed daily aggregates by 06:00. If data arrives hourly, process each hour as it arrives? But if input files are arriving as hourly files in local directory, maybe we can process at 00:00 for previous day? Requirement \"daily aggregates per user and per event type must be ready by 06:00\" could be batch once daily. But input files are hourly; if processing all 24 hours at once daily, restart after crash may reprocess hours? We need incremental. We can process hourly files as they appear, then at end-of-day build daily aggregate. That's more restartable. Need schedule cron every hour to process any new hourly file, and a daily job at 05:00 to build daily aggregate and 06:00 ready. But \"daily aggregates per user and per event type must be ready by 06:00\" if processing hourly at 00:00? Let's design.\n\nNeed process hours that \"already finished\" maybe from 00 to 23. If crash at 05:00 after 23:xx, need not reprocess hours 00-22. We can have hourly processing jobs run after each hour; they mark each hour done. At 04:00 daily job builds aggregate from processed hourly files. If crash, rerun at next cron, skip done hours.\n\nBut if the input directory only has daily files? It says arriving as hourly files in local directory. So yes.\n\nNeed \"restartable after a crash without reprocessing hours that already finished\": We'll maintain `processed/` directory with per-hour output files. Each file named `YYYYMMDD-HH.json.gz` or `YYYYMMDD_HH.out`. If exists, skip. But if an hourly process fails after writing partial output to `processed`? Need atomic rename from `tmp/` to `processed/`. If crash before rename, partial file in tmp can be deleted/overwritten next run. If crash after rename, file is valid and skip. This avoids duplicates.\n\nPotential issue: If process for hour H is interrupted after writing some events to output but before rename, no status. On restart, it starts from scratch and writes output to temp. It reprocesses hour H from beginning. That's acceptable because H wasn't \"finished\". Requirement says not reprocess hours that already finished; H didn't finish. Good.\n\nNeed if processing all hours daily, maybe \"hourly jobs\" can be a single cron job every hour that runs a Python script with `--date` and `--hour`. But if crash, cron job may run again. We'll describe.\n\nNeed \"detection failures\": We can use cron's MAILTO and exit codes. Each job returns nonzero on failure. We can also write a `last_success` file. Need maybe a supervisor script that checks `processed` files. Use `set -e`, atomic writes. We'll describe.\n\nNeed \"raw logs kept for 60 days then deleted\": Need a retention job. Daily at maybe 02:00 delete files older than 60 days. Need ensure not delete files currently being processed? Use `find -mtime +60 -delete` but if processing hourly, no need. But if hourly job is running on a file, deleting at same time could be bad. We can use `find ... -mmin +...` with `-newer`? Simpler: run cleanup at 01:00 after all hourly jobs for previous day are done; delete files older than 60 days. But if a file is being processed at that moment? Hourly job at 00:00 may be processing current hour. To be safe, skip files currently in `tmp/`? We'll state cleanup uses `find ... -mtime +60` and is run outside processing window, and processed files are only deleted after their hour's output is finalized? Actually raw logs are input; we keep 60 days. We can delete raw input files older than 60 days, including files already processed. Since they are not needed, but if crash and we need to reprocess an old hour? If it's older than 60 days and no output? We might need? But requirement says raw logs kept for 60 days then deleted; if a file older than 60 days is deleted, we cannot reprocess it. But that's okay, after 60 days no need. But if an hourly output file exists, no need raw. Need maintain raw until at least 60 days after processing. If raw deleted at 60 days, and if an hourly file was not completed, we can't process. But the system should not leave incomplete old hours. We'll state cleanup only after verifying that the corresponding output exists or the hour is too old and no longer needed. But simpler: \"A daily cleanup cron job deletes raw input files older than 60 days. It is run after the hourly processing job for the current hour and after checking that all files in the previous day have completed outputs.\" But if a file is 60 days old and its output missing, we'd be deleting raw logs. Need maybe don't delete if output missing? Could be okay? Hmm.\n\nNeed design \"daily aggregates per user and per event type\" maybe from all event logs, not per hour. Let's define data model:\n\n- `events` table? Maybe no need store raw events? But raw logs are kept 60 days; aggregates are separate. For classifier, need features from last 30 days aggregates. Could train on daily aggregate rows. Need store daily aggregates as:\n  - `user_daily.parquet`: date, user_id, event_type, event_count, maybe user features (e.g., total events, distinct event types, first/last event time). \"per user and per event type\" could mean for each user and event type, aggregate counts. We'll include:\n    - date\n    - user_id\n    - event_type\n    - event_count\n    - total_events (user/day) maybe\n    - unique_days? Hmm.\n  - `eventtype_daily.parquet`: date, event_type, event_count, unique_users.\nBut if we store per user-event type, eventtype_daily can be derived. However requirement says \"daily aggregates per user and per event type\" maybe a table with both dimensions. We can produce two files:\n  1. `user_day.parquet` with one row per `(date, user_id, event_type)`.\n  2. `eventtype_day.parquet` with one row per `(date, event_type)`.\nThis satisfies.\n\nNeed include \"raw logs kept for 60 days then deleted\" but raw logs are gzip JSONL. We can store in `/data/raw/YYYY/MM/DD/HH.jsonl.gz`. The pipeline processes them, and after processing, we could move them to `/data/raw_old/`? But \"kept for 60 days then deleted\" implies keep original in raw dir and delete after 60 days. Need directory layout:\n\n```\n/data/\n  raw/2024/03/12/00.jsonl.gz\n  raw/2024/03/12/01.jsonl.gz\n  ...\n  processed/2024/03/12/00.jsonl.gz.parquet? or csv?\n  dailies/2024/03/12/user_day.parquet\n  dailies/2024/03/12/eventtype_day.parquet\n  models/weekly/\n  tmp/\n  logs/\n  state/\n```\n\nMaybe `processed` holds hourly partial aggregates in a compact format (e.g., JSONL or Parquet). Then daily job combines processed files for the day into final daily parquet. Need if hourly outputs are per user-event counts, they can be merged by group-by date. We need avoid reprocessing hours; processed files are per hour. Daily job reads all processed files for that date and writes daily aggregates. If daily job crashes after writing some daily files, re-run can skip because daily files exist. If crash before daily files exist, it reprocesses from processed files. That's fine.\n\nBut if we process hourly files and store processed outputs as Parquet, then daily job reads them. Need \"per user and per event type\" from processed files. For each hour, we aggregate `(user_id, event_type)` counts. The processed file might be a small Parquet with columns `date, hour, user_id, event_type, event_count`. But to build daily aggregate, need group by date, user, event type, summing counts. Also event type daily requires group by date, event_type summing and unique user count. We can compute in daily job.\n\nNeed maybe process hour with \"user_day\" output only? If we write hourly output with `user_id, event_type, count`, then daily job groups. But to compute eventtype_daily with unique users, need know all users for each event type. We can group by event type and user, then aggregate. Good.\n\nPotential memory: In daily job, if reading all processed files for a day and grouping, may need to hold many rows. If using pandas, 100M events/day maybe too big. Need use disk-based groupby or SQL. We can use SQLite to build daily aggregates incrementally. But no code. We can describe \"use pandas groupby if daily row count manageable; otherwise use SQLite or DuckDB; since we have 16GB, use streaming aggregation with `dask` or `polars`? Need keep memory. We can design with a disk-based key-value store or SQLite. But maybe not needed if we process per-hour and store hourly output, daily job can merge using SQLite or DuckDB. But the user specifically says \"no cloud services\", not \"no Python libs\". We can use DuckDB? But maybe not installed. Simpler: Use SQLite for daily aggregation; it's local, no extra server. For hourly processing, we can use Python dict and write to SQLite. But if we write to SQLite per event, it's slow. Better: aggregate in memory, then insert into SQLite as batches. Need restartable per hour: if crash after inserting some rows but before hour done, next run would need know which rows inserted? We can avoid by not inserting to persistent DB until hour complete; write hourly output file first. Then daily job inserts. Good.\n\nNeed \"daily aggregates ready by 06:00\" if we use SQLite, need build by 06:00. Let's estimate: 100M events/day; using DuckDB or pandas may be okay within few hours. Need rough estimate.\n\nNeed include \"no GPU\" and \"4 cores\": use multiprocessing for parsing? Python GIL; can use multiprocessing for file decompression/parsing? We can use 4 processes. But JSON parsing is CPU-bound; 4 cores. Need estimate processing time: 20GB gz compressed, maybe 100-200M lines/day. Decompression and JSON parse with Python maybe ~100k-500k lines/sec/core. With 4 cores, 2M lines/sec. 100M events -> 50 sec? Wait 2M/sec * 50 = 100M/2M=50 seconds. Actually Python JSON parse maybe 1M/sec/core? Let's estimate 100M events in 5 minutes? Need realistic: gzip decompress ~100 MB/s/core; 20GB/day = 20,000 MB / 100 MB/s = 200 sec/core; with 4 cores 50 sec? Hmm maybe more. But Python JSON parsing slower. Need not be too precise. We can say \"a few minutes to tens of minutes\" and \"well within 6 hours.\" Need rough estimates for disk use.\n\nLet's compute disk use:\n- Raw: 20 GB/day * 60 days = 1.2 TB. But server has 2TB disk. Need also processed and aggregates and models. Need maybe raw logs 1.2 TB, processed hourly files maybe 5-10 GB/day, aggregates daily maybe 1-5 GB, models small. Total under 2TB. Need maybe raw 1.2 TB + processed 0.3 TB + aggregates 0.1 TB = 1.6 TB. Fits. Need mention.\n\n- Raw logs: 20 GB compressed per day, 60 days = 1.2 TB. Plus if we keep uncompressed? We don't. We'll keep gz only. Processed hourly aggregate maybe:\n  - If 100M events/day, 1M user-event pairs/hour? Let's estimate 5M pairs/day. Each row maybe 50 bytes in Parquet compressed? 5M rows/day ~ 0.25 GB/day. 60 days ~ 15 GB. Daily aggregates maybe similar or smaller. Models maybe <100 MB. Fine.\n\nNeed \"raw logs are kept for 60 days then deleted\" but if disk 2TB, 60 days raw is 1.2TB. If plus processed and dailies, still under 2TB. Good.\n\nNeed \"weekly retrain on last 30 days of aggregates\": Need store last 30 days of daily aggregate. We can keep 60 days? Actually raw logs 60 days; aggregates maybe keep 90 days? But weekly training uses last 30 days of aggregates. Need if old daily aggregate deleted, can't retrain. We can keep daily aggregate files for 90 days, or all? But disk fine. Need mention \"keep daily aggregate files for 90 days (or indefinitely if space permits); the 60-day raw log deletion is independent.\" But requirement only says raw logs kept for 60 days then deleted, not aggregates. We can choose. Need maybe to allow weekly retrain, keep daily aggregates at least 30 days plus margin. We'll state \"keep daily aggregate Parquet for 90 days; weekly retrain only needs last 30.\" That's okay.\n\nNeed \"no cloud services\" and \"plain cron is fine\". We'll describe cron jobs:\n- `@hourly` run `/opt/pipeline/process_hour.py` with current hour. It processes any new files in `/data/raw/YYYY/MM/DD/HH.jsonl.gz` and writes to `/data/processed/YYYY/MM/DD/HH.parquet` (or JSONL). It uses a lock to avoid concurrent runs? If cron @hourly, job duration might overlap? Need prevent overlapping. Use `flock` or a lock file. We can say \"use a lock file to prevent overlapping hourly runs.\" Need if process_hour takes >1h? It should be <1h. But if crash and rerun, no overlap. Use `flock -n /tmp/pipeline_hourly.lock` to avoid concurrent.\n- `@daily` at 04:30 run `/opt/pipeline/build_daily.py` to combine processed hourly files for yesterday into daily aggregates and write to `/data/daily/YYYY/MM/DD/user_day.parquet` and `eventtype_day.parquet`. Need if 23 hours processed, 24th? For yesterday's day, all 24 hours should be present by 04:30? Wait if input is hourly, 00:00-23:00. At 04:30, the 00:00-23:00 files for previous day should all have arrived and processed. Yes. But if file for 23:00 hasn't arrived? It arrives around 00:00? Actually \"arriving as hourly files\" could be file for hour HH arrives at HH+1? Need not specify. We'll say \"the daily job runs after all 24 hourly files for the previous day are expected to have arrived and been processed.\" To be safe, at 04:30. Need \"ready by 06:00\" yes.\n\n- `@weekly` on Monday at 05:30 run `/opt/pipeline/train_weekly.py` to train scikit-learn classifier on last 30 days of aggregates and write model to `/data/models/weekly/model.pkl` and metrics.\n\n- `@daily` at 01:30 run `/opt/pipeline/cleanup_raw.py` to delete raw files older than 60 days. But must not delete raw files for current day? `find /data/raw -mtime +60 -delete`. This deletes files whose mtime older than 60 days. If files are created when received, okay. Need if a file is currently being processed, deletion could occur before processing? We can state \"cleanup runs at 01:00 after hourly processing for the previous day is finished; it only deletes files older than 60 days and never deletes the current or previous day's raw files.\" But if a file is 60 days old and not processed, we might need it. But if it's 60 days old, it should have been processed; if not, system is broken. We can include \"the cleanup job first checks that the corresponding output exists; if not, it aborts that day.\" Maybe.\n\nNeed \"failure detection\":\n- Each Python script exits 0 on success, non-zero on failure. Cron sends mail to admin. We can also write a `last_run` timestamp and a `FAILED` flag. Need monitor:\n  - Hourly job: If process_hour.py fails, cron mail. Also a watchdog cron at 05:30 checks that all 24 hourly output files for previous day exist; if not, sends alert. But if the hourly job failed, the file missing. This catches.\n  - Daily job: if build_daily.py fails, cron mail. If daily aggregate files not present by 05:45, alert. But if it crashed, rerun can be scheduled. We can have a \"catch-up\" cron at 05:30 that runs build_daily for yesterday if missing. Need not reprocess hours. Good.\n  - Weekly: if training fails, mail. If model file missing, alert.\n  - Need \"restartable after crash without reprocessing hours that already finished\": The key is the processed output files are the source of truth. We'll explain.\n\nNeed maybe \"no code\" but can describe.\n\nNeed \"storage format and directory layout\" in detail:\n\n```\n/opt/pipeline/\n  process_hour.py\n  build_daily.py\n  train_weekly.py\n  cleanup_raw.py\n  requirements.txt\n\n/data/\n  raw/\n    2024/\n      03/\n        12/\n          00.jsonl.gz\n          01.jsonl.gz\n  processed/\n    2024/\n      03/\n        12/\n          00.parquet\n          01.parquet\n  daily/\n    2024/\n      03/\n        12/\n          user_day.parquet\n          eventtype_day.parquet\n  models/\n    2024/\n      03/\n        11-18_model.pkl  # or weekly model with date\n  logs/\n    pipeline.log\n  state/\n    last_hour_processed.lock\n    last_daily.lock\n```\n\nMaybe `processed` hourly files can be JSONL or Parquet. Need choose format. \"storage format\" maybe:\n- Raw: gzip JSONL (as received)\n- Processed hourly: Parquet (or JSONL) with columns `hour, user_id, event_type, event_count`\n- Daily: Parquet with columns `date, user_id, event_type, event_count` and `date, event_type, event_count, unique_users`\n- Models: scikit-learn pickle (`model.pkl`) plus `metrics.json`.\nNeed mention \"Parquet chosen for compression and fast columnar scans; no cloud.\"\n\nNeed \"memory under 16GB\":\n- In `process_hour.py`: Stream through gzip file with `gzip.open`; parse each line; update in-memory dict keyed by `(user_id, event_type)`. The number of active keys is bounded by the number of distinct users and event types in that hour. If this could exceed, e.g., 5M, Python dict maybe 1-2GB. For 4GB uncompressed per hour, likely 100M events/hour? Wait 20GB/day = 0.8GB/hour gz; uncompressed maybe 4GB/hour. 100M events/day = 4M/hour. Distinct user-event pairs maybe 1M/hour. Dict ~200MB. Fine. But if high cardinality, use SQLite or `diskcache`. We can say \"If the distinct-pair count is projected to exceed 5M, spill to SQLite with batched commits; the code can fall back to `sqlite3` keyed by `user_id,event_type`.\" Need not overcomplicate.\n\n- In `build_daily.py`: We need combine all 24 hourly processed files. If using pandas, we might load all rows and group. 4M/hour * 24 = 100M rows. pandas DataFrame with 100M rows might use >10GB. Need avoid. So use SQLite or DuckDB. We can describe \"Use a SQLite database file `/data/daily/agg.db` as the daily accumulator. For each processed hourly Parquet, insert batch rows into a table `hourly_counts` (hour, user_id, event_type, count). Then run `INSERT INTO daily_user_event SELECT date, user_id, event_type, SUM(count) FROM hourly_counts GROUP BY 1,2,3` and `INSERT INTO daily_event_type SELECT date, event_type, SUM(count), COUNT(DISTINCT user_id) FROM hourly_counts GROUP BY 1,2`.\" This is disk-based, memory small. Then copy result to Parquet and delete the SQLite temp? But if we delete the SQLite, daily job needs re-run? It can rebuild from processed files. But if we leave SQLite, memory low. Need \"restartable\" for daily job: The SQLite database can be the state; if crash after some inserts, re-run should avoid duplicate. We can use `INSERT OR IGNORE`? Or use `REPLACE`? Hmm.\n\nNeed think: build_daily.py combines hourly processed files into daily parquet. If we use SQLite to accumulate, and crash mid-way, re-run would need know which hourly files already inserted. Could use a `loaded_hours` table or check the daily parquet existence. Simpler: If daily parquet files exist, skip. If not, delete any previous SQLite and rebuild from all processed hourly files for that date. This may reprocess the daily aggregation, but not the hourly processing. Requirement says \"without reprocessing hours that already finished\" refers to hourly log processing, not daily aggregation. Rebuilding daily aggregate from processed files is okay. But if we reprocess the daily aggregation from scratch, it's not reprocessing hours. It's combining outputs. That's fine. So for build_daily, we can just use `sqlite3` in memory/temp and rebuild. Need memory under 16GB. SQLite uses disk and small memory.\n\nNeed perhaps \"processed hourly files\" are not necessarily Parquet; they can be JSONL to avoid requiring pyarrow. But if daily job uses SQLite, it can read JSONL and insert. But JSONL parsing for each line in Python is slower. Parquet can be read by pandas/pyarrow fast. Need choose Parquet. But if no pyarrow? scikit-learn usually has pandas, pyarrow maybe. We can state \"PyArrow/Parquet or, if unavailable, JSONL with line-oriented inserts; Parquet is recommended.\" But no code. Need be decisive.\n\nNeed \"scikit-learn classifier retrained weekly on last 30 days of aggregates\": Need describe features and labels? The requirement doesn't specify classification target. Need design with placeholders: \"features are the daily aggregate columns; label is defined by the business rule (e.g., fraud flag stored in a separate table).\" But since no code, we can say \"The training script reads the last 30 days of daily aggregate Parquet files, computes features, trains a scikit-learn classifier, and writes model to /data/models/weekly/. It also writes evaluation metrics.\" Need maybe \"The classifier is retrained weekly\" with schedule.\n\nNeed \"detection failures\" more details:\n- Use `flock` to avoid overlapping cron jobs.\n- Each script logs to `/data/logs/pipeline.log` with timestamp, status.\n- On failure, exit code non-zero, cron mails root/admin.\n- A `status` directory with `last_hour`, `last_daily`, `last_weekly` files? We can say \"The hourly script writes a status file in `/data/state` only after the processed output is atomically moved into place; if the file is missing, the hour is considered not finished.\"\n- A watchdog cron at 05:30: \"If `/data/daily/<date>/user_day.parquet` is missing by 05:45, run build_daily again and send mail if still missing.\" This ensures ready by 06:00.\n- If `process_hour` crashes after moving output but before exiting, the output file is valid; next run skips. Need \"the output file is the status.\"\n\nNeed \"raw logs kept 60 days then deleted\": Need maybe \"The cleanup job uses `find /data/raw -mtime +60 -delete` and is run at 01:00. It also removes the corresponding processed hourly file? No, processed files are separate; keep processed files until daily aggregates exist. The daily aggregate files should be kept at least 90 days for weekly retraining. Raw deletion does not affect processed/daily.\"\n\nNeed \"disk use rough estimates\":\nLet's create table:\n- Raw JSONL gz: 20 GB/day -> 1.2 TB over 60 days.\n- Processed hourly aggregates: 5-20 MB per hour? Let's estimate. 4M rows/hour, Parquet compressed maybe 2-5 MB/hour? Actually 4M rows with 4 columns maybe 50 bytes/row = 200MB raw, compressed 50-100MB/hour. Daily ~1-2GB. 60 days ~100GB. Hmm. Need be reasonable. Let's estimate more carefully.\n\nLet's estimate event count. 20GB/day compressed JSONL. If average line 200 bytes uncompressed, total uncompressed ~100GB/day. If average line 500 bytes, 40GB/day. Let's assume 80M events/day. Hourly 3.3M events. Distinct user-event pairs per hour maybe 1M. Parquet row: date (int), user_id (string), event_type (string), count (int64). With dictionary encoding, 1M rows maybe ~50MB uncompressed, ~10-20MB compressed. 24 hours -> 240-480MB/day. 60 days -> 15-30GB. Fine.\n- Daily aggregates: 24M rows/day? Wait 80M events/day, but user-event pairs maybe 10M/day. Parquet compressed maybe 50-100MB/day. 90 days ~5-9GB.\n- Models: <100MB.\n- SQLite temp: maybe few hundred MB.\nTotal ~1.3TB. Fits.\n\nNeed \"processing time\":\n- Hourly: 0.8GB gz; decompression and JSON parsing. With 4 cores and multiprocessing, maybe 2-5 minutes per hour. Need if using Python gzip and json, 0.8GB gz maybe 200-500MB? Let's estimate: 20GB/day -> 0.83GB/hour. gzip decompression rate ~200MB/s/core, 4 cores => 800MB/s, so 1 sec? But Python JSON parsing is slower: maybe 1M events/sec/core. 3.3M events/hour / 4 cores = 825k events/sec -> 4 seconds. Wait that seems too fast. Actually Python json.loads for small dict ~1-2 microseconds? 1M/sec/core plausible. 3.3M events in 4 seconds? That's 825k/sec, yes. But gzip decompress and parsing maybe 10-20 sec. So hourly processing is fast. But if files are 20GB/day, maybe 100M events/day -> 4M/hour. Still 10-30 sec. So \"a few minutes\" is safe.\n- Daily build: reading 24 Parquet files and SQLite group by 80M rows. SQLite can do in maybe 5-15 minutes. \"Well before 06:00.\"\n\nNeed \"no GPU\" and \"no cloud services\" no issue.\n\nNeed maybe \"restartable after crash without reprocessing hours that already finished\" in detail:\n- The `processed/` directory is the journal. Each hour's output is written to `/data/processed/.../tmp/`, then atomically renamed to `/data/processed/.../`. The rename is the commit. If process crashes before rename, no processed file; on restart, the hour is reprocessed from scratch. If it crashes after rename, the processed file is complete and will be skipped. This is the same as \"write-ahead log\" but simpler.\n- Need \"if process_hour.py is interrupted while writing to `tmp/`, the partial file can be deleted on next run because the final rename never happened.\" Good.\n\nNeed \"daily aggregates\" maybe \"per user and per event type\" - We'll define:\n- `user_day`: one row per `(date, user_id, event_type)` with `event_count`, maybe `total_events` per user/day and `event_types`? But \"per user and per event type\" could mean for each user, count by event type. We'll include `event_count`.\n- `eventtype_day`: one row per `(date, event_type)` with `event_count`, `unique_users`. This is \"per event type\" daily aggregate.\nNeed \"ready by 06:00\" means `build_daily` for date D runs at 04:30 on D+1? Wait if \"daily aggregates per user and per event type must be ready by 06:00\" perhaps for the previous day's data. We'll state: \"For data date D, the daily aggregate is produced on the morning of D+1 by 05:30; if a file for the current day is needed earlier, the same script can run intraday, but the SLA is for the previous day.\" Need maybe not.\n\nNeed \"weekly retrain on last 30 days of aggregates\": If daily aggregates are Parquet files by date, training script:\n- Read all `/data/daily/*/*.parquet` for last 30 days, concatenate.\n- Build feature matrix (e.g., per user-event-type counts, per user totals, maybe time features). Need \"classifier\" target unspecified. We'll say \"The target column (e.g., `is_flagged`) must be supplied by the business; if not, the script can be adapted.\" But maybe the user expects \"a scikit-learn classifier is retrained\" not \"design a model.\" We'll state \"The exact model is a placeholder; the pipeline stores and reloads it.\"\n\nNeed \"detect failures\" more robust:\n- Use `set -euo pipefail`? No code.\n- Use cron MAILTO and `flock`.\n- Use `journalctl`? Not needed.\n- Use `check` script that verifies:\n  - For each hour D-1 00-23, `processed/` file exists.\n  - For date D-1, daily Parquet files exist.\n  - `model.pkl` timestamp updated within last 7 days.\n- A \"catch-up\" job at 05:30 will re-run `build_daily` if missing. If it still missing, alert.\n\nNeed maybe \"plain cron is fine\" but we can use systemd timers? The user said plain cron fine. We'll use cron.\n\nNeed \"no code\" but can include command examples? \"No code\" means no Python code. We can mention `flock` and `find` as shell commands. Fine.\n\nNeed \"memory under 16GB\" more concrete:\n- `process_hour.py`: Use a `collections.defaultdict(int)` for `(user_id, event_type)`. Estimated memory:\n  - 1M keys * (tuple + int) ~ 200MB. 10M keys ~2GB. Safe.\n  - If a single user has many event types, keys are `(user, event_type)`, not `(user, event)`? We need maybe aggregate per user and event type. Use key `(user_id, event_type)` and value count. Good.\n  - If line contains nested fields, we extract `user_id` and `event_type`. If missing, skip.\n- `build_daily.py`: Use SQLite to accumulate; no large in-memory structures. It can create a temporary SQLite database in `/tmp` or `/data/state/daily_agg.db`; insert batch rows from Parquet using `executemany` with `PRAGMA journal_mode=WAL`? Need no code. But \"memory under 16GB\" because SQLite uses disk and small memory. However, if we use pandas to read Parquet, it may load into memory. We can avoid by streaming with `pyarrow.parquet.ParquetFile.iter_batches(batch_size=100000)`. We'll describe \"read Parquet in batches of 100k rows; insert into SQLite in batches.\" This keeps memory bounded. Good.\n- `train_weekly.py`: Read last 30 days of daily aggregates. If using pandas, 30 days * maybe 10M rows/day = 300M rows, too big. Need use a data-processing library or SQLite. Need \"memory under 16GB\" for training too. We can say \"Training is done in a streaming fashion: load daily aggregates into a SQLite table, build features, and train using `partial_fit` with `SGDClassifier` or `MiniBatchKMeans`? But scikit-learn classifiers mostly not `partial_fit` except SGD. Need maybe use `partial_fit` with SGDClassifier. That's a valid scikit-learn classifier. We can say \"Use `SGDClassifier` with `partial_fit` to train incrementally over the 30-day data in chunks, so memory stays low.\" That's a nice design. Need mention \"if the dataset is small enough, use `RandomForestClassifier` in one batch; if not, use `SGDClassifier` partial_fit.\" But the requirement says scikit-learn classifier; no specific. We'll use `SGDClassifier` for incremental. Need \"features\" can be derived from aggregates.\n\nNeed \"no GPU\" and \"4 cores\" for training: `SGDClassifier` is single-threaded but data loading is I/O-bound. Could use multiprocessing for feature engineering? Maybe not necessary. Need \"rough estimates for processing time\" maybe training time: 30 days of daily aggregates, 300M rows? With `SGDClassifier` partial_fit over chunks, maybe 10-30 minutes on 4 cores. But if dataset is 300M rows, still maybe 1-2 hours. Need not overpromise. But \"daily aggregates ready by 06:00\" is separate.\n\nNeed maybe \"scikit-learn classifier\" could be trained on \"last 30 days of aggregates\" not \"events\". If aggregates are daily per user-event, 30 days * maybe 10M rows/day = 300M rows. That's large but possible with partial_fit. Need \"memory under 16GB\" by chunking.\n\nNeed \"raw logs are kept for 60 days then deleted\" but \"daily aggregates\" are needed for 90 days. If we delete raw logs at 60 days, and an hourly processed file is missing, no way to recover. But the system should not allow missing processed files. We can state \"The pipeline's invariant is: a raw input file is not deleted until its processed output file exists; the cleanup job enforces this.\" Need maybe if a file is 60 days old, its processed output should exist; if not, abort cleanup. We'll include.\n\nNeed \"restartable after a crash\" maybe \"use `flock` to prevent concurrent runs; if a cron job is killed, the lock is released when the process dies.\" Good.\n\nNeed \"daily aggregates per user and per event type\" maybe \"daily aggregates\" are not \"hourly outputs\". Need \"process_hour\" writes per-hour aggregated counts. But if an hour file is malformed (e.g., corrupt gzip), process_hour should fail. On rerun, it reprocesses from scratch; if the file is corrupt, it will fail again. That's fine. But \"without reprocessing hours that already finished\" if a corrupt hour never finished, reprocessing it is okay. If a corrupt hour is older, cleanup won't delete it because no processed output. Need \"dead-letter\" directory? Could move bad files to `bad/` and continue? But requirement doesn't mention. We can mention \"Corrupt hourly files are moved to `/data/bad/` and an alert is sent; the hour is then considered failed and will be retried later only after the file is fixed or the bad file is removed.\" But no code.\n\nNeed \"detect failures\" maybe \"use `set -e` and `trap` to clean up temp files on failure.\" We'll describe.\n\nNeed \"scheduling (plain cron is fine)\" with exact crontab:\n```\nMAILTO=ops@example.com\n0 * * * * /usr/bin/flock -n /tmp/pipeline_hourly.lock /opt/pipeline/process_hour.py\n30 1 * * * /usr/bin/flock -n /tmp/pipeline_cleanup.lock /opt/pipeline/cleanup_raw.py\n30 4 * * * /usr/bin/flock -n /tmp/pipeline_daily.lock /opt/pipeline/build_daily.py\n0 5 * * 1 /usr/bin/flock -n /tmp/pipeline_weekly.lock /opt/pipeline/train_weekly.py\n```\nNeed \"build_daily at 4:30\" maybe if 24 hourly files for previous day are present. But if input for hour 23 arrives at 00:00, at 04:30 yes. Need \"if at 04:30 not all 24 hourly files exist, the build_daily script can wait or run catch-up at 05:30.\" We'll say \"The daily job is scheduled at 04:30; a catch-up job at 05:30 re-runs it if the aggregate is missing.\"\n\nNeed \"weekly retrain\" at Monday 05:30, but if daily aggregates ready by 06:00, training at 05:30 may need Monday's aggregates? For \"last 30 days\" includes Sunday. Need Monday 05:30 can use Sunday's aggregates if built Sunday morning. Yes. But if weekly training should use data through Sunday, run Monday 05:30. Good.\n\nNeed \"storage format and directory layout\" with `data` root. Let's write in prose/numbered.\n\nNeed \"rough estimates for disk use\" table maybe:\n- Raw: 20 GB/day * 60 = 1.2 TB\n- Processed: 1-3 GB/day * 60 = 60-180 GB\n- Daily aggregates: 0.5-1 GB/day * 90 = 45-90 GB\n- Models/logs: <1 GB\nTotal ~1.3-1.5 TB. Fits in 2TB. Need note if raw logs are 20GB/day compressed, uncompressed maybe 100GB/day; but we don't store uncompressed.\n\nNeed \"processing time\" estimates:\n- Hourly: 0.8GB gz, 3-5M events. With 4 cores, 2-10 minutes. (Actually maybe 2-5 min). Use \"a few minutes\".\n- Daily: reading 24 Parquet files and grouping 80M rows in SQLite, 5-20 minutes.\n- Weekly training: 30 days of aggregates, 1-2 hours? Need if SGDClassifier on 300M rows maybe 1-2 hours. But \"by Monday 06:00\" maybe okay. We'll say \"tens of minutes to a couple of hours; run at 05:30 or overnight.\" Hmm. Need \"ready by 06:00\" for aggregates, not model. Weekly training can finish later. But maybe no issue.\n\nNeed \"restartable\" in more detail:\n- \"The `processed` directory is the journal. A file in `processed` means that hour is complete. The hourly script writes to `processed.tmp` and then renames to `processed`. The rename is the commit. If the process crashes before the rename, the temp file is ignored and the hour is reprocessed; if it crashes after the rename, the output is complete and will be skipped. Therefore a crash never causes duplicate counts.\"\n- \"The daily script is not incremental in the same way: it rebuilds the daily aggregate from the processed hourly files each time it runs. A crash during the daily build is harmless because the processed hourly files are the source of truth; it does not reprocess the raw hourly logs.\"\n- \"The weekly script writes the model to a temp file and renames it into place, so a crash leaves either the old model or the new model, never a partial model.\"\n\nNeed \"failure detection\" maybe:\n- \"Every job exits non-zero on failure. Cron mails the output. A `catch-up` script checks at 05:30 that all processed hourly files for the previous day exist; if not, it runs `process_hour` for the missing hours, then runs `build_daily`. If the aggregate is still missing at 05:45, an alert is sent.\"\n- \"The `cleanup_raw.py` job checks before deleting: for each file older than 60 days, it verifies a processed hourly file exists; if not, it leaves the raw file and logs a warning. This prevents deleting a file that is needed to recover a failed hour.\"\n- \"The `train_weekly.py` job writes `model.pkl` atomically and records a `trained_at` timestamp. A monitor alerts if no model has been written in 8 days.\"\n\nNeed \"scikit-learn classifier\" maybe \"features\":\n- We need not specify exact model, but perhaps \"The training script uses the last 30 days of daily aggregate rows. For each `(user_id, event_type)` row, features are `event_count`, `day_of_week`, `user_total_events`, `user_unique_event_types`, `event_type_share`, etc. The target `y` is a column that must exist in the business schema. If the target is not in the aggregate, it is joined from a labels table.\" This is enough.\n\nNeed \"directory layout\" with \"tmp\" for atomic writes:\n```\n/opt/pipeline/\n  process_hour.py\n  build_daily.py\n  train_weekly.py\n  cleanup_raw.py\n  catch_up.sh\n  crontab\n\n/data/\n  raw/2024/03/12/00.jsonl.gz\n  processed/2024/03/12/00.parquet\n  dailies/2024/03/12/user_day.parquet\n  dailies/2024/03/12/eventtype_day.parquet\n  models/weekly/model_2024-03-12.pkl\n  state/hourly.lock\n  logs/pipeline.log\n```\nNeed maybe \"raw\" is read-only? We'll include `raw` for input.\n\nNeed \"no code\" but can use \"Parquet\" and \"SQLite\". Need \"scikit-learn\" maybe \"pickle\".\n\nLet's craft final answer with sections:\n1. Overview\n2. Directory layout and formats\n3. Hourly processing stage (process_hour)\n4. Daily aggregation stage (build_daily)\n5. Weekly training stage\n6. Scheduling and restartability\n7. Memory management\n8. Failure detection and recovery\n9. Retention and disk estimates\n10. Time estimates\n\nNeed keep within desired oververbosity 5. But user asks detailed. We'll write concise but complete.\n\nNeed \"Prose or numbered list, your choice.\" We'll use numbered list.\n\nLet's ensure no code. Use \"e.g.\".\n\nNeed maybe \"daily aggregates per user and per event type\" \"ready by 06:00\" \"restartable after crash without reprocessing hours that already finished\" all addressed.\n\nLet's write final.\n\nPotential nuance: \"Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory.\" If the input files are hourly, but if a crash happens, \"without reprocessing hours that already finished\" means we need not reprocess hours that already finished, not necessarily \"not reprocess hour if it was interrupted.\" We'll make that clear.\n\nPotential nuance: \"raw logs are kept for 60 days then deleted\" Could mean the pipeline stores raw logs in its own storage, not input? We'll assume.\n\nPotential nuance: \"scikit-learn classifier is retrained weekly on the last 30 days of aggregates\" Could use \"aggregates\" as daily aggregate tables. We'll include \"keep at least 30 days of daily aggregate files.\"\n\nPotential nuance: \"no cloud services\" but local disk 2TB. We'll not use cloud.\n\nPotential nuance: \"4 CPU cores, 16GB RAM\" We need not use multiprocessing too much. We'll mention \"process_hour uses 4 workers; process_hour.py is CPU-bound, so the 4 cores are used.\" Need \"Python multiprocessing with `Pool` can parse gzip in parallel; but GZip is single file, need split? Could use `zcat` to decompress to stdout and pipe to workers? But no code. We can say \"For the hourly job, the gzip stream is decompressed with a single reader process and parsed by a pool of workers; this keeps I/O and CPU balanced.\" But maybe \"plain cron\" not \"no code\". We'll just state \"use the four cores in a process pool.\" Need not detail.\n\nNeed \"memory under 16GB\" for hourly: \"The in-memory hash table is the only large structure; 1M-10M keys fit in <2GB. If cardinality is extremely high, use SQLite spill.\" Good.\n\nNeed \"daily build\" maybe \"use SQLite\" and \"not pandas\" to keep memory low. But \"scikit-learn\" training with SGD partial_fit.\n\nLet's write final answer.\n",
+ "content": "## Daily batch pipeline design\n\n### 1. Directory layout and storage formats\n\nUse a single data root, `/data`, and keep everything local:\n\n```\n/data/\n  raw/\n    2024/03/12/00.jsonl.gz\n    2024/03/12/01.jsonl.gz\n  processed/\n    2024/03/12/00.parquet\n    2024/03/12/01.parquet\n  dailies/\n    2024/03/12/user_day.parquet\n    2024/03/12/eventtype_day.parquet\n  models/\n    2024/03/12/model_2024-03-12.pkl\n  state/\n    hourly.lock\n    daily.lock\n    weekly.lock\n  logs/\n    pipeline.log\n```\n\nFormats:\n\n- **Raw input**: gzip-compressed JSONL, as received.\n- **Processed hourly output**: Parquet, one row per `(user_id, event_type)` with a count for that hour. This is the restartable journal.\n- **Daily aggregates**: Parquet.\n  - `user_day.parquet`: columns `date, user_id, event_type, event_count`.\n  - `eventtype_day.parquet`: columns `date, event_type, event_count, unique_users`.\n- **Weekly model**: scikit-learn pickle, e.g. `model_YYYY-MM-DD.pkl`, plus a small JSON metrics file.\n\n### 2. Hourly processing stage: `process_hour.py`\n\n- Run at the top of every hour.\n- For the current hour, find the raw file `/data/raw/YYYY/MM/DD/HH.jsonl.gz`.\n- If the corresponding `/data/processed/YYYY/MM/DD/HH.parquet` already exists, skip it. That file’s existence is the “done” marker.\n- Otherwise:\n  1. Stream-decompress and parse the JSONL file line by line.\n  2. Extract `user_id`, `event_type`, and increment a count.\n  3. Aggregate in memory using a dictionary keyed by `(user_id, event_type)`.\n  4. Write the aggregated counts to a temporary Parquet file in a `.tmp` location.\n  5. Atomically rename the temp file to the final `processed` path.\n\nThis gives restartability: if the job crashes before the rename, the hour is incomplete and will be reprocessed from the raw file. If it crashes after the rename, the processed file is complete and the next run skips it.\n\nUse the 4 CPU cores with a process pool for JSON parsing and aggregation. The in-memory dictionary is bounded by the number of distinct user-event pairs in that hour, typically a few million, so memory stays well below 16 GB.\n\n### 3. Daily aggregation stage: `build_daily.py`\n\n- Run every day at 04:30 for the previous day’s data.\n- If `/data/dailies/YYYY/MM/DD/user_day.parquet` already exists, skip.\n- Otherwise:\n  1. Read all 24 hourly Parquet files for that date from `/data/processed/`.\n  2. Load them in small batches and insert into a temporary SQLite database.\n  3. Run SQL group-by queries:\n     - `SELECT date, user_id, event_type, SUM(count) FROM hourly GROUP BY 1,2,3`\n     - `SELECT date, event_type, SUM(count), COUNT(DISTINCT user_id) FROM hourly GROUP BY 1,2`\n  4. Write the results to the two daily Parquet files.\n  5. If the daily job crashes, the processed hourly files are still the source of truth; re-running the daily job simply rebuilds the daily aggregates from them. It does not reprocess raw hourly logs.\n\nThis keeps memory low because SQLite does the grouping on disk, and batches keep the Python process small.\n\n### 4. Weekly training stage: `train_weekly.py`\n\n- Run every Monday at 05:30.\n- Read the last 30 days of daily aggregate Parquet files.\n- Build features from the aggregate rows, e.g. per user:\n  - daily event count\n  - number of distinct event types\n  - per event-type counts\n  - time-based features such as day-of-week and recency\n- Train a scikit-learn classifier. If the training data is large, use an incremental classifier such as `SGDClassifier` with `partial_fit`, processing the daily aggregates in chunks so memory stays low.\n- Write the trained model atomically to `/data/models/YYYY/MM/DD/model_YYYY-MM-DD.pkl`, along with evaluation metrics.\n\nThe exact target/label column is a business decision, but the pipeline is structured so the label can be joined in from a separate table or file.\n\n### 5. Raw log retention and cleanup: `cleanup_raw.py`\n\n- Run daily at 01:00.\n- Delete files under `/data/raw` older than 60 days.\n- Before deleting a raw file, check that its corresponding processed hourly file exists. If it does not, keep the raw file and log a warning; do not delete a file that might be needed to recover a failed hour.\n\nThis satisfies the requirement: raw logs are kept for 60 days, but never at the expense of recoverability.\n\n### 6. Scheduling with plain cron\n\nUse a crontab with `flock` to prevent overlapping runs:\n\n```text\nMAILTO=ops@example.com\n\n0 * * * *  flock -n /data/state/hourly.lock  /opt/pipeline/process_hour.py\n30 1 * * *  flock -n /data/state/cleanup.lock  /opt/pipeline/cleanup_raw.py\n30 4 * * *  flock -n /data/state/daily.lock  /opt/pipeline/build_daily.py\n0 5 * * 1 flock -n /data/state/weekly.lock  /opt/pipeline/train_weekly.py\n30 5 * * *  flock -n /data/state/catchup.lock  /opt/pipeline/catch_up.sh\n```\n\nThe catch-up job at 05:30 re-runs `build_daily.py` if the previous day’s aggregate is still missing, so the daily aggregate is ready by 06:00.\n\n### 7. Memory management\n\n- **Hourly job**: the main in-memory structure is a dictionary of `(user_id, event_type)` counts. A few million keys fit in under 2 GB.\n- **Daily job**: use SQLite for grouping; read Parquet in batches and insert in batches.\n- **Weekly job**: use incremental training with `partial_fit` so the full 30-day dataset is never loaded into memory.\n- Leave at least a few GB free for the OS and logging.\n\n### 8. Failure detection and recovery\n\n- Every script exits with a non-zero code on failure; cron mails the output.\n- Use `flock` so a crashed or restarted job never runs concurrently with itself.\n- The hourly job’s processed file is the source of truth: if it exists, the hour is finished; if it does not, the hour is not finished.\n- The daily job is idempotent: if the output files exist, it skips; if not, it rebuilds from processed files.\n- The weekly job writes to a temp model file and renames it into place, so a crash leaves either the old model or the new model, never a partial model.\n- The catch-up cron at 05:30 detects a missing daily aggregate and retries. If it is still missing after retry, an alert is sent.\n\n### 9. Rough time and disk estimates\n\nInput is 20 GB/day of gzipped JSONL, so assume roughly 50–100 GB/day uncompressed and about 80M–150M events/day.\n\n- **Hourly processing**: 0.8 GB compressed per hour, a few million events per hour. With 4 cores, expect roughly 2–10 minutes per hour.\n- **Daily aggregation**: reading 24 hourly Parquet files and grouping in SQLite, roughly 5–20 minutes.\n- **Weekly training**: 30 days of aggregates, roughly tens of minutes to a couple of hours depending on model and feature complexity.\n- **Disk use**:\n  - Raw logs: 20 GB/day × 60 days = 1.2 TB\n  - Processed hourly files: roughly 1–3 GB/day × 60 days = 60–180 GB\n  - Daily aggregates: roughly 0.5–1 GB/day × 90 days = 45–90 GB\n  - Models and logs: under 1 GB\n  - Total: approximately 1.3–1.5 TB, fitting comfortably on a 2 TB disk.\n\nThis design is restartable after crashes, keeps memory well under 16 GB, uses only local storage, and uses plain cron for scheduling.",
+ "usage": {
+  "completion_tokens": 12706,
+  "prompt_tokens": 191,
+  "total_tokens": 12897,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 191,
+  "prompt_ms": 2258.78,
+  "prompt_per_token_ms": 11.82607329842932,
+  "prompt_per_second": 84.5589211875437,
+  "predicted_n": 12706,
+  "predicted_ms": 1370077.334,
+  "predicted_per_token_ms": 107.83764927194018,
+  "predicted_per_second": 9.273199172565832
+ },
+ "tokens": {
+  "reasoning_tokenized": 10871,
+  "content_tokenized": 1832,
+  "completion_tokens_usage": 12706,
+  "prompt_tokens_usage": 191,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.262,
+  "to_first_reasoning": 2.262,
+  "to_first_answer_token": 1163.667,
+  "to_final_answer": 1372.343
+ },
+ "peaks": {
+  "gpu_temp_c": 82,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26206
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26571
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26761
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26648
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26663
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26703
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26683
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26694
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26702
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26691
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26685
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26691
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26696
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26704
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26695
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26696
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26699
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26705
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26706
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26709
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26713
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26708
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26709
+  },
+  {
+   "t_s": 281.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26694
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26704
+  },
+  {
+   "t_s": 301.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26714
+  },
+  {
+   "t_s": 311.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26703
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26710
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26716
+  },
+  {
+   "t_s": 341.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26691
+  },
+  {
+   "t_s": 352.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26713
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 372.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 382.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26722
+  },
+  {
+   "t_s": 392.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 402.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 412.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 422.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 432.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 442.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26717
+  },
+  {
+   "t_s": 452.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26699
+  },
+  {
+   "t_s": 462.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26705
+  },
+  {
+   "t_s": 472.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26709
+  },
+  {
+   "t_s": 482.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26710
+  },
+  {
+   "t_s": 492.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26706
+  },
+  {
+   "t_s": 502.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26700
+  },
+  {
+   "t_s": 512.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 522.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26716
+  },
+  {
+   "t_s": 532.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26718
+  },
+  {
+   "t_s": 542.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 552.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 562.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 572.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 582.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 592.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 602.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 612.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 622.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 632.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26718
+  },
+  {
+   "t_s": 642.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 652.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 662.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 672.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 682.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 692.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26743
+  },
+  {
+   "t_s": 703.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 713.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 723.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26750
+  },
+  {
+   "t_s": 733.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  },
+  {
+   "t_s": 743.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 753.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 763.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26206
+  },
+  {
+   "t_s": 773.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 783.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26722
+  },
+  {
+   "t_s": 793.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 803.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26743
+  },
+  {
+   "t_s": 813.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 823.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26721
+  },
+  {
+   "t_s": 833.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 843.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 853.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26728
+  },
+  {
+   "t_s": 863.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 873.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26721
+  },
+  {
+   "t_s": 883.5,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 893.5,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 903.5,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 913.5,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 923.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 933.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 943.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 953.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 963.7,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 973.7,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 983.7,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 993.8,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 1003.8,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 1013.8,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26722
+  },
+  {
+   "t_s": 1023.8,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1033.9,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1043.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 1053.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1063.9,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 1074.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 1084.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 1094.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 1104.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1114.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 1124.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 1134.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 1144.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26744
+  },
+  {
+   "t_s": 1154.2,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 1164.2,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 1174.3,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 1184.3,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 1194.3,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 1204.4,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 1214.4,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 1224.4,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 1234.4,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 1244.5,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26706
+  },
+  {
+   "t_s": 1254.5,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26715
+  },
+  {
+   "t_s": 1264.5,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 1274.6,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26712
+  },
+  {
+   "t_s": 1284.6,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1294.6,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26722
+  },
+  {
+   "t_s": 1304.7,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26732
+  },
+  {
+   "t_s": 1314.7,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26704
+  },
+  {
+   "t_s": 1324.7,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 1334.7,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 1344.8,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 1354.8,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 1364.8,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  }
+ ]
+}

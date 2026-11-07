@@ -1,0 +1,547 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1013,
+ "started_at": "2026-10-30T23:01:44",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "length",
+ "did_not_finish_within_budget": true,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need answer user asks design daily batch pipeline. Need produce detailed design. Need obey no code. Need prose/numbered list choice. Need include stages, storage format/directory layout, memory under 16 GB, scheduling cron, failure detection, processing time and disk estimates. Need maybe use numbered list. Need ensure constraints: 20 GB per day gzipped JSONL event logs, hourly files in local dir. Hardware one server 4 cores, 16GB RAM, 2TB disk no GPU no cloud. Daily aggregates per user and event type ready by 06:00. Raw logs kept 60 days then deleted. scikit-learn classifier retrained weekly on last 30 days aggregates. Restartable after crash without reprocessing hours already finished.\n\nNeed design robust. Need consider gzipped JSONL: 20 GB/day compressed. Hourly files => ~20 files/day. Need ingest hourly. Need daily aggregates per user and event type. Need maybe raw logs archived? Raw logs kept 60 days then deleted. Could use rolling partition. Need directory layout.\n\nNeed estimate disk usage: raw 20 GB/day * 60 = 1.2 TB. Additional maybe uncompressed temp? Need avoid duplicating too much. We can process hourly files and write aggregates, raw logs retained. If unzip into temp? Need careful not to double disk. Could read gzipped JSONL directly using streaming line-by-line decompression. Python gzip can decompress to file? If streaming line by line from compressed file: open gz file, read chunks? gzip module supports read(fileobj) chunks, can read line by line? Yes `for line in gzip.open(path, 'rt')` reads lines with internal buffer. It does not materialize full file. So no full uncompressed disk. Good.\n\nNeed daily aggregates per user and per event type. Could be many users. Need store in SQLite/Postgres? No cloud. Use SQLite maybe easy. But daily aggregate tables: user_id, event_type, count, maybe last_seen, sum numeric fields? \"aggregates per user and per event type\" maybe per user event type? Need define aggregate table with user_id, event_type, count, maybe min/max? We need enough for classifier retraining on last 30 days aggregates. Need include features. But requirement: daily aggregates per user and per event type. Could mean aggregate counts by user and event type. Need classifier retrained weekly on last 30 days of aggregates. We can have `user_event_daily` table: date, user_id, event_type, count, maybe other metrics. Need classifier can use user behavior features. Need maybe aggregate raw event counts per user-event type per day. Also maybe event_type aggregates. Need \"daily aggregates per user and per event type\" could be \"per user\" total and \"per event type\" total. But classifier needs aggregates; perhaps user_event_type daily counts.\n\nNeed storage format: SQLite for operational tables? Directory layout: \n- `/data/raw/logs/YYYY/MM/DD/hourly_YYYYMMDD_HH.json.gz` (or `/var/log/events/`)\n- `/data/processed/daily/YYYY-MM-DD/` for daily aggregate parquet? Need parquet? But no Python packages? Maybe use SQLite to avoid dependency. But 20GB/day raw, 1.2TB after 60 days. Need maybe use SQLite for aggregates. But if daily aggregates maybe small. Need classifier retraining uses aggregates from last 30 days. Could use SQLite database with tables. Or use Parquet? Need estimate. SQLite with 20GB? no, raw logs in separate raw dir. SQLite aggregates small. Need maybe store raw logs compressed, daily aggregate SQLite. Good.\n\nBut need consider \"daily aggregates per user and per event type must be ready by 06:00\". We can process hourly files as they arrive; after 05:00 start daily aggregation for prior day; by 06:00 ready. Need schedule cron.\n\nNeed restartable after crash without reprocessing hours already finished. Need design state file with processed hours. For each day, hourly file names. Need checkpoint per hour: after successfully processing a file, append to `processed` file or DB `processed_hours` table. If crash, skip already processed. Need ensure if a file fails and no checkpoint, reprocess. Need maybe idempotent. Could write partial output to temp and atomically rename. Use SQLite transaction. Need avoid partial rows. Need maybe for each hour file: `for each line in gzip open`: parse JSON, update aggregate state. Need memory under 16GB. Need streaming. Need parse JSON line by line. Need count per user per event type. But if aggregate table is large, updating SQLite for each event? Could be millions. 20GB/day JSONL maybe 10-50 million lines? Need efficient. Need update SQLite per event? 20GB/day maybe 10 million lines? Updating SQLite per row can be slow but maybe acceptable? Need maybe use in-memory dictionaries for daily aggregate counts? But 20GB/day could have millions unique users. Need memory constraints. Need process per hourly file: for each line, parse JSON, update per-user-event-type counts. But if many unique users, cannot keep entire day in memory. Need use disk-based aggregate state. Could use SQLite upsert per event. But 20GB/day with maybe 100M lines? Need estimate. Need maybe use `sqlite3` with `INSERT ... ON CONFLICT DO UPDATE SET COUNT = COUNT + 1` for each event. That is one SQL per line. 20GB/day maybe 20-50 million lines, SQLite can handle maybe 100k/sec? 50M would be hours. Need optimize: batch by user_id+event_type? But if user/event pairs numerous. Could use Python dict for a time window? Hmm.\n\nNeed design daily aggregate. Maybe use \"aggregates per user and per event type\" as daily total counts per user and event_type. But if many users, daily counts by user-event type could be huge. Need perhaps store counts per user per event type, but for classifier maybe only top N or aggregate over last 30 days. Need no cloud, no GPU. Need maybe use `sqlite3` with `INSERT OR REPLACE` on (date, user_id, event_type) count. But that's many rows. Alternative: use daily aggregate \"per user\" only and \"per event type\" only? Let's parse wording: \"daily aggregates per user and per event type\" maybe means two aggregate tables: user totals and event-type totals. \"per user and per event type\" could mean \"daily aggregates per user and per event type\" i.e., aggregate by user and by event type. Need classifier retrained on last 30 days of aggregates. For classifier, likely need user-level features. Could have:\n- `event_type_daily_counts`: date, event_type, count\n- `user_daily_counts`: date, user_id, total_count\nBut then classifier can't see user-event type interaction. But maybe \"per user and per event type\" means \"daily aggregates per user [event] type\"? Hmm.\n\nLet's think of event logs: each JSONL line maybe has `user_id`, `event_type`, `timestamp`, other fields. Need daily aggregates per user and per event type. Could mean daily counts per user and per event type? \"per user and per event type\" could be \"per user and per event type\" = aggregate by user, aggregate by event_type. But classifier retrained weekly on last 30 days of aggregates. Maybe classifier predicts something? Not specified. Need design to support. We can include `user_event_daily` with one row per (date, user_id, event_type) to be safe. But that could be huge. Maybe \"per user and per event type\" in pipeline tasks often \"daily aggregates per user and per event type\" = \"aggregate daily counts by user and by event type\". Need perhaps use two tables: `user_daily` and `event_daily`. Need classifier retraining uses \"last 30 days of aggregates\" maybe \"aggregates\" could include both. We'll design both and mention if interaction is needed add `user_event_daily` table. But to satisfy requirement, maybe include a `user_event_daily` table? Need not overcomplicate. Need mention schema with `user_daily`, `event_daily`, and optional `user_event_daily`. But disk use estimate.\n\nNeed memory under 16 GB: Use streaming line-by-line from compressed JSON, no full file. Use SQLite for incremental counts. But if SQLite update per line, need maybe memory for buffer only. Need not load all lines. Use `gzip.open` file object. Use `json.loads` per line. Use `sqlite3` connection. Use context managers. Use `PRAGMA synchronous=NORMAL`, `journal_mode=WAL`, `cache_size`. Need maybe use `temp` files. Need avoid storing raw uncompressed. Use `os.replace` for checkpoint.\n\nNeed scheduling: plain cron fine. Need cron jobs:\n- `hourly_ingest.sh` every 15 min or hourly? Files arrive hourly. Need process each new file. Could run every 15 min to catch files. But if processing long, cron overlap? Need use `flock` to prevent concurrent. Use `hourly_ingest.sh` at e.g. `*/15 * * * *`? But 20GB/day, hourly files maybe 3.3GB. Need process maybe 10-20 min? Need not run too often. Could run every 30 min or hourly. Need by 06:00 daily aggregate. If files arrive hourly, maybe last file at 03:00. Need by 06:00 daily aggregate. Could run `process_hourly` every 30 min from 04:00 to 05:30, then `build_daily` at 05:30. But if hourly file arrives at 03:00, process by 03:30. Need maybe cron schedule:\n- `0 * * * *` hourly process\n- `15,45 * * * *` maybe check.\n- `5 4 * * *` daily aggregation after daily processing complete? Need if last file processed before 05:30.\n- `0 5 * * *` maybe ensure aggregates ready by 06:00.\nCould also use `@daily` at 05:00. But \"plain cron fine\". Need mention `@reboot`? For restartability after crash: cron resumes automatically; need `flock` and checkpoint.\n\nNeed detect failures: If script exits non-zero, cron email? Need log to `pipeline.log` with timestamps. Need health check: daily aggregate table exists and updated. Need alert? Could send local mail? Maybe simple: cron can mail output if configured. Need monitor via `journalctl`? We can define `fail` if script exits 0? Need check. Need maybe write `STATUS` file with `OK`/`FAILED` and last run. Could have `check_pipeline.sh` every hour to verify checkpoints and aggregate counts; if missing expected hours, send mail. But no cloud; can use `mail` command or `logger`. Need mention.\n\nNeed processing time and disk use:\n- Raw 20GB/day * 60 = 1.2TB. Need maybe plus SQLite daily aggregates maybe maybe 5-20GB? Wait if storing per user-event type rows, could be large. Need estimate. 20GB/day compressed JSONL. How many events? Need estimate maybe 30M lines/day (3 lines per 10KB? 20GB/ ~200 bytes/line = 100M lines/day? Actually JSONL events maybe 1KB each? 20GB/day = 20,000MB / 1KB = 20,000 lines? Wait 20GB = 20,000MB. If each JSON event ~1KB, that's 20,000 lines/day? That seems low. But JSONL event logs with ~200-500 bytes per line, 20GB/day => 40k-100k lines/day? Hmm 20GB is huge for 100k lines/day (200 bytes/line). But maybe each event has many fields. Need estimate maybe 20-50 million lines/day if 500 bytes/line? Actually 20GB/day / 1KB = 20,000 lines, not millions. But \"20 GB per day\" perhaps 20,000,000 KB; at 200 bytes/line = 100 million lines/day. That's 100M lines/day. That is plausible. Need process 100M lines/day, 20GB/day. At 100M lines/day, 2.3M lines/hour. Processing maybe 100k lines/sec? That's 30M/sec too high. Need maybe 10k lines/sec? 100M lines * 5 sec/1000? Let's estimate. JSON parse and SQLite update per line maybe 0.1-0.5 ms? Python maybe 5-10 micro? Actually json.loads 100 bytes ~ 5-10 micro? 100M lines impossible. Need optimize.\n\nNeed perhaps use `sqlite3` update per line maybe 50-100 us? Let's think: Python json.loads 1KB ~ 3 micro? SQLite upsert maybe 100us. 100M lines => 10,000 seconds? 3 hours? Too high. Need maybe use C++? But no code. Need maybe use `sqlite3` with `INSERT OR REPLACE` is expensive. Alternative: aggregate in memory per user per event? But memory constraints. Need maybe process by using `awk`/`python` and write daily counts? Need efficient.\n\nMaybe 20GB/day compressed is not huge; can process in hours with 4 cores. Need estimate. Let's use realistic numbers: 20GB/day compressed, maybe 100MB/hour? Actually if 20GB/day, hourly files 3.33GB. Processing 3.33GB compressed per hour. If use `gzip.open` decompress, Python json line parse, SQLite update. Could process maybe 50-100 MB/s? Need test. 3.33GB/hour -> 30-60 sec if 100MB/s. But SQLite update per line could be bottleneck. Need maybe use `sqlite3` in C? Python overhead maybe 100k lines/sec. 100MB/hour at 1KB/line = 100k lines/sec, 3.33GB = 3.33M lines/hour. 100k lines/sec -> 33 sec. Good. If 200 bytes/line, 16.6M lines/hour -> 167 sec. If 500 bytes/line, 6.6M lines/hour -> 666 sec. Need estimate. Let's say 3-8 min per hourly file. Good. Need maybe use `sqlite3` batch: use `INSERT ... ON CONFLICT ...` per line. That is maybe okay.\n\nBut need \"daily aggregates per user and per event type\" maybe update SQLite per line. Need perhaps use `INSERT OR REPLACE INTO daily_user_event (date, user_id, event_type, count) ...`? Need count. But if update per line with `ON CONFLICT DO UPDATE SET COUNT = COUNT + 1`, for 100M lines/day, 100k rows? Actually number of unique (user,event) pairs could be up to millions. Need table maybe 10M rows? SQLite can handle. But disk use of SQLite? If one row per user-event per day, maybe 100M rows? Could be huge. Need maybe aggregate by user and event type separately to keep table small. Let's reconsider.\n\nRequirement \"daily aggregates per user and per event type\" maybe likely \"daily aggregate counts per user and per event type\" = two tables. \"aggregates per user and per event type\" could mean \"per user\" and \"per event type\" as dimensions. We can implement:\n- `daily_user`: `date, user_id, count, first_seen, last_seen` (or `total_events`)\n- `daily_event`: `date, event_type, count`\nThis table size: if 100M events/day, unique users maybe 1M, unique event types maybe 100. User table 1M rows ~ 100MB per day; 30 days = 3GB. Event table 100 rows. Good. But then user-event interaction lost. For classifier maybe need \"last 30 days of aggregates\" maybe user totals enough? Could use user total counts per day, plus event totals. Maybe okay. But if classifier needs per event type per user, need `user_event_daily` table. Could be huge but maybe manageable? Let's estimate: 20GB/day compressed, 100M lines, unique user-event pairs maybe maybe 1M/day, rows 1M/day; 30 days=30M rows. SQLite row overhead 100 bytes -> 3GB. Could be okay but with indexes maybe 5GB. But if 10M pairs/day -> 100M rows 30 days -> 10GB. Need maybe not.\n\nThe prompt says \"daily aggregates per user and per event type\" maybe \"per user and per event type\" as two aggregate dimensions. Need not store user-event table. But \"aggregates per user and per event type\" might be \"per user and per event type\" = aggregate by user, aggregate by event type. Let's design both `user_daily` and `event_daily` and perhaps optional `user_event_daily` if classifier requires interaction. Need mention that if interaction is needed, use `user_event_daily` with counts; but to keep disk bounded, maybe limit to top N? Hmm.\n\nNeed maybe include \"daily aggregates per user and per event type\" exactly: `user_daily_counts` (per user total count for date) and `event_daily_counts` (per event type total count for date). Then classifier retrained weekly on last 30 days of aggregates: can use `user_daily` as user features, `event_daily` as event distribution. That is plausible.\n\nNeed maybe include \"per event type\" counts by event type. But \"per user and per event type\" could also mean \"for each user, aggregate event types\" i.e. `user_event_daily`. Let's phrase: \"The core operational aggregates are two small tables: `daily_user` and `daily_event`; if the classifier needs the user-event cross, a third table `user_event_daily` is also populated.\" Then maybe not overfocus.\n\nNeed design pipeline stages:\n\n1. Ingest:\n   - Hourly files placed in `raw/` directory by producer.\n   - At the beginning of each hour, `ingest_hour.sh` runs. It locks a lockfile for that hour (flock), checks if hour already processed (in `processed_hours` table or `state/processed_hours` file), and if not, processes the file.\n   - Process file: open compressed file with `gzip.open(..., 'rt')`, iterate line by line. For each line:\n     - Parse JSON.\n     - Determine `date` from timestamp (UTC/local? Need define).\n     - Increment aggregate counters in SQLite (or in-memory for daily aggregate? Need maybe daily aggregates after file? Let's decide).\n   - At end, if any line failed? Need decide: if a line fails, log and maybe skip? Need robust. Need maybe `json.loads` errors; could count bad lines and store. Need maybe if parse error, count as `error`? Need not.\n   - After processing, update `processed_hours` table with hour file name and timestamp. Use a transaction around entire hourly file so atomic. Use `sqlite3` connection in `:memory:`? Need disk? Could use WAL. Need ensure if crash after processing file but before checkpoint, no reprocess. If process file successfully but crash before commit checkpoint, need maybe checkpoint? Could use `journal_mode=WAL` and write checkpoint? Actually if crash before commit, changes in WAL may be lost? If process file and then commit to SQLite, if crash after commit but before processed_hours update? Need transaction ordering: Process file, then update `processed_hours`, then commit? But if commit of processed_hours after file processing? If crash before commit, maybe processed_hours not updated; reprocess same file. That's okay. If process file and then update processed_hours in same transaction? Need if we update aggregates table and processed_hours table in same transaction, then either all committed or not. But if file processing takes long, transaction open and update counts? Need update counts per line; if we open transaction at start and update all counts, and commit after file. But then if crash mid-file, transaction not committed, all changes lost. That's fine? But if many lines processed, redo. However if we use `INSERT ... ON CONFLICT` per line, each statement writes to SQLite; if in explicit transaction, all buffered and not committed until end. Good. But if using Python sqlite3, need set `isolation_level=None`? We can use `connection.execute` and `connection.commit()` after file. Need maybe `PRAGMA synchronous=NORMAL`. That reduces disk I/O. Good.\n   - After file processed, `processed_hours` includes file path and completion timestamp. Could store in `pipeline_state` table with columns `file_path, processed_at, status`.\n   - If failure, do not update `processed_hours`, and script returns non-zero. Cron logs.\n\n2. Daily aggregation:\n   - At 05:00? Need process all raw files for that day. But raw files are processed hourly and aggregate counts are in SQLite. Need daily aggregation could simply read `daily_user`, `daily_event` tables for that date. But if using SQLite `daily_user` and `daily_event` as running totals, no daily aggregation needed? We can insert rows with `date` key and count. Then daily aggregate query is `SELECT ... WHERE date = ?`. But requirement says daily aggregates per user and per event type. Could be table per date. Need maybe need \"ready by 06:00\"; if hourly ingest for last day completed, aggregates ready. Need perhaps `daily_aggregation` job runs at 05:00 after last hourly file processed. It can query SQLite for date and write to a `daily_output` maybe parquet/CSV for downstream. But maybe \"ready\" means table rows available. We can create a `daily_snapshot` table? Or maybe write a `daily_aggregate` file to `processed/YYYY-MM-DD/user_event_daily.csv` for classifier. Need include.\n\nNeed maybe use SQLite as source of truth. But classifier retrained weekly on last 30 days of aggregates. Could query SQLite directly. But for retraining, maybe need export to CSV/Parquet? Since no cloud, can use SQLite. Need perhaps use `sqlite3` to export. But no code. Need storage format and directory layout:\n```\n/data/\n  raw/\n    events/\n      2024/01/01/\n        20240101_00.json.gz\n        ...\n  sqlite/\n    pipeline.db\n  processed/\n    daily/\n      2024-01-01/\n        user_daily.csv\n        event_daily.csv\n    hourly/\n      2024-01-01/\n        20240101_00.json.gz.sha256\n        20240101_00.json.gz.ingest.log\n  state/\n    processed_hours/\n      20240101_00.json.gz\n      ...\n  output/\n    model/\n      2024-01-29/\n        model.pkl\n        metrics.json\n      2024-01-30/\n        model.pkl\n        metrics.json\n  logs/\n    pipeline.log\n```\nNeed raw logs kept 60 days. Could use `raw/events/YYYY/MM/DD/` and a cron `purge_raw_60d.sh` at 02:00 each day deletes raw files older than 60 days. Need ensure if deleting raw logs after aggregates are ready. Need maybe daily at 02:00. Need maybe not delete too early. Need \"raw logs are kept for 60 days then deleted\" exactly. Need implement with `find` command. Need maybe if using `raw` as read-only? Good.\n\nNeed maybe use `parquet`? But no code, can use SQLite. Need storage format: gzipped JSONL raw; SQLite for state/aggregates; optional model stored as pickle (sklearn). Need mention.\n\nNeed memory under 16GB:\n- Use streaming line-by-line: `gzip.open` reads in chunks, so no full uncompressed file in RAM.\n- Use SQLite for counts; no in-memory hash of all users/events.\n- If using in-memory batch for hourly file? Could use small dictionaries for a small batch of lines? But to avoid memory, process one line at a time.\n- SQLite connection uses a few MB; Python process maybe 100MB. 16GB plenty.\n- Need maybe set `PYTHONUNBUFFERED=1`.\n- Avoid loading all JSON objects; parse one at a time.\n- Use `json.loads` on one line; memory small.\n- If using `sqlite3`, set `cache_size` to e.g. 8MB, `journal_mode=WAL`, `synchronous=NORMAL`.\n- If using `user_event_daily` table, need maybe batch inserts? But SQLite upsert per line okay. Could use `INSERT INTO ... VALUES (...) ON CONFLICT ... DO UPDATE SET count = count + 1`. Need maybe if many unique keys, upsert per line can be expensive. Could use `INSERT INTO ... VALUES` without conflict and then `DELETE duplicates`? But need counts. Could use `INSERT OR IGNORE` then `UPDATE`? That would be two queries. Could use `INSERT INTO ... ON CONFLICT (date, user_id, event_type) DO UPDATE SET count = count + 1` for each line. Need maybe if high cardinality, conflict cost. Alternative: use Python dict for a batch? But memory. Maybe use SQLite's `INSERT OR REPLACE`? No, that replaces count with 1, not good. Could use `INSERT ... ON CONFLICT` per line. Good.\n\nNeed maybe process `daily_user` and `daily_event` separately:\n- For each line, `INSERT INTO daily_user (date,user_id,count) VALUES (?, ?, 1) ON CONFLICT DO UPDATE SET count = count + 1`\n- `INSERT INTO daily_event (date,event_type,count) VALUES (?, ?, 1) ON CONFLICT DO UPDATE SET count = count + 1`\n- If also user_event table, same. Three upserts per line. Need maybe too many. Could instead process raw file once and update all three tables. But per line 3 SQLite statements. 100M lines * 3 = 300M statements/day. Might be too much. Need optimize. Maybe process file by grouping? Hmm.\n\nMaybe need reconsider performance. Could use Python `sqlite3` with `executemany` for batches? But if updating count per line, can't batch easily because each line increments. Could use `CREATE TEMP TABLE batch_events` and then `INSERT INTO daily_user` with `UPDATE`? Let's think.\n\nAlternative: Use in-memory dictionary per user/event for one hour? Hourly files 3.33GB, maybe unique users millions. Not possible. But could use SQLite as running aggregate.\n\nMaybe use `sqlite3` with `INSERT INTO ... VALUES (?, ?, 1) ON CONFLICT DO UPDATE SET count = count + 1` is a single statement. For 3.33GB/hour maybe 3.33M lines/hour. 3 statements per line => 10M SQL statements/hour. SQLite can maybe do 100k/s? 10k sec. Too high. Need optimize.\n\nMaybe process file by extracting user_id, event_type, date fields using `sqlite3`? Could use `sqlite3` virtual tables? No.\n\nMaybe use `awk`/`sqlite3`? But no code. Need design with acceptable estimates. Could use `C` or `Rust`? But no cloud, no GPU. We can use system tools. But perhaps need use `sqlite3` CLI with `--create-temporary-table`? Need maybe use `sqlite3` to create index? Hmm.\n\nMaybe better to use `sqlite3` but not per line. Could parse each file and insert into a temporary table `batch_events` with columns `date, user_id, event_type`, then use SQL to aggregate into final tables. But if batch table contains millions of rows, memory? SQLite can store temp table on disk. Then SQL `INSERT INTO daily_user SELECT date, user_id, COUNT(*) FROM batch_events GROUP BY date, user_id`? But need daily_user per user, event, and user-event. Could do:\n- Read each line, parse JSON, extract fields, and `INSERT INTO tmp_hour_events (date, user_id, event_type) VALUES (?)`. This is one insert per line.\n- Then after file, `DELETE FROM tmp_hour_events`.\n- Then aggregate:\n  - `INSERT INTO daily_user SELECT date, user_id, COUNT(*) FROM tmp_hour_events GROUP BY date, user_id`\n  - `INSERT INTO daily_event SELECT date, event_type, COUNT(*) FROM tmp_hour_events GROUP BY date, event_type`\n  - `INSERT INTO user_event_daily SELECT date, user_id, event_type, COUNT(*) FROM tmp_hour_events GROUP BY date, user_id, event_type`\nBut wait if daily_user table already has rows for date from previous hours, need either replace or increment. Could use daily_user as snapshot per date with `INSERT OR REPLACE`? But if processing hour by hour, need update. Could instead store `hourly_user_event` counts in SQLite, then after day complete, aggregate all hours into daily tables. That might be efficient: insert raw fields into a staging table `hourly_counts` with `(date, user_id, event_type)` one row per event. Then daily aggregation at day end groups by date. But then `hourly_counts` would contain all events for day; after daily aggregation, can delete or truncate. This is efficient: per line one insert into staging table. But staging table will be as large as all events for day, maybe 100M rows. SQLite can handle but disk? It duplicates raw? It stores 3 columns, maybe 50 bytes each => 5GB per day. Too large. Could use `COUNT`? Not good.\n\nAlternative: Use SQLite `INSERT INTO tmp_hour_events` but with `journal_mode=MEMORY`? Need not.\n\nCould use `sqlite3` with `INSERT` into a table that has `AUTOINCREMENT`? Not efficient.\n\nMaybe use `sqlite3` to insert into `daily_user` with `INSERT OR REPLACE` per line? No.\n\nNeed maybe use `python` with `sqlite3` and `executemany` for batches of 1000 lines into staging, then after each batch do `INSERT OR REPLACE INTO daily_user`? Still count increment per line.\n\nCould use `INSERT INTO daily_user` with `ON CONFLICT DO UPDATE SET count = count + 1` per line. That's okay if not too many. Need maybe estimate 3.33GB/hour compressed, but compressed JSON line count? If JSONL event logs, each line maybe 300 bytes, 11M lines/hour. 3 statements per line = 33M SQL statements/hour. SQLite can maybe handle 1M/s? No. But if using `sqlite3` Python with default, maybe 50k/s, 33M/50k=660s=11min. Maybe okay. But 100M/day -> 1000min? Hmm.\n\nCould use `sqlite3` in C via `sqlite3` CLI with `.import`? Actually `sqlite3` CLI supports `INSERT` with `ON CONFLICT` but not batch? Could use `.mode insert` and `.import` to create table? Maybe.\n\nMaybe use `sqlite3` with `CREATE TABLE` and `INSERT INTO ... ON CONFLICT ... DO UPDATE` per line; but Python overhead. Need maybe use `sqlite3`'s `executemany` with 1000 inserts? But each insert statement separate. Could use `INSERT INTO daily_user (date,user_id) VALUES (?,?,?)` and `ON CONFLICT`? Not batch.\n\nAlternative: Use `sqlite3` `PRAGMA` and `insert` with `UPDATE` via `INSERT OR REPLACE`? Hmm.\n\nMaybe use `sqlite3` `INSERT INTO ... VALUES (?, ?, 1) ON CONFLICT (date, user_id) DO UPDATE SET count = count + 1` and use `executemany` with a list of tuples. Each tuple is one line. That's same.\n\nCould use `sqlite3` `CREATE TEMP TABLE batch` and use `INSERT INTO batch` for each line, then `INSERT INTO daily_user ... SELECT ... GROUP BY ...` after batch. But batch table with millions rows; but maybe we can process hourly file: batch table is per hour, maybe 11M rows. SQLite can store in temp DB on disk? But temp tables stored in memory by default? Actually SQLite temp tables can be stored in disk if `PRAGMA temp_store=ON`. We can use `PRAGMA temp_store=OFF`? Need maybe not. But after each hour, aggregate into daily tables. But daily tables need to handle incremental updates. Could use `daily_user` with `(date, user_id)` and count; when processing hour, we want to add counts from that hour. If we aggregate hour's `batch_events` into `hourly_user_event` table, then update `daily_user` by summing? Could use `INSERT INTO daily_user SELECT date, user_id, SUM(cnt) FROM hourly_user_event GROUP BY date, user_id`? But `daily_user` already has previous hours. Could do `INSERT OR REPLACE`? No, need merge. Could use `INSERT INTO daily_user` with `SELECT ...` and `ON CONFLICT DO UPDATE SET count = daily_user.count + excluded.count`. SQLite supports `INSERT ... SELECT ... ON CONFLICT DO UPDATE SET count = daily_user.count + excluded.count`. That might work. But need staging hourly_user_event table for each hour with one row per user? Actually hourly_user_event could be per user (not per event) with count, created by `SELECT user_id, COUNT(*) ... GROUP BY user_id` from batch table. Then merge into daily_user. For event table, similar. This reduces rows? hourly_user_event one row per user, maybe millions. Then daily_user one row per user. Good.\n\nNeed process:\n- For each hourly file, read lines and insert into a temp/batch table `hourly_batch_events` with columns `date, user_id, event_type` (or maybe `date, user_id` and event_type). But if we only need daily_user and daily_event, we can insert into two temp tables `hourly_user_counts`? Hmm.\n- Could read file, and for each line, insert into `hourly_batch_events` (one row). At end of file, run SQL:\n  - `INSERT INTO daily_user (date, user_id, cnt) SELECT date, user_id, COUNT(*) FROM hourly_batch_events GROUP BY date, user_id`\n  - `INSERT INTO daily_event (date, event_type, cnt) SELECT date, event_type, COUNT(*) FROM hourly_batch_events GROUP BY date, event_type`\n  - Optionally `INSERT INTO user_event_daily ...`.\n  - Then `DELETE FROM hourly_batch_events`.\nBut `hourly_batch_events` would contain all events in that hour. Could be huge (11M rows/hour). SQLite can handle but disk? Temp table maybe on disk. After aggregate, delete. Could be okay but maybe heavy. Could use `hourly_batch_events` as `daily_user`? Wait we can aggregate per hour and merge into daily tables. For `daily_user`, after hour processed, we can:\n  - Create `hourly_user` table with `(date, user_id, cnt)` from `hourly_batch_events` (group by user_id).\n  - Merge into `daily_user`: `INSERT INTO daily_user (date,user_id,cnt) SELECT h.date,h.user_id,h.cnt FROM hourly_user h ON CONFLICT DO UPDATE SET cnt = daily_user.cnt + excluded.cnt`.\n  - Same for event_type.\n  - `DELETE FROM hourly_batch_events`.\nBut `hourly_user` table also huge? It has one row per unique user in hour, maybe 1M rows. `hourly_batch_events` one row per event, 11M. Could avoid `hourly_batch_events` by using `INSERT INTO hourly_user_counts SELECT date, user_id, COUNT(*) ...`? Need source. Maybe use SQLite `CREATE TABLE hourly_user_counts AS SELECT ...`? Can't select from inserted rows.\n\nCould use Python dictionary to count per user and event type within an hour? But memory maybe 1M users * 8 bytes = 8MB, fine. Actually for 11M lines/hour, unique users maybe 1M; counting in Python dict of user->count for each hour could use maybe 100MB, okay. We can process one hour at a time, maintain dict for `user_counts` and `event_counts` and maybe `user_event_counts`. Then after hour, insert/update daily tables. This is better memory: 16GB. But if daily_user table has 1M rows per day, we can update at day end. For hourly processing, we could accumulate counts in memory for the hour and then merge. But if hourly file 3.33GB, number of unique users could be large but maybe manageable. However if there are 10M unique users, dict too large. But typical? Need robust. Could use SQLite staging.\n\nAlternative: Use Python's `sqlite3` with `INSERT INTO daily_user ... ON CONFLICT DO UPDATE` per line but with `executemany` for 1000 lines. Need maybe performance acceptable if use `sqlite3` C? Let's estimate. Could use `sqlite3` Python module with `executemany` to execute a statement with bind params. For each tuple, one SQL statement. 100M lines/day => 100M SQL statements/day. SQLite can handle 100k statements/sec? Actually SQLite can do millions per second in C. Python overhead maybe 10-20k/s. 100M/20k=5000s=83min. Too high. But maybe daily 20GB compressed, 100M lines not necessarily; if 50M lines/day, 41min. Could be okay but not great.\n\nCould use `sqlite3` CLI `.import` with `INSERT OR IGNORE`? Not.\n\nMaybe use `awk` to aggregate? Hmm.\n\nNeed maybe use `sqlite3` with `INSERT INTO tmp_hour_events` one row per line. Then at end of day, aggregate. But if we process one hour at a time, we can create `tmp_hour_events` with one row per line. That's 11M rows/hour. SQLite can handle but maybe disk I/O. Then aggregate into daily tables. But daily tables after all 24 hours: `daily_user` would be created once at day end? Could process each hour and update daily_user by aggregating hour's batch into `hourly_user` and merging. This is many rows but not too many? `hourly_user` one row per unique user; if 1M users, 1M rows. Good. `hourly_batch_events` 11M rows. Could instead aggregate per hour into `hourly_user` using Python dict? Hmm.\n\nMaybe use `sqlite3` with `CREATE TEMP TABLE hourly_user_counts(date, user_id, cnt)` and `INSERT INTO hourly_user_counts SELECT ...` after reading batch. Then `INSERT INTO daily_user SELECT ... ON CONFLICT ...`. But batch table large.\n\nMaybe use Python dict for an hour is simpler and memory okay. Need maybe if 10M unique users in hour, dict would be 10M * (user_id 16 bytes + count 8 + overhead 50) = 800MB, okay under 16GB. Could do. But if 20M unique users, 1.6GB, still okay. Could process per hour. Need maybe not use SQLite per line.\n\nLet's design:\n- For each hourly file, use Python script `process_hour.py` that opens gz file and builds local dictionaries:\n  - `user_counts`: `defaultdict(int)` key `user_id` (maybe string)\n  - `event_counts`: `defaultdict(int)` key `event_type`\n  - `user_event_counts`: `defaultdict(int)` key `(user_id, event_type)` if needed.\n  - For each line, parse JSON, increment counts.\n  - At end, insert/update `daily_user`, `daily_event`, and optionally `user_event_daily` in SQLite via SQL `INSERT ... ON CONFLICT DO UPDATE`.\nThis avoids per-line SQLite. Memory: number of unique users/events per hour. 16GB enough. Disk: no temp file except maybe `sqlite3` DB. Processing time: parsing 20GB/day compressed? Actually decompress and parse JSON. 20GB/day, maybe 100GB uncompressed? Wait 20GB compressed decompress maybe 80GB/day? Need decompress time. 4 cores. Python gzip decompress and JSON parse maybe 50-100 MB/s. 80GB/day => 13-27 min. Good. SQLite inserts at end maybe small. So estimates reasonable.\n\nBut wait raw logs are \"gzipped JSONL event logs\" 20GB/day. Gzip compression ratio maybe 5-10x? If 20GB compressed, uncompressed maybe 100-200GB/day. Python gzip decompress 100GB/day at 100MB/s = 1000s=16.7min. Good. 4 cores. Need maybe use `gzip` decompress with Python single-threaded; can use multiprocessing to split file? But no code. Could use `gzip -dc` and `python`? Maybe. Need maybe process hourly files sequentially. 4 cores can process 4 files in parallel, but memory? 16GB; each file maybe 3.33GB compressed, decompress to maybe 30GB? If decompressing in memory line by line, not full file. Could run 4 parallel hourly files, each with 3-6GB? Wait decompressed size 3.33GB compressed -> 30GB uncompressed; Python dict counts per hour maybe maybe 1-3GB, 4 files -> 12GB, okay. But need maybe not parallel to avoid complexity. Could use 4 cores for `gzip`? Not needed. Could use `parallel` to process multiple hourly files, but plain cron maybe. Need maybe use `xargs -P4` in ingest script. That would speed. Need mention.\n\nNeed maybe use `multiprocessing` to process hourly files in parallel? But plain cron fine. Could schedule `process_hourly` every 15 minutes; it can find new hourly files and process them with `xargs -P 4`. But if processing takes longer than 15 min, files may pile up. Need maybe process at 02:00? Let's think.\n\nHourly files arrive as hourly files in local directory. Need daily aggregates per user/event by 06:00. If each hourly file processed within ~15 min, daily aggregate by 06:00. We can process hourly files every 15 min. But if a file arrives at 00:00, by 00:15 process. 03:00 process by 03:15. 03:30? Wait files hourly, likely 00,01,02,03. Last file at 03:00. Process by 03:15. Then daily aggregation at 05:00. Ready by 06:00. Need maybe if files are \"hourly files\" maybe each file covers one hour, arriving at top of hour. Need process every 15 min. Good.\n\nNeed maybe use `flock` to avoid two runs overlapping. Could use `flock /tmp/process_hourly.lock -c '...'`. Need also if a file already in progress? If process crashes, need resume. Could have `state/processed_hours` file. Need maybe `find` new files since last run and process only those not in processed set.\n\nNeed failure detection:\n- `process_hourly` exits non-zero if any hourly file fails; writes error to `logs/pipeline.log`; `cron` can email if output. Need maybe `cron` doesn't notify. We can set `MAILTO` and `MAIL` if output. Need maybe use `logger -t pipeline` to syslog. Need maybe `check_health.sh` every 15 min? Actually cron jobs with `MAILTO` will send mail for any output. Need ensure logs.\n\nNeed maybe use `systemctl`? No. Use `cron` with `MAILTO=...`, `MAIL`? Cron can mail output. Need maybe `cron` with `MAILTO=root`. But root no mail? Could use `logger`. Need mention.\n\nNeed \"restartable after a crash without reprocessing hours that already finished\": Need state file. For each hour, when a file is fully processed, write its path to `state/processed_hours/` file with newline. If a new run starts, it reads existing processed files and skips those. Need also handle if processing a file fails; don't add. Need if a file is partially processed? Use checkpoint after file complete. Need if process crashes mid-file, no checkpoint, so it will reprocess. Good.\n\nNeed maybe use `mtime`? No, path list.\n\nNeed maybe if a file is missing? Raw producer maybe should not remove. Need maybe if file disappears, but already processed? Fine.\n\nNeed daily aggregates \"ready by 06:00\": Need maybe at 05:30, run `daily_aggregation.sh` that:\n- Takes `date = yesterday`.\n- Ensures all hourly files for that date have been processed (check `state/processed_hours` includes all 24 files). If not, maybe process remaining? Could run `process_hourly` again or fail? Need not.\n- Runs `aggregate_daily.py` which queries SQLite:\n  - `INSERT INTO daily_user (date, user_id, count) ...` maybe already populated by hourly processing.\n  - But if we used `daily_user` table updated by hourly processing, daily aggregates ready. Need maybe `daily_aggregation.sh` creates a snapshot directory with CSVs for downstream:\n    - `sqlite3 pipeline.db \"SELECT date, user_id, count FROM daily_user WHERE date=?;\" > processed/daily/YYYY-MM-DD/user_daily.csv`\n    - `... event_daily.csv`\n    - maybe `user_event_daily.csv`\n  - If all hourly files processed, then ready. If not, wait until 05:00? Could run `daily_aggregation` at 05:00 daily. If some hourly file not processed due to failure, job should fail and send alert, and retry next day? But requirement daily aggregates by 06:00; if last file at 03:00 and process within 15 min, okay. Need maybe `daily_aggregation` at 05:30 to allow last processing. Could also at 05:00 if processing of 03:00 done by 03:15; no issue. Use 05:00? If processing of 03:00 takes 20 min, maybe not. Use 05:30. Need maybe `05:30` cron. Good.\n- Need maybe if a file arrives after 03:30? \"hourly files\" maybe top of hour, no. But to be safe, run hourly processing every 15 min, so all files processed within 15 min of arrival.\n\nNeed weekly model retraining:\n- Need retrain weekly on last 30 days of aggregates. Use cron `@weekly` or `0 0 * * 1` (Monday) at 01:00 maybe. Need model.pkl? scikit-learn models can be saved via `joblib.dump` or `pickle`. Need use `sklearn`? Need not code. Need maybe use `sqlite3` to extract last 30 days aggregates. Could create `output/model/YYYY-MM-DD/model.pkl` and `metrics.json`. Need maybe `retrain_model.sh` at 01:00 Monday. It should:\n  - Connect to SQLite, export last 30 days of `daily_user`, `daily_event` (or `user_event_daily`) to CSV/Parquet? Could use `sqlite3` to `EXPORT` to CSV in temp dir. Use Python script to load CSV into pandas? Need no code, but pipeline can use Python. Need maybe `retrain_model.py`:\n    - Connect to SQLite, execute `SELECT * FROM daily_user WHERE date >= date('now','-30 days') ORDER BY user_id` etc.\n    - Train model, save `model.pkl`.\n  - Need ensure only latest model. Use timestamp and `model_latest` symlink. If retraining fails, keep previous model? Need maybe if new model not ready, don't overwrite. Could write to `output/model/YYYY-MM-DD` and if success, `ln -sf` `latest`.\n  - Need maybe run at 01:00 Monday. But daily raw retention at 60 days: raw logs from 60 days ago deleted. Aggregates are in SQLite. SQLite grows if we don't prune old aggregate rows. Need maybe retain aggregates for at least 30 days for model; but maybe need prune older than 90? Requirement says raw logs kept 60 days. Aggregates maybe can be kept indefinitely or pruned after 90 days. Need mention prune raw at 60 days; SQLite aggregates can be pruned after 90 days or keep. But for model, last 30 days. Need maybe daily aggregate rows for user/event maybe small; can keep. Need maybe if SQLite has 30 days * 1M users = 30M rows, maybe large. But if we need model last 30 days, could keep. Need maybe prune `daily_user` after 90 days. Need estimate disk.\n\nNeed need disk use estimate:\n- Raw: 20 GB/day * 60 days = 1.2 TB. Need maybe `raw` plus `sqlite` plus `processed`. 2TB disk. Good.\n- SQLite daily aggregates: If storing `daily_user` (date, user_id, count) and `daily_event` (date, event_type, count) and maybe `user_event_daily`? Need estimate. Suppose 100M events/day, unique users 2M, unique event types 100. `daily_user`: 2M rows/day. Each row in SQLite with index: date (4/8) + user_id (16) + count (8) + rowid (8) + index (user_id + date?) maybe ~50 bytes. 100MB/day. 30 days = 3GB. `daily_event` small. If storing `user_event_daily` with one row per user-event pair per day: if 100M events and 2M users, 100 event types, average 10 events per user-event pair? Actually 100M events / 200M user-event pairs? Wait if 2M users * 100 events = 200M pairs, but only 100M events, average 0.5? Not all pairs. Unique pairs maybe 50M/day. Table rows 50M/day -> 2.5GB/day? Too high. Need avoid. So likely only `daily_user` and `daily_event` are needed. But classifier needs maybe user-level features. Good. Need maybe `user_event_daily` optional but if required, could use \"top 100 event types per user\"? Hmm.\n\nNeed maybe \"daily aggregates per user and per event type\" might indeed mean per user and per event type, not user-event. Good.\n\nNeed maybe include \"daily aggregates per user and per event type\" as:\n- `user_daily_counts`: `date, user_id, total_events`\n- `event_daily_counts`: `date, event_type, total_events`\nThen classifier retrained on last 30 days of aggregates can use these. Need maybe include `first_seen`, `last_seen`? Maybe \"aggregates\" could include `first_seen`, `last_seen`, `total_events`. But daily per user and event type? Hmm. Need maybe \"aggregates per user and per event type\" = for each user, daily counts; for each event type, daily counts. We can add `first_seen`, `last_seen`, `min/max` maybe not necessary. For classifier, counts and recency are useful. But prompt only says aggregates per user and per event type. Need maybe include `total_events`, `first_seen`, `last_seen`? Let's think.\n\nIf classifier is retrained weekly on \"last 30 days of aggregates\", maybe they need to predict something like whether a user will churn. User-level daily aggregates over last 30 days: total count, number of active days, recency, maybe event type distribution. Event type daily totals are context. We can store in `daily_user`: `date, user_id, total_events, first_seen, last_seen`? But daily_user per user per day? If `daily_user` table has one row per user per date, then \"last 30 days of aggregates\" can be queried with `WHERE date >= last_30_days AND date = ?`. Need maybe `daily_user` with `date, user_id, total_events` is enough. `event_daily` with `date, event_type, total_events`.\n\nNeed maybe include `daily_user` with columns `date, user_id, event_count, first_seen, last_seen`? But \"daily aggregates per user\" maybe one row per user per day with event count. We can add `first_seen`, `last_seen` maybe not necessary. Need not overcomplicate. But maybe \"per user and per event type\" means \"per user and per event type\" as two dimensions; daily aggregate could be `count_by_user` and `count_by_event_type`. We'll define.\n\nNeed maybe use SQLite with tables:\n```\nCREATE TABLE daily_user (\n  date TEXT NOT NULL,\n  user_id TEXT NOT NULL,\n  event_count INTEGER NOT NULL,\n  PRIMARY KEY (date, user_id)\n);\nCREATE TABLE daily_event (\n  date TEXT NOT NULL,\n  event_type TEXT NOT NULL,\n  event_count INTEGER NOT NULL,\n  PRIMARY KEY (date, event_type)\n);\nCREATE TABLE processed_hour (\n  file_path TEXT PRIMARY KEY,\n  processed_at TEXT NOT NULL\n);\n```\nMaybe include `pipeline_state` table with `date`? Good.\n\nNeed maybe use `processed_hour` table to store processed hours. But if we use SQLite, raw files are in `raw`; processed_hour table with 24 rows/day. Fine.\n\nNeed maybe \"restartable after a crash without reprocessing hours that already finished\": Could use `processed_hour` table. At start of each run, `SELECT file_path FROM processed_hour` to get already done. For new files in raw for that day not in processed_hour, process. Need maybe if a file was processed but its `processed_at` is NULL? No.\n\nNeed maybe need \"without reprocessing hours that already finished\" also if processing a file crashes after writing some rows to `daily_user`? Wait if we use Python dict and only write to SQLite after complete hour, then no partial state. If crash mid-hour, no partial writes. Good. Need maybe if using `INSERT ... ON CONFLICT DO UPDATE` at the end of hour, we process entire hour in Python, then perform SQL inserts. If crash before SQL inserts, no partial. If crash after SQL inserts? We only write after file complete. Good. So restartable.\n\nNeed maybe maybe process hourly file with Python dict and at end write SQLite. But if hourly file is 3.33GB compressed and decompressed 30GB, parsing in Python maybe 30-60 min? Need maybe too slow? Let's estimate. Python JSON parse 100MB/s? 30GB/day / 100MB/s = 300s=5min? Wait 30GB/day = 30,000MB; at 100MB/s = 300s. At 50MB/s = 600s. Good. Actually decompress and parse maybe 1-2 GB/s? Python gzip+json maybe 200MB/s? 30GB/day => 150s. Good. So hourly file 3.33GB compressed -> maybe 100MB compressed? Wait compressed 3.33GB = 3,300,000KB; decompress maybe 33,000,000KB? If ratio 10, 30GB. At 200MB/s -> 150s. Good. 24 hours => 60 min. Fine.\n\nNeed maybe if using `gzip.open` line by line, decompress speed maybe 50MB/s. 3.3GB compressed -> 30GB decompressed -> 600s. Good. So hourly processing maybe 10 min. Great.\n\nNeed maybe use `xargs -P4` to process multiple files, reducing. But need maybe not.\n\nNeed maybe need \"plain cron is fine\" so no systemd timer. Use `crontab -e`.\n\nNeed maybe need \"no cloud services\" okay.\n\nNeed maybe need \"storage format and directory layout\": Need specify raw logs compressed, SQLite, maybe `processed/daily` snapshot, model. Need maybe use `Parquet`? No.\n\nNeed maybe need \"daily aggregates per user and per event type must be ready by 06:00\": Need maybe `daily_aggregation.sh` at 05:30 writes `processed/daily/YYYY-MM-DD/*.csv` or `*.parquet`? If using SQLite, \"ready\" means rows in `pipeline.db`. But to be explicit, maybe create a `daily_snapshot` directory with CSVs. Need include.\n\nNeed maybe need \"raw logs are kept for 60 days then deleted\": Use `purge_raw.sh` at 02:00 daily: find raw files older than 60 days. Need maybe \"raw logs\" includes compressed files. Need maybe if `find` uses `-mtime +60`? Better use date arithmetic:\n```\nfind /data/raw/events -type f -name '*.json.gz' -mtime +60 -delete\n```\nBut `-mtime +60` counts 60 days from file's mtime (deletion time? File mtime is creation? Need maybe `-newermt`? Better use `find ... -daystart -mtime +60`? Need maybe use `find` with `-newermt`? We need delete files whose date is more than 60 days old. Could use:\n```\nfind /data/raw/events -type f -name '*.json.gz' -mtime +60 -delete\n```\nBut if file was modified on deletion? Hmm. Need maybe use `find ... -daystart -mtime +60`? Actually `-mtime +60` means modified more than 60*24 hours ago. If file not modified, okay. Could also use `find ... -newermt '$(date -d \"-61 days\" +%Y-%m-%d) ! -delete`? Need no code. We can say use `find` with date arithmetic. Need maybe raw files have mtime set to arrival? Good.\n\nNeed maybe \"raw logs kept for 60 days then deleted\": Could use `find /data/raw/events -type f -mtime +60 -delete` at 02:00 daily. Need maybe if `raw` is under `/data`, disk 2TB. Good.\n\nNeed maybe \"daily aggregates per user and per event type\": Could maybe create `daily_snapshot` by `sqlite3` exporting rows. Need maybe `sqlite3` CLI can output CSV. Need no code. Need mention.\n\nNeed maybe \"scheduling plain cron\": Need cron entries:\n```\n# m h dom mon dow  command\n*/15 * * * *  flock -n /tmp/process_hourly.lock /opt/event-pipeline/process_hourly.sh >> /var/log/event-pipeline.log 2>&1\n5 5 * * *   /opt/event-pipeline/daily_aggregation.sh >> /var/log/event-pipeline.log 2>&1\n2 2 * * *   /opt/event-pipeline/purge_raw.sh >> /var/log/event-pipeline.log 2>&1\n0 1 * * 1   /opt/event-pipeline/retrain_model.sh >> /var/log/event-pipeline.log 2>&1\n```\nNeed maybe `*/15` from 00:00 to 05:45. If last file 03:00, process by 03:15. Daily aggregation at 05:30? Actually if `5 5 * * *` at 05:05, then ready by 06:00. Need maybe use 05:30 to allow. But if `*/15`, 05:45 run, daily aggregation at 05:30? Need maybe use `30 5 * * *` (05:30). Let's set `30 5 * * *` daily_aggregation. But if last file at 03:00 processed by 03:15, no issue. Use `0 5 * * *`? Need by 06:00. Use `30 5 * * *` to be safe. Need maybe `5 5` maybe too late if processing of 03:00 takes >2.5 hours? But not. Use `30 5`. Need maybe `2 2` purge raw at 02:00. Need maybe `0 1 * * 1` retrain Monday. Good.\n\nNeed maybe maybe `cron` with `MAILTO=root` and `MAIL`? We can mention `MAILTO=pipeline@...` or `MAILTO=you`. But if no mail, use `logger`. Need maybe `crontab` with `MAILTO=admin@example.com` and `MAIL`? In cron, `MAILTO` variable. Need maybe use `logger` in scripts to `syslog`. We can say \"All scripts send a one-line status to `logger -t event-pipeline`; cron's mail output is also enabled if `MAILTO` is set.\" Good.\n\nNeed maybe \"detect failures\": Need `process_hourly.sh` returns non-zero; `daily_aggregation.sh` returns non-zero if any file missing. `purge_raw.sh` returns non-zero if find fails. `retrain_model.sh` returns non-zero. Need maybe a `health_check.sh` at 06:00? Could check that `daily_snapshot/YYYY-MM-DD` exists. But daily aggregation at 05:30 should produce. Need maybe if it fails, health check at 06:00 will fail. Need maybe use `logger`. Need maybe `cron` job with `MAIL` if any output. Good.\n\nNeed maybe maybe \"restartable after a crash without reprocessing hours that already finished\": Need maybe use `flock` and `processed_hour` table. Need mention.\n\nNeed maybe \"memory under 16 GB\": Need maybe use `PYTHONUNBUFFERED=1`, `ulimit -v`? Not necessary. Need maybe use `sqlite3` `PRAGMA` to avoid reading large tables. Need maybe if using Python dict per hour, memory bounded by unique users in that hour. Need maybe set `PYTHONHASHSEED`? No.\n\nNeed maybe \"processing time and disk use\" rough estimates:\n- Disk: raw 1.2TB. SQLite maybe 3-10GB if pruning. Processed daily snapshots maybe 5-20GB. Total within 2TB. Need maybe say \"with pruning, about 1.3-1.5TB used\". Need maybe if model 100MB. Need maybe `raw` plus `sqlite` plus `processed`. Good.\n- Time: hourly processing of 3.3GB compressed maybe 10-20 min with 4 cores; daily aggregation a few minutes; weekly retraining maybe 10-30 min. Need maybe \"daily total from last file to snapshot: ~15-30 min; retrain ~20-60 min\". Need maybe \"first day after startup maybe processing backlog, but steady state under 06:00.\"\n\nNeed maybe maybe need \"daily aggregates per user and per event type ready by 06:00\": Need maybe daily aggregation should wait for all 24 hourly files processed. Could run `process_hourly.sh` every 15 min, but if at 05:30 it runs, it could process any leftover files from 03:00. Daily aggregation at 05:30 should call `process_hourly.sh` first? Or wait. We can design `daily_aggregation.sh`:\n```\nprocess_hourly.sh   # idempotent, processes any pending files\nsqlite3 ... > daily_snapshot\n```\nBut if process_hourly takes 20 min and daily_aggregation at 05:30, might not finish by 06:00. Need maybe process_hourly at 05:30? Hmm. Need maybe use `*/15` and ensure last hourly file at 03:00 processed by 03:15; no need daily to process. But if there are files from 03:00 arriving at 03:00? Process at 03:00? `*/15` includes 03:00, 03:15. Good. So at 05:30 all done. Could still call process_hourly to catch stragglers; if it takes 20 min, maybe daily snapshot not ready. But likely not. Need maybe daily_aggregation at 05:45? Then by 06:00? Hmm.\n\nLet's set `*/15` processing. Daily aggregation at `45 5 * * *` (05:45). Then if any leftover files from 03:30? Actually hourly files top of hour, last file 03:00. Process at 03:15. No issue. Use 05:45 to ensure. Need by 06:00. Could also use `@daily` at 05:45. Need maybe if processing of 03:00 file takes until 04:00? Still fine. Use 05:45.\n\nNeed maybe if files are \"hourly\" and \"arriving as hourly files\" maybe they arrive at end of each hour (e.g., 00:00 file covers previous hour 23:00-00:00?). Last file at 03:00? If hourly files arrive at 00:00, 01:00, 02:00, 03:00. Good. If they arrive at 00:05? Still `*/15` catches. Last at 03:00 processed by 03:15. Good.\n\nNeed maybe need \"daily aggregates per user and per event type must be ready by 06:00\": We can set `daily_aggregation` at `45 5` and `purge_raw` at `0 2`, `retrain` Monday 01:00. Good.\n\nNeed maybe \"raw logs are kept for 60 days then deleted\": Use `purge_raw.sh` at `0 2` daily. Need maybe if `daily_aggregation` at 05:45 uses SQLite aggregates; no dependency on raw. Good.\n\nNeed maybe \"classifier retrained weekly on the last 30 days of aggregates\": Use `retrain_model.sh` at `0 1 * * 1`. It should use SQLite `daily_user` and `daily_event`. Need maybe if using `sqlite3` to export, `sqlite3` CLI can output CSV. But retraining in Python with `sklearn` and `joblib`. Need maybe no code. Need mention:\n- `retrain_model.sh` calls `python3 retrain_model.py`.\n- `retrain_model.py`:\n  - Connect to SQLite, extract all rows from `daily_user` and `daily_event` where `date >= date('now', '-30 day')` into pandas DataFrames.\n  - Train classifier (e.g., logistic regression / random forest depending on target) and save with `joblib.dump` to `/data/output/model/YYYY-MM-DD/model.pkl`.\n  - Write `metrics.json` with model name, date, accuracy, etc.\n  - Create/update `latest` symlink.\n- Need maybe \"last 30 days of aggregates\": Because `daily_user` rows are per user per day. Good.\n- Need maybe if using `sklearn` and `joblib`, no code.\n\nNeed maybe maybe \"daily aggregates per user and per event type\" could mean \"aggregate event_type counts per user\"? Need maybe maybe include `user_event_daily` as optional. But if we only have `daily_user` and `daily_event`, classifier may not know which event types a user does. Maybe \"daily aggregates per user and per event type\" perhaps exactly \"for each user, daily aggregate event types\" i.e., \"per user and per event type\" means \"per user, per event type\" as cross-tab. Let's parse grammar: \"daily aggregates per user and per event type\" could mean \"daily aggregates per user and per event type\" -> \"aggregates per user\" and \"per event type\" (two aggregations). But if they wanted \"per user per event type\" they'd say \"per user-event type pair\". The phrase \"per user and per event type\" often means two dimensions. Need maybe \"daily aggregates per user and per event type\" = \"daily aggregate counts by user and by event type\". We'll go with that. But perhaps mention \"If the model needs the user×event-type cross, add `user_event_daily`; otherwise two small tables suffice.\" Good.\n\nNeed maybe need \"storage format\" maybe \"SQLite\" is storage format for aggregates and state. Raw logs remain compressed. Model `pkl`. Directory layout.\n\nNeed maybe maybe \"20 GB per day\" raw logs. If gzipped JSONL, need maybe not decompress to disk; but for \"restartable after crash\" maybe if a file is processed, need maybe write a `processed` marker. Need maybe \"raw logs are kept 60 days then deleted\" but if we use SQLite aggregates, raw can be deleted after processing. Need maybe if a crash after processing but before `processed_hour` update? Use transaction.\n\nNeed maybe maybe \"detect failures\": Need perhaps `process_hourly.sh` should check if `sqlite3` connection fails; if `find` returns no files, that's okay. Need maybe if `sqlite3` database file is corrupt? Need maybe `sqlite3` can run `PRAGMA integrity_check`. Could schedule `integrity_check.sh` daily? Need maybe not. But failure detection could include `sqlite3` `integrity_check` in daily aggregation. We can mention `daily_aggregation.sh` runs `sqlite3 \"PRAGMA integrity_check\"`? Might be heavy. Could do `SELECT` and if returns rows >0? Integrity_check returns one row; if fail, sqlite would error. Good. Need maybe.\n\nNeed maybe \"restartable after crash without reprocessing hours that already finished\": Need maybe if a file is processed but then raw file deleted? No. Need maybe if `processed_hour` table is updated only after successful processing. Need maybe if crash after `processed_hour` update but before daily snapshot, okay. Need maybe if `processed_hour` table itself has partial update? Use transaction.\n\nNeed maybe maybe \"plain cron is fine\" but maybe need \"cron with `flock`\" not exactly plain cron? It's fine.\n\nNeed maybe \"no code\" so no code blocks. We can use shell-like paths, cron entries. Need avoid code? User said \"No code.\" They might mean no code snippets. But cron entries are code-ish. Maybe okay? They said \"Prose or a numbered list, your choice. No code.\" So maybe avoid actual code snippets, including cron entries? Hmm. But \"plain cron is fine\" implies cron entries maybe okay? They said no code. Could describe cron schedule in prose: \"every 15 minutes, at 05:45 daily, at 02:00",
+ "content": "",
+ "usage": {
+  "completion_tokens": 15000,
+  "prompt_tokens": 191,
+  "total_tokens": 15191,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 191,
+  "prompt_ms": 272.98,
+  "prompt_per_token_ms": 1.429214659685864,
+  "prompt_per_second": 699.6849586050259,
+  "predicted_n": 15000,
+  "predicted_ms": 788122.805,
+  "predicted_per_token_ms": 52.545023334888995,
+  "predicted_per_second": 19.031298047516845
+ },
+ "tokens": {
+  "reasoning_tokenized": 14999,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 15000,
+  "prompt_tokens_usage": 191,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.276,
+  "to_first_reasoning": 0.276,
+  "to_first_answer_token": null,
+  "to_final_answer": 788.402
+ },
+ "peaks": {
+  "gpu_temp_c": 90,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26397
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 85,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26409
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 86,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26397
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 86,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26475
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26492
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 87,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26468
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26468
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26454
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26462
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26467
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26453
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26460
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26464
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26449
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26445
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26457
+  },
+  {
+   "t_s": 151.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26426
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26445
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26435
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26456
+  },
+  {
+   "t_s": 191.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26446
+  },
+  {
+   "t_s": 201.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26450
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26441
+  },
+  {
+   "t_s": 221.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26438
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26463
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26466
+  },
+  {
+   "t_s": 251.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26449
+  },
+  {
+   "t_s": 261.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26448
+  },
+  {
+   "t_s": 271.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26461
+  },
+  {
+   "t_s": 281.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26459
+  },
+  {
+   "t_s": 291.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26438
+  },
+  {
+   "t_s": 302.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26470
+  },
+  {
+   "t_s": 312.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26461
+  },
+  {
+   "t_s": 322.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26459
+  },
+  {
+   "t_s": 332.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26446
+  },
+  {
+   "t_s": 342.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26452
+  },
+  {
+   "t_s": 352.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26461
+  },
+  {
+   "t_s": 362.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26452
+  },
+  {
+   "t_s": 372.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26463
+  },
+  {
+   "t_s": 382.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26455
+  },
+  {
+   "t_s": 392.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26454
+  },
+  {
+   "t_s": 402.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26479
+  },
+  {
+   "t_s": 412.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26442
+  },
+  {
+   "t_s": 422.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26450
+  },
+  {
+   "t_s": 432.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26468
+  },
+  {
+   "t_s": 442.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26438
+  },
+  {
+   "t_s": 452.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26438
+  },
+  {
+   "t_s": 462.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26461
+  },
+  {
+   "t_s": 472.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26479
+  },
+  {
+   "t_s": 482.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26469
+  },
+  {
+   "t_s": 492.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26480
+  },
+  {
+   "t_s": 502.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26459
+  },
+  {
+   "t_s": 512.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26468
+  },
+  {
+   "t_s": 522.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26475
+  },
+  {
+   "t_s": 532.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26457
+  },
+  {
+   "t_s": 542.7,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26460
+  },
+  {
+   "t_s": 552.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26462
+  },
+  {
+   "t_s": 562.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26475
+  },
+  {
+   "t_s": 572.8,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26454
+  },
+  {
+   "t_s": 582.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26462
+  },
+  {
+   "t_s": 592.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26455
+  },
+  {
+   "t_s": 602.9,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26403
+  },
+  {
+   "t_s": 613.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26428
+  },
+  {
+   "t_s": 623.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26430
+  },
+  {
+   "t_s": 633.0,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26428
+  },
+  {
+   "t_s": 643.1,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26416
+  },
+  {
+   "t_s": 653.1,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26432
+  },
+  {
+   "t_s": 663.1,
+   "gpu_temp_c": 88,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26438
+  },
+  {
+   "t_s": 673.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26421
+  },
+  {
+   "t_s": 683.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26426
+  },
+  {
+   "t_s": 693.2,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26414
+  },
+  {
+   "t_s": 703.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26408
+  },
+  {
+   "t_s": 713.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26416
+  },
+  {
+   "t_s": 723.3,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26412
+  },
+  {
+   "t_s": 733.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26419
+  },
+  {
+   "t_s": 743.4,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26429
+  },
+  {
+   "t_s": 753.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26428
+  },
+  {
+   "t_s": 763.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26423
+  },
+  {
+   "t_s": 773.5,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26419
+  },
+  {
+   "t_s": 783.6,
+   "gpu_temp_c": 90,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26426
+  }
+ ]
+}

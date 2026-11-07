@@ -1,0 +1,99 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1001,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1001,
+ "started_at": "2026-10-30T17:30:47",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Project Name:** gridhop\n   - **Purpose:** Command-line tool that converts CSV timetables into ICS calendar files\n   - **Sentence 1:** What it does (converts CSV timetables to ICS calendar files)\n   - **Sentence 2:** Who it's for (people who receive timetables as spreadsheets and want them in a calendar app)\n   - **Sentence 3:** How to install it (`pip install gridhop`)\n   - **Tone/Style:** Plain wording, no marketing language\n   - **Output Requirement:** Exactly the first three sentences of a README\n\n2.  **Draft - Sentence 1 (What it does):**\n   GridHop is a command-line tool that converts CSV timetables into ICS calendar files.\n   *(Check: Clear, direct, matches requirement)*\n\n3.  **Draft - Sentence 2 (Who it's for):**\n   It is designed for people who receive timetables as spreadsheets and want them in a calendar app.\n   *(Check: Plain wording, directly addresses the target audience as specified)*\n\n4.  **Draft - Sentence 3 (How to install):**\n   Install it with `pip install gridhop`.\n   *(Check: Directly states the installation command as requested)*\n\n5.  **Review & Refine:**\n   Let's put them together and check against constraints:\n   \"GridHop is a command-line tool that converts CSV timetables into ICS calendar files. It is designed for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.\"\n   \n   Constraints check:\n   - First three sentences of a README? Yes.\n   - Sentence 1: says what it does? Yes.\n   - Sentence 2: says who it is for (people who receive timetables as spreadsheets and want them in a calendar app)? Yes.\n   - Sentence 3: says how to install it (`pip install gridhop`)? Yes.\n   - Plain wording, no marketing language? Yes, straightforward and functional.\n   \n   All constraints met. The draft is ready. I'll output exactly these three sentences. No extra fluff.✅\n",
+ "content": "GridHop is a command-line tool that converts CSV timetables into ICS calendar files. It is intended for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+ "usage": {
+  "completion_tokens": 545,
+  "prompt_tokens": 90,
+  "total_tokens": 635,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 90,
+  "prompt_ms": 2024.159,
+  "prompt_per_token_ms": 22.490655555555556,
+  "prompt_per_second": 44.46291027532916,
+  "predicted_n": 545,
+  "predicted_ms": 36376.751,
+  "predicted_per_token_ms": 66.86902757352941,
+  "predicted_per_second": 14.954606583749056
+ },
+ "tokens": {
+  "reasoning_tokenized": 493,
+  "content_tokenized": 49,
+  "completion_tokens_usage": 545,
+  "prompt_tokens_usage": 90,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.026,
+  "to_first_reasoning": 2.026,
+  "to_first_answer_token": 34.933,
+  "to_final_answer": 38.403
+ },
+ "peaks": {
+  "gpu_temp_c": 57,
+  "gpu_mem_mib": 5237,
+  "min_mem_available_mib": 26244
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 51,
+   "gpu_mem_mib": 5237,
+   "mem_available_mib": 26257
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 5237,
+   "mem_available_mib": 26248
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5237,
+   "mem_available_mib": 26244
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 57,
+   "gpu_mem_mib": 5237,
+   "mem_available_mib": 26260
+  }
+ ]
+}

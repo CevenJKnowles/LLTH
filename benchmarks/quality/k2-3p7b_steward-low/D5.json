@@ -1,0 +1,83 @@
+{
+ "id": "D5",
+ "title": "Train/test split with hidden structure (ambiguous)",
+ "prompt_text": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "I have a DataFrame of 12,000 rows of irregularly sampled sensor readings from 40 machines collected over six months, columns `machine_id`, `timestamp`, twelve numeric features, and a binary `failure_next_24h` label. Give me the code to split it into train and test for a classifier. scikit-learn and pandas only."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1020,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1020,
+ "started_at": "2026-11-05T04:47:58",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "ESCALATE",
+ "usage": {
+  "completion_tokens": 5,
+  "prompt_tokens": 122,
+  "total_tokens": 127,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 122,
+  "prompt_ms": 84.416,
+  "prompt_per_token_ms": 0.6919344262295082,
+  "prompt_per_second": 1445.223654283548,
+  "predicted_n": 5,
+  "predicted_ms": 72.068,
+  "predicted_per_token_ms": 18.017,
+  "predicted_per_second": 55.50313592717989
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 3,
+  "completion_tokens_usage": 5,
+  "prompt_tokens_usage": 122,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.105,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.105,
+  "to_final_answer": 0.159
+ },
+ "peaks": {
+  "gpu_temp_c": 74,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22294
+ },
+ "samples": [
+  {
+   "t_s": 0.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22294
+  }
+ ]
+}

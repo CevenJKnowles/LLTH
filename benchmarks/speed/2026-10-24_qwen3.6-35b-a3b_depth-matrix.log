@@ -1,0 +1,113 @@
+### Qwen3.6-35B-A3B IQ4_XS  KV=q8_0  ncmoe=34  depth=0
+start: 2026-10-24T21:36:12+02:00  gpu_temp_before=45  mem_available_MiB=23983  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4029
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 34 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |           pp512 |        395.22 ± 6.11 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |           tg128 |         19.19 ± 1.46 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5075 gpu_temp_C=57 sm_clock_min_MHz=300 sm_clock_max_MHz=1935 power_max_W=93 mem_available_min_MiB=23289 samples=28 exit=0
+end: 2026-10-24T21:36:41+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q8_0  ncmoe=34  depth=8192
+start: 2026-10-24T21:37:01+02:00  gpu_temp_before=51  mem_available_MiB=24093  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3724
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 34 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |   pp512 @ d8192 |        358.30 ± 3.89 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |   tg128 @ d8192 |         18.19 ± 0.98 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5181 gpu_temp_C=70 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=95 mem_available_min_MiB=23434 samples=50 exit=0
+end: 2026-10-24T21:37:52+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q8_0  ncmoe=34  depth=16384
+start: 2026-10-24T21:38:37+02:00  gpu_temp_before=55  mem_available_MiB=24077  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3755
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 34 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |  pp512 @ d16384 |        339.14 ± 3.85 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |  tg128 @ d16384 |         16.16 ± 0.99 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5265 gpu_temp_C=77 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=92 mem_available_min_MiB=23137 samples=77 exit=0
+end: 2026-10-24T21:39:57+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q8_0  ncmoe=34  depth=32768
+start: 2026-10-24T21:41:12+02:00  gpu_temp_before=55  mem_available_MiB=24066  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3416
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 34 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |  pp512 @ d32768 |        306.07 ± 1.09 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q8_0 |   q8_0 |   1 |  tg128 @ d32768 |         13.71 ± 0.38 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5435 gpu_temp_C=86 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=90 mem_available_min_MiB=22994 samples=130 exit=0
+end: 2026-10-24T21:43:26+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q4_0  ncmoe=34  depth=0
+start: 2026-10-24T21:45:22+02:00  gpu_temp_before=55  mem_available_MiB=24119  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4018
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 34 -d 0 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |           pp512 |        393.03 ± 6.77 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |           tg128 |         18.85 ± 1.48 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5073 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=97 mem_available_min_MiB=23591 samples=28 exit=0
+end: 2026-10-24T21:45:51+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q4_0  ncmoe=34  depth=8192
+start: 2026-10-24T21:46:36+02:00  gpu_temp_before=55  mem_available_MiB=24105  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3988
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 34 -d 8192 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |   pp512 @ d8192 |        356.46 ± 3.10 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |   tg128 @ d8192 |         17.52 ± 0.91 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5137 gpu_temp_C=76 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=89 mem_available_min_MiB=23479 samples=51 exit=0
+end: 2026-10-24T21:47:28+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q4_0  ncmoe=34  depth=16384
+start: 2026-10-24T21:48:39+02:00  gpu_temp_before=55  mem_available_MiB=24047  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4107
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 34 -d 16384 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |  pp512 @ d16384 |        339.09 ± 2.30 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |  tg128 @ d16384 |         15.76 ± 0.41 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5183 gpu_temp_C=79 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=82 mem_available_min_MiB=23278 samples=77 exit=0
+end: 2026-10-24T21:49:58+02:00
+
+### Qwen3.6-35B-A3B IQ4_XS  KV=q4_0  ncmoe=34  depth=32768
+start: 2026-10-24T21:51:24+02:00  gpu_temp_before=55  mem_available_MiB=24118  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4004
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/unsloth/Qwen3.6-35B-A3B-GGUF/Qwen3.6-35B-A3B-UD-IQ4_XS.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 34 -d 32768 -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------: | -------------------: |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |  pp512 @ d32768 |        305.29 ± 1.36 |
+| qwen35moe 35B.A3B IQ4_XS - 4.25 bpw |  16.50 GiB |    34.66 B | CUDA       |  99 |         34 |   q4_0 |   q4_0 |   1 |  tg128 @ d32768 |         13.56 ± 0.39 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5273 gpu_temp_C=86 sm_clock_min_MHz=300 sm_clock_max_MHz=1860 power_max_W=93 mem_available_min_MiB=23093 samples=131 exit=0
+end: 2026-10-24T21:53:39+02:00
+
+DONE (depth matrix qwen3.6-35b-a3b)

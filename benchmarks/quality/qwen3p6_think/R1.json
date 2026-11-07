@@ -1,0 +1,603 @@
+{
+ "id": "R1",
+ "title": "Minimum-cost worker schedule",
+ "prompt_text": "A nightly job must process 4,320 records within 120 minutes. Two workers are available. Worker A processes 24 records per minute and costs 3 credits per minute while running. Worker B processes 40 records per minute and costs 6 credits per minute while running. Both can run at the same time, each can be started and stopped at any whole minute, and records can be split between them in any way. Find the schedule that minimises total credits, and state the minimum cost. Show the reasoning.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "A nightly job must process 4,320 records within 120 minutes. Two workers are available. Worker A processes 24 records per minute and costs 3 credits per minute while running. Worker B processes 40 records per minute and costs 6 credits per minute while running. Both can run at the same time, each can be started and stopped at any whole minute, and records can be split between them in any way. Find the schedule that minimises total credits, and state the minimum cost. Show the reasoning."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1011,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1011,
+ "started_at": "2026-10-30T18:36:41",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process that leads to the suggested solution:\n\n1.  **Understand the Goal:** The objective is to process 4,320 records within 120 minutes using two workers (A and B). The goal is to minimize the total cost (in credits) while meeting the constraints on time and record volume.\n\n2.  **Analyze the Data:**\n    *   Total Records ($R$): 4,320\n    *   Total Time Available ($T_{max}$): 120 minutes\n    *   Worker A:\n        *   Rate ($r_A$): 24 records/min\n        *   Cost ($c_A$): 3 credits/min\n    *   Worker B:\n        *   Rate ($r_B$): 40 records/min\n        *   Cost ($c_B$): 6 credits/min\n    *   Constraints:\n        *   Start/Stop at whole minutes.\n        *   Workers can run simultaneously.\n        *   Records can be split (continuous work, but discrete time steps).\n\n3.  **Analyze Efficiency (Cost per Record):**\n    *   To minimize cost, we should prioritize the worker who gets the job done cheaper per unit of work.\n    *   Worker A Cost per Record: $c_A / r_A = 3 / 24 = 1/8 = 0.125$ credits/record.\n    *   Worker B Cost per Record: $c_B / r_B = 6 / 40 = 6/40 = 3/20 = 0.15$ credits/record.\n\n    *Comparison:* Worker A is cheaper per record ($0.125 < 0.15$).\n    *Initial Intuition:* Use Worker A as much as possible because they are more cost-effective.\n\n4.  **Analyze Constraints vs. Capability:**\n    *   Max capacity of Worker A in 120 mins: $24 \\times 120 = 2,880$ records.\n    *   Max capacity of Worker B in 120 mins: $40 \\times 120 = 4,800$ records.\n    *   Required Records: 4,320.\n\n    *Problem:* Worker A alone cannot finish the job (2,880 < 4,320). We *must* use Worker B to meet the deadline if we rely on A's cheaper rate, or perhaps use both simultaneously for a duration.\n\n    *Constraint Check:* Is it possible to do it with just Worker B?\n    $4,320 / 40 = 108$ minutes. Yes. Cost: $108 \\times 6 = 648$ credits.\n    But can we do better using A (cheaper rate)?\n\n5.  **Formulate the Optimization Problem:**\n    Let $t_A$ be the time Worker A runs.\n    Let $t_B$ be the time Worker B runs.\n\n    *Objective Function (Minimize Cost):*\n    $Cost = 3 t_A + 6 t_B$\n\n    *Constraints:*\n    1.  Production Constraint: $24 t_A + 40 t_B \\ge 4,320$\n    2.  Time Constraint: $t_A \\le 120$ and $t_B \\le 120$ (actually, since they run simultaneously, the constraint is effectively $\\max(t_A, t_B) \\le 120$, but strictly speaking, time is just duration).\n    3.  Non-negativity: $t_A, t_B \\ge 0$.\n    4.  Integer constraint: $t_A, t_B$ are integers (whole minutes).\n\n6.  **Strategy Selection:**\n    Since Worker A is more efficient per record ($0.125$ vs $0.15$), we want to maximize $t_A$ and minimize $t_B$, provided that the total time doesn't exceed 120 minutes.\n\n    *Scenario 1: Maximize A's usage.*\n    Worker A works for the full 120 minutes.\n    Records processed by A: $24 \\times 120 = 2,880$.\n    Remaining records needed: $4,320 - 2,880 = 1,440$.\n    These must be done by Worker B.\n    Time required for B: $1,440 / 40 = 36$ minutes.\n    Total time elapsed: $\\max(120, 36) = 120$ minutes. (Valid).\n\n    *Calculate Cost for Scenario 1:*\n    Worker A cost: $120 \\text{ min} \\times 3 \\text{ credits/min} = 360$.\n    Worker B cost: $36 \\text{ min} \\times 6 \\text{ credits/min} = 216$.\n    Total Cost: $360 + 216 = 576$ credits.\n\n    *Is there a cheaper way?*\n    We established that A is cheaper per record. So shifting work from B to A should lower costs, *unless* we hit the time limit. Here, A ran for the full 120 minutes (time limit reached) but still didn't finish the job.\n    Wait, if A ran longer, it would be cheaper. But A cannot run longer than 120 minutes.\n    Therefore, we must use B to pick up the slack.\n    Since B is the *only* option left and B is more expensive, this looks like the optimal solution derived from the \"greedy\" approach of using the cheapest resource until constraints bind.\n\n    *Let's double check logic.*\n    We have a linear programming problem (integer).\n    Min $3t_A + 6t_B$\n    Subject to:\n    $24t_A + 40t_B \\ge 4320$\n    $t_A \\le 120$\n    $t_B \\le 120$\n    $t_A, t_B \\in \\mathbb{Z}_{\\ge 0}$\n\n    Let's check the slope of the objective function vs the constraint line.\n    Constraint boundary: $24t_A + 40t_B = 4320$.\n    Divide by 8: $3t_A + 5t_B = 540$.\n    We want to minimize $3t_A + 6t_B$.\n\n    Let's express $t_A$ in terms of $t_B$ from the constraint (assuming equality for minimum resources):\n    $24t_A = 4320 - 40t_B$\n    $t_A = 180 - \\frac{5}{3}t_B$\n\n    Substitute into Cost function:\n    $C(t_B) = 3(180 - \\frac{5}{3}t_B) + 6t_B$\n    $C(t_B) = 540 - 5t_B + 6t_B$\n    $C(t_B) = 540 + t_B$\n\n    This is a very interesting result. The cost function depends linearly on $t_B$ with a positive coefficient (+1).\n    To minimize Cost ($540 + t_B$), we must **minimize** $t_B$.\n\n    *Check Constraints again:*\n    We need to satisfy $24t_A + 40t_B \\ge 4320$ and $t_A \\le 120$.\n\n    From $C(t_B) = 540 + t_B$, minimizing cost means minimizing the time B works.\n    However, if we decrease $t_B$, we must increase $t_A$ to maintain production.\n    The maximum possible $t_A$ is 120.\n    So, minimum feasible $t_B$ occurs when $t_A$ is at its maximum (120).\n\n    Let's verify mathematically:\n    We need $24(120) + 40t_B \\ge 4320$.\n    $2880 + 40t_B \\ge 4320$\n    $40t_B \\ge 1440$\n    $t_B \\ge 36$.\n\n    So the minimum integer value for $t_B$ is 36.\n    If $t_B = 36$, then $t_A$ must be 120 (or close to it to meet production, but since A is cheaper per record, and the math above showed Cost increases as B's time increases... wait).\n\n    Let's re-evaluate the substitution.\n    I assumed equality in production ($24t_A + 40t_B = 4320$).\n    If we process more than required, cost goes up (since costs are positive). So we assume exact completion or just over completion at integer steps.\n\n    Let's re-evaluate the Cost Function derivation:\n    $Cost = 3t_A + 6t_B$\n    Constraint: $24t_A + 40t_B \\ge 4320$\n    Time Limit: $t_A \\le 120, t_B \\le 120$.\n\n    Actually, looking at $C(t_B) = 540 + t_B$:\n    This implies that every minute we replace Worker A with Worker B (to satisfy the record count), the cost goes **up**.\n    Why?\n    Replacing 1 minute of A (24 records, 3 credits) with B.\n    B needs to do 24 records. Rate is 40/min. So B takes $24/40 = 0.6$ minutes.\n    Cost of 1 min A: 3.\n    Cost of 0.6 min B: $0.6 \\times 6 = 3.6$.\n    $3.6 > 3$.\n    So yes, replacing A with B increases cost.\n    Conversely, replacing B with A decreases cost.\n\n    Therefore, we want to maximize the usage of Worker A and minimize the usage of Worker B.\n    Max usage of A is limited by the deadline: 120 minutes.\n    Does 120 minutes of A produce enough records?\n    $24 \\times 120 = 2880$.\n    Required: 4320.\n    Shortfall: 1440.\n    This shortfall *must* be covered by B.\n\n    So, the logic holds:\n    1. Run A for as long as possible (120 mins) because it's cheaper per record.\n    2. Run B for the minimum time necessary to finish the remaining records.\n\n    Calculation:\n    Records by A: $24 \\times 120 = 2880$.\n    Remaining: $4320 - 2880 = 1440$.\n    Time for B: $1440 / 40 = 36$ minutes.\n    Total Time Check: A runs 0-120, B runs 0-36 (or any interval within 120). Since $\\max(120, 36) \\le 120$, valid.\n\n    Cost Calculation:\n    A: $120 \\times 3 = 360$.\n    B: $36 \\times 6 = 216$.\n    Total: 576.\n\n    *Is there a trick?*\n    \"Records can be split... started and stopped at any whole minute\".\n    Is it possible to run A for less time and save money? No, we proved replacing A with B adds cost.\n    Is it possible that running B for the full 120 minutes is cheaper?\n    Let's check \"All B\" scenario just to be sure.\n    $t_A = 0$.\n    Records needed: 4320.\n    Time B: $4320 / 40 = 108$ minutes.\n    Cost: $108 \\times 6 = 648$.\n    648 > 576. So \"All A + some B\" is better.\n\n    *Wait, check the prompt constraints carefully.*\n    \"Worker A processes 24 records per minute... Worker B processes 40 records per minute\".\n    Is there a nuance about \"splitting records\"?\n    Since we deal with discrete minutes, maybe we can't split perfectly?\n    Records are integers.\n    Worker A produces integer records every minute (24).\n    Worker B produces integer records every minute (40).\n    Total records must be 4320.\n    $24 t_A + 40 t_B = 4320$.\n    Divide by 8: $3 t_A + 5 t_B = 540$.\n    We need integer solutions for $t_A, t_B$.\n\n    In my proposed solution ($t_A=120, t_B=36$):\n    $3(120) + 5(36) = 360 + 180 = 540$.\n    It fits perfectly. Both are integers. No partial minute rounding issues affecting the record count (since rates divide evenly into 4320? Wait, 24 and 40 share factor 8. 4320/8 = 540. Yes).\n\n    *Is there any constraint I missed?*\n    \"Both can run at the same time\".\n    \"Start/stop at whole minute\".\n    \"Minimize total credits\".\n\n    Let's double check the cost efficiency calculation again to be absolutely certain.\n    Cost per record A: 0.125\n    Cost per record B: 0.15\n    A is definitely cheaper per unit.\n    Therefore, maximize A.\n    Max A = 120 mins.\n    Remaining work done by B.\n\n    Is there any constraint on *simultaneous* running affecting cost?\n    \"Two workers are available.\" No synergy or penalty mentioned.\n    Costs are linear.\n\n    Let's consider if the time limit was tighter.\n    Suppose we had 100 minutes.\n    Max A = 100 mins -> 2400 records.\n    Remaining 1920 records.\n    B time = $1920/40 = 48$ mins.\n    Cost: $300 + (48 \\times 6) = 300 + 288 = 588$.\n\n    But here we have 120 minutes. A is bottlenecked by time, not capacity (well, A's capacity is high, but B is faster).\n    Actually, B is faster per minute, but slower per cost.\n    If the deadline was very tight (e.g., 50 minutes), we would be forced to use B more heavily even though it's expensive. But with a loose deadline (120 mins allows finishing easily with B alone in 108 mins), we have the luxury of using the cheaper worker A for as long as possible.\n\n    *Is there any \"batch\" processing logic?*\n    No, continuous rates given.\n\n    *Let's check if there's an alternative interpretation.*\n    Could \"split records\" mean partial minutes?\n    \"Started and stopped at any whole minute\".\n    This implies time is discrete ($t \\in \\mathbb{Z}$).\n    But production within that minute is likely linear or batched. Usually, in these problems, if a worker works 1 minute, they do the rate amount. If they work 0 minutes, 0 records.\n    Since $t_A$ and $t_B$ must be integers, we are looking at integer solutions to $24 t_A + 40 t_B \\ge 4320$.\n\n    We established $Cost = 3t_A + 6t_B$.\n    We found optimal continuous solution: $t_A = 120, t_B = 36$.\n    This yields integer minutes.\n    Cost = 576.\n\n    Let's check neighbors just in case the \"integer\" constraint forces a suboptimal move (though 576 looks solid).\n    Neighbors of $(120, 36)$ satisfying $24t_A + 40t_B \\ge 4320$.\n    Current: $24(120) + 40(36) = 2880 + 1440 = 4320$. Exact match.\n\n    What if we reduce $t_A$ by 1 (to 119)?\n    Records lost: 24.\n    Must gain 24 records from B.\n    B rate 40/min.\n    Since B works in whole minutes, reducing $t_B$ isn't really the trade-off here, we are increasing $t_A$ (wait, I'm checking reducing A).\n    If we reduce A by 1 min, we lose 24 records.\n    We need to add $\\lceil 24/40 \\rceil = 1$ minute of B?\n    Actually, if $t_B$ stays at 36, records = $24(119) + 40(36) = 2856 + 1440 = 4296 < 4320$. Fail.\n    So we would need to increase B time? But increasing B increases cost and A is cheaper? No, wait.\n    Re-evaluating the trade-off slope.\n    We established $Cost \\approx 540 + t_B$.\n    This assumed $24t_A + 40t_B = 4320$.\n    But since time steps are discrete, we might overshoot.\n\n    Let's check a point where $t_A$ decreases and $t_B$ increases to compensate?\n    Wait, if I decrease A (cheaper), I must increase B (more expensive). This increases cost.\n    Example: Move from $(120, 36)$ to $(70, \\dots)$?\n    If $t_A = 70$, Records = $1680$. Need $4320-1680 = 2640$.\n    $t_B = 2640/40 = 66$.\n    Cost: $3(70) + 6(66) = 210 + 396 = 606$.\n    606 > 576. Cost went up.\n    This confirms maximizing A is correct.\n\n    What if we increase B and decrease A? (Wait, I just did that).\n    What if we increase A? Can't, max 120.\n    What if we decrease B and increase A?\n    We are at max A (120). Cannot decrease B below 36 because records would drop below 4320.\n    If $t_A = 120$ and $t_B = 35$:\n    Records = $2880 + 1400 = 4280$. Too low.\n\n    Are there any other integer combinations?\n    We need $24 t_A + 40 t_B \\ge 4320$.\n    Divide by 8: $3 t_A + 5 t_B \\ge 540$.\n    Minimize $3 t_A + 6 t_B$.\n\n    From $3 t_A \\ge 540 - 5 t_B$, substitute into cost (using min required $t_A$):\n    Actually, since $t_A$ coefficient in Cost (3) is positive, we want smallest possible $t_A$ for a fixed $t_B$?\n    NO.\n    Let's look at the coefficients again.\n    Objective: $3 t_A + 6 t_B$.\n    Constraint: $3 t_A + 5 t_B \\ge 540$.\n\n    Let $x = t_A, y = t_B$.\n    Min $3x + 6y$ s.t. $3x + 5y \\ge 540$.\n    Also $x \\le 120$.\n\n    From constraint: $3x \\ge 540 - 5y$.\n    Substitute into objective (since we want to minimize cost, we take the smallest valid $x$):\n    Cost $\\ge (540 - 5y) + 6y = 540 + y$.\n    To minimize Cost ($540+y$), we need to minimize $y$ ($t_B$).\n\n    So we want minimum $t_B$.\n    But $x$ (time for A) cannot exceed 120.\n    We have $3(120) + 5y \\ge 540$ ? No, that's checking feasibility.\n    The constraint is $3x + 5y \\ge 540$.\n    To minimize $y$, we must maximize $x$ (because larger $x$ allows smaller $y$ to satisfy sum).\n    Max $x = 120$.\n    $3(120) + 5y \\ge 540$\n    $360 + 5y \\ge 540$\n    $5y \\ge 180$\n    $y \\ge 36$.\n    Min integer $y = 36$.\n\n    So $(x, y) = (120, 36)$ is indeed the optimal solution for the relaxed problem and fits integer constraints.\n\n    **Wait, hold on.**\n    Is it possible to have *negative* logic?\n    What if running B longer allows us to run A *less*?\n    We just analyzed that: $Cost = 540 + y$. Increasing $y$ increases cost.\n    So we want minimal $y$. Minimal $y$ is constrained by maximal $x$.\n\n    **Is there any catch with the \"Split\" wording?**\n    \"Records can be split between them in any way.\"\n    This usually just confirms that it's not all-or-nothing tasks.\n    \"Started and stopped at any whole minute\".\n    Confirms discrete time steps.\n\n    **Let's check if there's a cheaper mix where B runs longer but A runs less?**\n    Wait, I did the math: $Cost = 540 + y$.\n    This means every additional minute of B (assuming A is maxed out or adjusted to compensate) costs *more* than the saving from not running A?\n    Let's trace a swap carefully.\n    Current state: A=120, B=36. Cost = 576. Records = 4320.\n    Swap: Decrease A by 1 min (saves 3 credits, loses 24 records).\n    Must recover 24 records using B.\n    B does 40 records/min.\n    If we add 1 minute to B?\n    Records gained: 40. Total records: $4320 - 24 + 40 = 4336$. (Overshoot, but allowed \"within\" usually means $\\ge$, though prompt says \"process 4320\", implying exactly or at least. Usually \"process 4320\" means finish the batch. Extra is waste but not forbidden unless specified. However, cost increases anyway).\n    Cost change:\n    A decreases by 1 -> -3 credits.\n    B increases by 1 -> +6 credits.\n    Net change: +3 credits.\n    So this swap is bad.\n\n    What if we decrease A by 2 minutes?\n    Saves $2 \\times 3 = 6$ credits.\n    Loses 48 records.\n    Need 48 records from B.\n    B rate 40/min. Must run B for 2 minutes (provides 80 records).\n    Cost increase: $2 \\times 6 = 12$ credits.\n    Net: -6 + 12 = +6 credits. Bad.\n\n    What if we decrease A by 5 minutes?\n    Saves 15 credits. Loses 120 records.\n    Need 120 records from B.\n    B takes $120/40 = 3$ minutes.\n    Cost increase: $3 \\times 6 = 18$ credits.\n    Net: -15 + 18 = +3 credits. Bad.\n\n    It seems A is strictly more efficient not just per record, but the ratio of cost to production aligns such that shifting work from A to B always increases cost.\n    Ratio A: Cost/Record = 0.125.\n    Ratio B: Cost/Record = 0.15.\n    Shifting work from A to B is equivalent to replacing cheap records with expensive ones. Obviously increases total cost.\n\n    **Is there a time constraint interaction I'm missing?**\n    Maybe running both allows us to finish *faster*?\n    But we have a max limit of 120, not a min limit. Finishing at minute 36 is fine (as long as records are done).\n    Wait, if we just used B alone:\n    Time = 108 mins.\n    Cost = 648.\n    This is more expensive than 576.\n    Why? Because we didn't use the cheaper worker A at all.\n    So using A (even partially) helps reduce cost, provided we have time.\n    Since 120 minutes is plenty of time for A to work, we load A as much as possible.\n\n    **Check constraints one more time.**\n    \"Worker A ... costs 3 credits per minute **while running**.\"\n    \"Worker B ... costs 6 credits per minute **while running**.\"\n    Okay, standard usage cost. No startup costs mentioned.\n\n    **Calculation check.**\n    Total Records: 4320.\n    Worker A: 24 rec/min, 3 cred/min.\n    Worker B: 40 rec/min, 6 cred/min.\n\n    Schedule:\n    Start Time 0:\n    Turn on Worker A.\n    Turn on Worker B.\n    \n    Worker A runs continuously for 120 minutes.\n    Records: $24 \\times 120 = 2880$.\n    Cost: $3 \\times 120 = 360$.\n\n    Worker B needs to cover the gap.\n    Gap = $4320 - 2880 = 1440$ records.\n    Time needed for B = $1440 / 40 = 36$ minutes.\n    Cost = $36 \\times 6 = 216$.\n\n    Total Time = 120 minutes (limited by A).\n    Worker B finishes at minute 36. Can stop or idle until 120?\n    \"Minimize total credits\". If B stops at minute 36, it costs 0 for the remaining time.\n    Does B *have* to run if not needed? No.\n    So B runs 0-36 (or any 36 min window). A runs 0-120.\n    Total Credits = $360 + 216 = 576$.\n\n    **Is it possible to do better by running B longer and A less?**\n    We proved no, because B is more expensive per record.\n    Is it possible that the integer constraint forces us to overshoot in a way that favors B?\n    Let's check if there is a combination where A runs fewer minutes, but B's integer nature makes it efficient?\n    No, B's rate (40) is higher, so B is more efficient at *time*, but we care about *cost*.\n    Cost efficiency is the king here.\n\n    **Let's check if there is a scenario where A runs 0 minutes.**\n    We did that. Cost 648.\n    **Scenario where B runs 0 minutes.**\n    Records: $24 \\times t_A = 4320 \\implies t_A = 180$.\n    But max time is 120. Impossible.\n\n    **Let's check intermediate points just to be paranoid.**\n    We established Cost function on the boundary (exact records) is $C(t_B) = 540 + t_B$ assuming we optimize A?\n    Wait, derivation:\n    $24 t_A + 40 t_B = 4320$\n    $t_A = 180 - \\frac{5}{3}t_B$\n    Cost $= 3(180 - \\frac{5}{3}t_B) + 6t_B = 540 - 5t_B + 6t_B = 540 + t_B$.\n    \n    This function says: As $t_B$ increases, Cost increases.\n    So we want smallest $t_B$.\n    Constraint on $t_B$ comes from $t_A \\le 120$.\n    $180 - \\frac{5}{3}t_B \\le 120$\n    $60 \\le \\frac{5}{3}t_B$\n    $180 \\le 5 t_B$\n    $36 \\le t_B$.\n    \n    So minimum $t_B$ is 36.\n    At $t_B = 36$, Cost = 576.\n    If we increased $t_B$ to 37?\n    Cost = 577.\n    Let's check if valid.\n    $t_B = 37$.\n    Records from B = $40 \\times 37 = 1480$.\n    Records needed from A = $4320 - 1480 = 2840$.\n    Time for A = $2840 / 24 = 118.33$ minutes.\n    Since time must be whole minute, we round up to 119?\n    If A runs 119 mins: Records = $24 \\times 119 = 2856$.\n    Total records = $1480 + 2856 = 4336$ (Overshoot).\n    Cost:\n    B: $37 \\times 6 = 222$.\n    A: $119 \\times 3 = 357$.\n    Total: 579.\n    579 > 576.\n    \n    Wait, the continuous math said cost increases with $t_B$. The discrete step might add a bit of \"friction\" (overshoot), but the trend is clear. Minimizing $t_B$ minimizes cost.\n\n    **Is there any constraint I missed about \"splitting\"?**\n    Maybe A does 1 record, B does 4319?\n    Rates are fixed per minute. You can't do partial minutes for specific records easily if start/stop is whole minutes, unless we interpret \"records can be split\" as just work distribution, not time slicing. But even with continuous time, the cost optimization holds.\n\n    **Double Check the Arithmetic.**\n    Total Records: 4320.\n    A Rate: 24. Cost: 3.\n    B Rate: 40. Cost: 6.\n    \n    Max Time: 120.\n    \n    A max records in 120 min = $24 \\times 120 = 2880$.\n    Remaining = $4320 - 2880 = 1440$.\n    B time for 1440 records = $1440 / 40 = 36$ min.\n    Total Cost = $(120 \\times 3) + (36 \\times 6) = 360 + 216 = 576$.\n\n    Let's check if we can reduce cost by running B *while* A is not running?\n    It doesn't matter. Time is global. As long as $\\max(t_A, t_B) \\le 120$, it works.\n    Cost depends only on $t_A$ and $t_B$.\n\n    **Alternative Check: Worker B's efficiency.**\n    Worker B is faster (40 rec/min) but costs double the credit rate of A (6 vs 3).\n    Is B twice as efficient?\n    A: 24 rec/min per 3 credits -> 8 rec/credit.\n    B: 40 rec/min per 6 credits -> 6.66 rec/credit.\n    A is more efficient (8 > 6.66).\n    Logic holds. Use A first.\n\n    **What if we used B for the whole job?**\n    Time: 108 min.\n    Cost: $108 \\times 6 = 648$.\n    \n    **What if we prioritized speed (minimizing time)?**\n    Both run at max.\n    Combined rate = 64 rec/min.\n    Time = $4320 / 64 = 67.5$ minutes.\n    Cost: A runs 68 mins? B runs 68 mins?\n    Actually, they work simultaneously.\n    $t_A \\approx 68, t_B \\approx 68$.\n    Cost $\\approx (68 \\times 3) + (68 \\times 6) = 204 + 408 = 612$.\n    Still higher than 576.\n    Speed costs money here because B is expensive and A is cheap but slow.\n\n    **Is there a constraint on \"records can be split\"?**\n    Perhaps meaning that if A works for 1 minute, it doesn't have to do exactly 24?\n    \"Processes 24 records per minute\". This implies a rate.\n    If I run for 0.5 minutes, do I process 12?\n    \"Started and stopped at any whole minute\".\n    This explicitly forbids running for 0.5 minutes.\n    So work must be in chunks of $24 \\times k$ for A and $40 \\times m$ for B.\n    However, the records themselves are split.\n    e.g. In minute 1, A processes 10 records, B processes 14?\n    Yes. \"Records can be split\".\n    But total processed by A must be integer multiple of 24?\n    Or is the rate an average?\n    Usually in these problems, Rate $\\times$ Time = Records.\n    If time is integer, and rate is integer, records are integer.\n    The \"split\" clause likely ensures we don't need to find a common multiple or worry about integer partitioning of the record set, just summing up outputs.\n\n    **Let's sanity check the \"Whole Minute\" constraint on the final split.**\n    We calculated $t_B = 36$.\n    $40 \\times 36 = 1440$ (Integer).\n    $24 \\times 120 = 2880$ (Integer).\n    Sum = 4320.\n    Everything aligns perfectly. No fractional records or minutes issues.\n\n    **Conclusion formulation:**\n    1.  Calculate efficiency (Cost per Record) for both workers.\n        *   A: $3/24 = 0.125$ credits/record.\n        *   B: $6/40 = 0.150$ credits/record.\n    2.  Identify that Worker A is more cost-effective.\n    3.  To minimize cost, maximize the usage of Worker A, subject to constraints.\n    4.  Constraint: Max time for any worker (or the project) is 120 minutes. Since they can run in parallel, each has a cap of 120 minutes of work time.\n    5.  Max output for A in 120 minutes = $24 \\times 120 = 2,880$ records.\n    6.  Remaining records = $4,320 - 2,880 = 1,440$.\n    7.  This remainder must be processed by Worker B.\n    8.  Time required for B = $1,440 / 40 = 36$ minutes.\n    9.  Check time feasibility: $\\max(120, 36) = 120 \\le 120$. Valid.\n    10. Calculate Cost:\n        *   A: $120 \\times 3 = 360$ credits.\n        *   B: $36 \\times 6 = 216$ credits.\n        *   Total: 576 credits.\n    11. Verify no other combination is cheaper. Any reduction in A's time (to save cost) requires increasing B's time to maintain record count. Since B is more expensive per record, this increases total cost.\n        *   Trade-off check: Reducing A by 1 min saves 3 credits but loses 24 records. Replacing with B requires $24/40 = 0.6$ min (cost $0.6 \\times 6 = 3.6$). Net loss of 0.6 credits.\n        *   Actually, since minutes are whole, reducing A by 5 mins (saves 15) loses 120 records. B needs 3 mins (cost 18). Net loss 3 credits.\n    12. Final Answer seems solid.\n\n    **Structure of the output:**\n    *   Step-by-step reasoning.\n    *   Efficiency comparison.\n    *   Strategy (Greedy approach on cheapest resource).\n    *   Calculation of schedule.\n    *   Final cost.\n\n    One minor detail: \"State the minimum cost.\" and \"Find the schedule\".\n    Schedule description:\n    Worker A runs from Minute 0 to Minute 120.\n    Worker B runs for 36 minutes (e.g., Minute 0 to Minute 36, or Minute 84 to 120). It doesn't matter when B runs as long as it's within the 120 min window, but typically running concurrently is implied or allowed. Since \"Both can run at the same time\", running them concurrently (0-36 for both) is the most logical schedule description.\n\n    Wait, if B runs 0-36 and A runs 0-120.\n    At t=0 to 36: Both working. Rate = 64 rec/min. Records = $64 \\times 36 = 2304$.\n    At t=36 to 120: Only A working. Rate = 24 rec/min. Duration = 84 min. Records = $24 \\times 84 = 2016$.\n    Total = $2304 + 2016 = 4320$.\n    Perfect.\n\n    Alternative Schedule: B runs last?\n    A works 0-120 (2880 rec).\n    B works 84-120 (36 mins).\n    Records during overlap (0-84): $64 \\times 84 = 5376$? No.\n    If A works 0-120 and B works 84-120:\n    Overlap is 84 to 120 (36 mins).\n    Records in overlap: $64 \\times 36 = 2304$.\n    Records A alone (0-84): $24 \\times 84 = 2016$.\n    Total: 4320.\n    Same cost. Schedule is flexible regarding *when* B runs, just needs to run for 36 mins total while A runs for 120. But simplest to state \"A runs full duration, B runs for first 36 minutes\".\n\n    Let's check if there is a weird constraint I missed.\n    \"Nightly job... within 120 minutes.\"\n    Does it imply the job must *start* at a specific time? No.\n    Just \"within\".\n\n    Final verification of the numbers.\n    $4320 / 24 = 180$ mins (All A). Impossible (>120).\n    $4320 / 40 = 108$ mins (All B). Possible. Cost $108 \\times 6 = 648$.\n    Mixed strategy leverages cheaper A for max time.\n    Max time A = 120. Output 2880. Deficit 1440.\n    B handles deficit. Time $1440/40 = 36$.\n    Cost $360 + 216 = 576$.\n    576 < 648.\n    Logic is sound.\n\n    Double check: $24 t_A + 40 t_B = 4320$.\n    Minimize $3 t_A + 6 t_B$.\n    From equation: $t_A = (4320 - 40 t_B) / 24 = 180 - (5/3)t_B$.\n    Substitute into cost:\n    $C = 3(180 - 5/3 t_B) + 6 t_B = 540 - 5 t_B + 6 t_B = 540 + t_B$.\n    To minimize C, minimize $t_B$.\n    Constraints:\n    1. $t_A \\le 120 \\implies 180 - 5/3 t_B \\le 120 \\implies 60 \\le 5/3 t_B \\implies 180 \\le 5 t_B \\implies t_B \\ge 36$.\n    2. $t_A \\ge 0 \\implies 180 - 5/3 t_B \\ge 0 \\implies 180 \\ge 5/3 t_B \\implies 108 \\ge t_B$.\n    3. $t_B \\le 120$.\n    \n    So range for $t_B$ is $[36, 108]$.\n    Objective function $C(t_B) = 540 + t_B$ is increasing.\n    Minimum is at lower bound of $t_B$, which is 36.\n    At $t_B = 36$, $C = 576$.\n    $t_A = 180 - (5/3)(36) = 180 - 60 = 120$.\n    \n    Integer check: 36 and 120 are integers.\n    Solution is robust.\n\n    Final check on \"whole minute\" phrasing.\n    Sometimes \"whole minute\" means you pay for the minute even if you do less?\n    \"Costs ... per minute while running\".\n    Yes, linear cost. If I run for 1 minute, I pay 3 or 6.\n    My solution uses integer minutes, so no pro-rating ambiguity.\n\n    **Drafting the response:**\n    1.  **Analyze Costs per Record:** Compare Worker A and B efficiency.\n        *   A: 0.125 credits/record.\n        *   B: 0.15 credits/record.\n        *   Conclusion: Worker A is cheaper per unit of work.\n    2.  **Determine Strategy:** Since Worker A is cheaper, maximize their runtime to minimize total cost, provided the deadline allows.\n    3.  **Check Constraints:**\n        *   Total time available: 120 minutes.\n        *   Max records by A in 120 mins: $24 \\times 120 = 2880$.\n        *   Target: 4320.\n        *   Deficit: $4320 - 2880 = 1440$ records.\n    4.  **Assign Remainder to Worker B:**\n        *   Worker B must process 1440 records.\n        *   Time required for B: $1440 / 40 = 36$ minutes.\n    5.  **Validate Schedule:**\n        *   Worker A runs for 120 minutes (max allowed).\n        *   Worker B runs for 36 minutes (fits within 120 minute window).\n        *   Total records: $2880 + 1440 = 4320$.\n    6.  **Calculate Cost:**\n        *   A: $120 \\times 3 = 360$.\n        *   B: $36 \\times 6 = 216$.\n        *   Total: 576.\n    7.  **Compare with Alternative (All B):**\n        *   Time: 108 mins. Cost: 648.\n        *   576 is lower.\n    8.  **Final Answer:** Schedule and Cost.\n\n    Wait, is there an interpretation where \"started and stopped at any whole minute\" implies we pay for the full minute even if we stop halfway?\n    No, \"while running\" usually implies active time. But with integer constraints, it's discrete blocks.\n    Even if it meant \"billing blocks\", 36 minutes is a whole number.\n    \n    Is there a constraint that they must start at 0?\n    \"A nightly job... within 120 minutes\". Usually implies a window $[0, 120]$.\n    It doesn't restrict start time, but minimizing cost means finishing as late as possible? No, cost is independent of *when* you run, only *how long*.\n    So scheduling is flexible.\n\n    One distinct possibility:\n    Could we run B for *less* than 36 minutes if A ran for *more* than 120?\n    No, max time is 120.\n    \n    Could we run A for *less* and B for *more*?\n    We proved that increases cost.\n\n    Final check of the question text: \"Find the schedule... state the minimum cost.\"\n    I will describe the schedule clearly (A runs full time, B runs 36 mins concurrently).\n\n    One detail: \"Records can be split between them in any way.\"\n    Just confirms we don't need to assign specific batches.\n\n    Ready to write solution.\n",
+ "content": "To find the schedule that minimizes the total cost, we must determine which worker is more cost-effective and prioritize their usage within the given time constraints.\n\n### 1. Analyze Cost Efficiency\nFirst, we calculate the cost to process a single record for each worker.\n\n*   **Worker A:** Costs 3 credits/minute and processes 24 records/minute.\n    *   Cost per record = $3 / 24 = \\mathbf{0.125}$ **credits/record**.\n*   **Worker B:** Costs 6 credits/minute and processes 40 records/minute.\n    *   Cost per record = $6 / 40 = \\mathbf{0.150}$ **credits/record**.\n\n**Conclusion:** Worker A is more cost-effective (cheaper per record) than Worker B. Therefore, to minimize the total cost, we should maximize the time Worker A works, up to the maximum allowed time.\n\n### 2. Determine Worker Durations\nThe job must be completed within 120 minutes. Let's see how much work Worker A can contribute in that timeframe.\n\n*   **Worker A's Maximum Output:** If Worker A runs for the full 120 minutes:\n    $$ \\text{Records processed} = 24 \\text{ records/min} \\times 120 \\text{ min} = 2,880 \\text{ records}. $$\n\n*   **Remaining Work:** The total requirement is 4,320 records.\n    $$ \\text{Remaining records} = 4,320 - 2,880 = 1,440 \\text{ records}. $$\n\nSince Worker A cannot work longer than 120 minutes to meet the deadline, the remaining 1,440 records must be processed by Worker B. We calculate how long Worker B needs to run:\n\n*   **Worker B's Required Time:**\n    $$ \\text{Time needed} = \\frac{1,440 \\text{ records}}{40 \\text{ records/min}} = 36 \\text{ minutes}. $$\n\n### 3. Verify Constraints and Calculate Cost\n*   **Time Check:** Worker A runs for 120 minutes. Worker B runs for 36 minutes. Since both can run simultaneously and the total project time is determined by the longest-running worker (120 minutes), this schedule fits perfectly within the 120-minute limit.\n*   **Integer Constraint:** Both durations (120 and 36) are whole minutes, satisfying the start/stop constraint.\n\nNow, we calculate the cost for this schedule:\n\n*   **Worker A Cost:** $120 \\text{ min} \\times 3 \\text{ credits/min} = 360$ credits.\n*   **Worker B Cost:** $36 \\text{ min} \\times 6 \\text{ credits/min} = 216$ credits.\n*   **Total Cost:** $360 + 216 = 576$ credits.\n\n*(Self-Check: If we used only Worker B, it would take $4320/40 = 108$ minutes, costing $108 \\times 6 = 648$ credits. The mixed schedule is indeed cheaper.)*\n\n### Final Solution\n\n**Schedule:**\n*   **Worker A:** Runs for the full **120 minutes**.\n*   **Worker B:** Runs for **36 minutes** (can run simultaneously with Worker A, e.g., from minute 0 to 36).\n\n**Minimum Cost:**\n**576 credits**",
+ "usage": {
+  "completion_tokens": 11261,
+  "prompt_tokens": 121,
+  "total_tokens": 11382,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 121,
+  "prompt_ms": 1395.978,
+  "prompt_per_token_ms": 11.537008264462811,
+  "prompt_per_second": 86.67758374415642,
+  "predicted_n": 11261,
+  "predicted_ms": 880557.634,
+  "predicted_per_token_ms": 78.20227655417406,
+  "predicted_per_second": 12.787351520479806
+ },
+ "tokens": {
+  "reasoning_tokenized": 10469,
+  "content_tokenized": 789,
+  "completion_tokens_usage": 11261,
+  "prompt_tokens_usage": 121,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.398,
+  "to_first_reasoning": 1.398,
+  "to_first_answer_token": 817.386,
+  "to_final_answer": 881.958
+ },
+ "peaks": {
+  "gpu_temp_c": 73,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26221
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26221
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26238
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 57,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26281
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 61,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 151.3,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26273
+  },
+  {
+   "t_s": 181.4,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 191.4,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 201.4,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26263
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26265
+  },
+  {
+   "t_s": 221.5,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 231.5,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 241.5,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26278
+  },
+  {
+   "t_s": 251.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 261.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 271.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 281.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26275
+  },
+  {
+   "t_s": 291.7,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26236
+  },
+  {
+   "t_s": 301.7,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26234
+  },
+  {
+   "t_s": 311.7,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26232
+  },
+  {
+   "t_s": 321.7,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26267
+  },
+  {
+   "t_s": 331.8,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26260
+  },
+  {
+   "t_s": 341.8,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 351.8,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26256
+  },
+  {
+   "t_s": 361.8,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26245
+  },
+  {
+   "t_s": 371.9,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26241
+  },
+  {
+   "t_s": 381.9,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26251
+  },
+  {
+   "t_s": 391.9,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26249
+  },
+  {
+   "t_s": 401.9,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26265
+  },
+  {
+   "t_s": 412.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26230
+  },
+  {
+   "t_s": 422.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 432.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 442.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26273
+  },
+  {
+   "t_s": 452.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 462.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 472.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26275
+  },
+  {
+   "t_s": 482.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 492.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 502.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 512.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 522.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26274
+  },
+  {
+   "t_s": 532.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 542.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 552.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26272
+  },
+  {
+   "t_s": 562.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26286
+  },
+  {
+   "t_s": 572.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 582.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 592.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26275
+  },
+  {
+   "t_s": 602.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 612.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26292
+  },
+  {
+   "t_s": 622.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 632.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 642.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26317
+  },
+  {
+   "t_s": 652.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 662.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 672.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 682.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 692.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 702.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 712.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 722.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26273
+  },
+  {
+   "t_s": 732.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 742.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26262
+  },
+  {
+   "t_s": 752.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26267
+  },
+  {
+   "t_s": 762.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26283
+  },
+  {
+   "t_s": 772.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 782.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 792.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 803.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 813.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 823.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 833.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 843.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 853.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 863.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 873.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26301
+  }
+ ]
+}

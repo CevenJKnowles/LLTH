@@ -1,0 +1,109 @@
+{
+ "id": "D4",
+ "title": "Group totals that do not add up (looks easy, is hard)",
+ "prompt_text": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1019,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1019,
+ "started_at": "2026-10-30T17:12:46",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to compute results. DataFrame:\nk: [\"a\",\"b\",None,\"a\"], v: [1,2,3,4]\ngroupby(\"k\")[\"v\"].sum(): groups: \"a\": values 1 and 4 => 5; \"b\": 2 => 2; NaN key: 3 => sum of v for NaN group? In pandas, groupby drops NaN keys by default (dropna=True). So NaN group omitted. So groupby sum series: a=5, b=2. Sum of that series = 7. The column total sum = 1+2+3+4=10. They differ because the NaN key group is excluded. The one-argument change: set dropna=False in groupby: df.groupby(\"k\", dropna=False)[\"v\"].sum().sum() => 10. Provide explanation.\n",
+ "content": "**Numbers**\n\n| Expression | Value |\n|--------------|-------|\n| `df.groupby(\"k\")[\"v\"].sum().sum()` | **7** |\n| `df[\"v\"].sum()` | **10** |\n\n**Why they differ**\n\n`DataFrame.groupby` (and `SeriesGroupBy`) drops rows whose key is missing (`NaN`/`None`) unless you explicitly ask it to keep them.  \nIn the example the key column `\"k\"` contains a `None` (which pandas treats as `NaN`). The row with that key has `v = 3`.\n\n```text\nk   v\n\"a\" 1\n\"b\" 2\nNaN 3   <-- dropped from the groupby result\n\"a\" 4\n```\n\nSo the group‑by operation produces only the groups `\"a\"` and `\"b\"`:\n\n```\na → 1 + 4 = 5\nb → 2\n```\n\nand their sum is `5 + 2 = 7`. The original column total, `1 + 2 + 3 + 4 = 10`, still includes the `3` that belonged to the missing‑key row.\n\n**One‑argument change**\n\nPass `dropna=False` to `groupby` so that the `NaN` key is kept as its own group:\n\n```python\ndf.groupby(\"k\", dropna=False)[\"v\"].sum().sum()\n```\n\nNow the groups are:\n\n```\na   → 5\nb   → 2\nNaN → 3\n```\n\nand their total is `5 + 2 + 3 = 10`, matching `df[\"v\"].sum()`.",
+ "usage": {
+  "completion_tokens": 513,
+  "prompt_tokens": 110,
+  "total_tokens": 623,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 110,
+  "prompt_ms": 2150.294,
+  "prompt_per_token_ms": 19.54812727272727,
+  "prompt_per_second": 51.15579544006541,
+  "predicted_n": 513,
+  "predicted_ms": 52926.047,
+  "predicted_per_token_ms": 103.371185546875,
+  "predicted_per_second": 9.673875700560068
+ },
+ "tokens": {
+  "reasoning_tokenized": 176,
+  "content_tokenized": 334,
+  "completion_tokens_usage": 513,
+  "prompt_tokens_usage": 110,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.154,
+  "to_first_reasoning": 2.154,
+  "to_first_answer_token": 19.513,
+  "to_final_answer": 55.08
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26592
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26592
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26760
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26753
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26743
+  }
+ ]
+}

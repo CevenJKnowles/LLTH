@@ -1,0 +1,208 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1015,
+ "started_at": "2026-10-30T21:47:42",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Input: User request (text + optional flag).\n    *   Models: 1B (Fast/Cheap), 30B (Slow/Expensive).\n    *   Constraints:\n        *   No learned classifier (rules must be deterministic and readable).\n        *   Decision Latency: < 5 ms.\n        *   Logging: Every decision + rule used must be logged.\n        *   Quota: 30B model $\\le$ 20% of total requests per calendar day.\n        *   Force Flag: Request can force 30B model.\n        *   Fallback: If 30B is down, use 1B (must answer).\n    *   Output: Rules (priority order), Quota mechanism/exhaustion strategy, Fallback path, Log record fields, 3 Example requests.\n\n    *   *Constraint Check: < 5 ms.* This means we can't do heavy semantic analysis or call other LLMs to decide. We need simple heuristic-based rules (regex, length, keywords, specific flags).\n    *   *Constraint Check: 20% quota.* We need a persistent (or semi-persistent) counter that resets at midnight.\n    *   *Constraint Check: Priority.*\n        1.  Explicit override (Force Flag).\n        2.  Complexity heuristic (Length/Complexity).\n        3.  Quota Check (Is 30B available within the 20% limit?).\n        4.  Default to 1B.\n\n    *   *Rule 1: Force Flag.* If `force_30b == true`, attempt 30B. (Wait, what if 30B is down? Fallback applies).\n    *   *Rule 2: Complexity (Heuristic).* How do we know if it's hard without an LLM?\n        *   Length: If input > $N$ characters $\\rightarrow$ 30B.\n        *   Complexity: Specific keywords (e.g., \"code\", \"solve\", \"reason\", \"explain complex\") $\\rightarrow$ 30B.\n    *   *Rule 3: Quota.* If Rule 2 is triggered, check if `count_30b / total_requests < 0.2`.\n\n    *Refinement on Rules (Priority Order):*\n    To ensure determinism and speed:\n    1.  **Rule: Force Flag.** If `force_30b` is `true` $\\rightarrow$ 30B.\n    2.  **Rule: Complexity (Keyword/Length).** If `length > 500` OR `contains_complex_keywords` $\\rightarrow$ 30B.\n    3.  **Rule: Default.** Otherwise $\\rightarrow$ 1B.\n\n    *Wait, I need to handle the 20% quota rule carefully.*\n    If a request *wants* 30B (via rule 2 or flag), but the quota is hit, what happens? The prompt says: \"the 30B model may serve at most 20 per cent\". This implies a hard limit. If the quota is hit, the request *must* go to 1B to respect the constraint.\n\n    *Revised Logic Flow:*\n    1.  Check `force_flag`. If `true`, try 30B.\n    2.  Check `complexity` (Length > X or Keywords). If `true`, try 30B.\n    3.  If 30B is requested (via 1 or 2):\n        a. Check Quota. If quota allows $\\rightarrow$ 30B.\n        b. If quota exhausted $\\rightarrow$ 1B.\n    4.  If 30B is requested but 30B is down $\\rightarrow$ 1B.\n    5.  Otherwise $\\rightarrow$ 1B.\n\n    *Actually, the \"Force Flag\" is tricky.* If I force 30B and quota is exhausted, do I honor the flag or the quota? The prompt says \"the 30B model may serve at most 20 per cent\". This is a hard constraint. Therefore, the quota takes precedence over the flag to ensure the constraint is met.\n\n    *   Mechanism: A sliding window is too complex for 5ms/simplicity. Let's use a \"Daily Counter\" approach.\n    *   Store: `total_requests_today` and `30b_requests_today`.\n    *   Reset: Midnight UTC.\n    *   Exhaustion: If `30b_requests_today >= (0.2 * total_requests_today)` (this is hard to calculate in real-time for the *next* request).\n    *   Better logic: Keep a counter of \"available 30B slots\" based on the current day's total.\n    *   *Standard Approach:* Use a \"Leaky Bucket\" or a simple counter. Since we need to meet 20% *over the day*, we track `total_count` and `30b_count`.\n    *   *The \"Math Problem\":* If I am at request 10, and I've used 2 30B calls, I'm at 20%. If I take one more, I'm at 22%.\n    *   *Strict implementation:* To ensure we never exceed 20%, we need to know the *projected* total. Since we don't know the future, we can use a \"Buffer/Safety Margin\" or simply a strict check: `if (30b_count + 1) / (total_count + 1) <= 0.2`. This is slightly risky for small $N$.\n    *   *Better logic:* We'll use a token bucket where tokens are replenished or a simple counter that enforces the ratio. Let's go with: `if (current_30b_count < (total_count * 0.2))` then allow.\n\n    *   Wait, if a user sends a \"Force\" request and the quota is hit, do we serve 1B? Yes, because \"the 30B model may serve at most 20 per cent\" is a hard constraint on the model's usage.\n\n    *   *Priority 1:* `FORCE_FLAG` (If flag is true AND quota remains AND 30B is up $\\rightarrow$ 30B).\n    *   *Priority 2:* `COMPLEXITY_TRIGGER` (If length > 500 OR keywords in {math, code, logic, explain} AND quota remains AND 30B is up $\\rightarrow$ 30B).\n    *   *Priority 3:* `DEFAULT_ROUTING` (All other cases $\\rightarrow$ 1B).\n\n    *   *Handling 30B Downtime:* If the logic selects 30B but the service is down $\\rightarrow$ Fallback to 1B.\n\n    *   `timestamp` (ISO8601)\n    *   `request_id` (UUID)\n    *   `input_length` (int)\n    *   `flag_active` (boolean)\n    *   `rule_triggered` (string - e.g., \"FORCE_FLAG\", \"COMPLEXITY\", \"DEFAULT\")\n    *   `model_assigned` (string - \"1B\" or \"30B\")\n    *   `quota_status` (string - \"OK\" or \"EXHAUSTED\")\n    *   `fallback_triggered` (boolean)\n\n    1.  \"Write a poem.\" (Short, no flag) $\\rightarrow$ 1B.\n    2.  \"Write a Python script to calculate the Fibonacci sequence.\" (Keyword: Python) $\\rightarrow$ 30B (if quota permits).\n    3.  \"Explain the theory of relativity in detail.\" (Flag: force_30b: true) $\\rightarrow$ 30B (if quota permits).\n\n    *   *Check latency:* All rules are O(1) or O(N) string matching. Very fast.\n    *   *Check determinism:* No AI in the router. Yes.\n    *   *Check 20% constraint:* The quota logic enforces it.\n    *   *Check Fallback:* If 30B is selected but fails, 1B is called.\n\n    *Self-Correction during drafting:* I must make sure the \"Complexity\" rules are truly readable and deterministic.\n    Keywords: `['code', 'solve', 'reason', 'mathematics', 'complex']`.\n    Length threshold: `500` characters.\n\n    *Refining the Quota logic for the prompt:* The prompt asks \"what happens when it is exhausted\". Answer: It falls back to the 1B model.\n\n    *Refining the priority order:*\n    1. Force Flag (Override)\n    2. Complexity (Heuristic)\n    3. Default (1B)\n\n    *Crucial Step:* If Rule 1 or 2 triggers, we *then* check Quota. If Quota is exhausted, we drop down to the Default path.\n\n    *Let's refine the \"Rules\" section for the user:*\n    1. Rule: `FORCE_FLAG_DETECTED` (If `request.force_30b == true`)\n    2. Rule: `COMPLEXITY_DETECTED` (If `len(input) > 500` OR `any(keyword in input for keyword in ['code', 'logic', 'solve', 'math'])`)\n    3. Rule: `DEFAULT_ROUTE` (Else)\n\n    *Wait, if Rule 1 triggers but Quota is hit, it's not Rule 1 anymore, it's a fallback.*\n    The instruction says \"give the rules in priority order\".\n\n    *Corrected Flow:*\n    1. If `flag == true`:\n       - If `quota_available` AND `model_30b_up`: Route 30B (Rule: `FLAG_OVERRIDE`)\n       - Else: Route 1B (Rule: `FLAG_OVERRIDE_FALLBACK_QUOTA` or `FLAG_OVERRIDE_FALLBACK_DOWNTIME`)\n    2. If `input_is_complex`:\n       - If `quota_available` AND `model_30b_up`: Route 30B (Rule: `COMPLEXITY_HEURISTIC`)\n       - Else: Route 1B (Rule: `COMPLEXITY_FALLBACK`)\n    3. Else:\n       - Route 1B (Rule: `DEFAULT`)\n\n    *Actually, simplicity is better for \"readable and same result\".*\n    Let's group the decision into:\n    - **Primary Intent** (Flag, Complexity, or Default)\n    - **Constraint Check** (Quota, Availability)\n    - **Final Route** (30B or 1B)\n\n    *Wait, the prompt asks for \"The Rules\".* I will present them as a decision tree.\n\n    - Log Record Fields: `timestamp`, `request_id`, `input_snippet`, `rule_fired`, `target_model`, `quota_remaining_pct`, `fallback_applied`.\n\n    *Final Polish of Example Requests:*\n    1. \"What is 2+2?\" -> Default -> 1B.\n    2. \"Write a complex C++ function to...\" -> Complexity -> 30B.\n    3. \"Explain quantum physics\" (Flag: true) -> Force -> 30B.\n    (Note: All assuming quota is available).\n\n    *Wait, let's make one example where quota is exhausted to show understanding.*\n    Example 3: \"Explain quantum physics\" (Flag: true, but quota hit) -> 1B.\n\n    *Latency Check:* String contains/Length is extremely fast. Logic is purely conditional. Definitely < 5ms.\n\n    *Wait, one detail:* \"every decision is logged with the rule that fired\".\n    If I want 30B via flag, but quota is exhausted, the rule that *decided* the routing is \"Quota Exhaustion\".\n\n    *Let's structure the response clearly:*\n    1.  **Routing Logic & Rules (Priority Order)**\n    2.  **Quota Mechanism & Exhaustion Strategy**\n    3.  **Fallback Path**\n    4.  **Log Record Schema**\n    5.  **Example Requests & Routes**",
+ "content": "This routing layer is designed as a **deterministic heuristic engine**. To meet the < 5ms latency requirement, the router avoids any neural processing, relying instead on string pattern matching, length checks, and atomic counter increments.\n\n### 1. Routing Rules (In Priority Order)\nThe router evaluates rules in this specific order. Once a rule \"triggers\" an intent, the router proceeds to the **Constraint Check** (Quota/Availability) before final assignment.\n\n| Priority | Rule Name | Logic (Trigger Condition) | Intent |\n| :--- | :--- | :--- | :--- |\n| 1 | `RULE_FORCE_30B` | `request.force_30b == true` | Request 30B |\n| 2 | `RULE_COMPLEXITY` | `len(request.text) > 500` **OR** `contains(request.text, [keywords])`* | Request 30B |\n| 3 | `RULE_DEFAULT` | All other requests | Request 1B |\n\n*\\*Keywords: `[\"code\", \"solve\", \"reason\", \"mathematics\", \"logic\", \"explain\"]`*\n\n---\n\n### 2. Quota Mechanism & Exhaustion\nTo ensure the 20% limit is respected over a calendar day without high-latency database lookups, the router uses an **Atomic Counter** stored in an in-memory cache (like Redis or an internal state variable).\n\n*   **The Counters:** \n    *   `total_requests_today` (Resets at 00:00 UTC)\n    *   `count_30b_today` (Resets at 00:00 UTC)\n*   **The Decision Logic:**\n    A request for the 30B model is only granted if:\n    `count_30b_today < (total_requests_today * 0.20)`\n*   **Exhaustion Strategy:**\n    If the quota check fails (i.e., the next 30B request would push the percentage above 20%), the intent is downgraded to the 1B model. The router treats the quota exhaustion as a \"Soft Constraint\" that overrides the user's intent.\n\n---\n\n### 3. Fallback Path\nThe fallback path is triggered in two scenarios:\n1.  **Constraint Failure:** The request triggered a 30B intent, but the quota was exhausted.\n2.  **Availability Failure:** The 30B model service returns a 503 (Unavailable) or a timeout.\n\n**The Path:**\n`Intent (30B) $\\rightarrow$ Check Quota $\\rightarrow$ Check 30B Health $\\rightarrow$ (If Fail) $\\rightarrow$ Route to 1B Model.`\n*This ensures the system remains available even if the high-capacity model is offline or over-utilized.*\n\n---\n\n### 4. Log Record Fields\nEvery decision is logged as a JSON object to ensure auditability:\n\n| Field Name | Type | Description |\n| :--- | :--- | :--- |\n| `timestamp` | ISO8601 | Precise time of decision |\n| `request_id` | UUID | Unique identifier for the request |\n| `input_length` | Integer | Character count of the input |\n| `rule_fired` | String | The specific rule (e.g., `RULE_COMPLEXITY`) |\n| `model_assigned` | String | `1B` or `30B` |\n| `quota_status` | String | `AVAILABLE` or `EXHAUSTED` |\n| `fallback_applied`| Boolean | `true` if 30B was intended but 1B was served |\n\n---\n\n### 5. Example Requests\n\n| Input Text | `force_30b` Flag | Rule Fired | Quota/Health | **Final Route** |\n| :--- | :--- | :--- | :--- | :--- |\n| \"What is 2+2?\" | `false` | `RULE_DEFAULT` | N/A (1B) | **1B** |\n| \"Write a Python script to calculate a complex derivative...\" | `false` | `RULE_COMPLEXITY` | Available | **30B** |\n| \"Explain the nuances of quantum entanglement.\" | `true` | `RULE_FORCE_30B` | **EXHAUSTED** | **1B** (Fallback) |",
+ "usage": {
+  "completion_tokens": 3707,
+  "prompt_tokens": 185,
+  "total_tokens": 3892,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 185,
+  "prompt_ms": 1478.408,
+  "prompt_per_token_ms": 7.991394594594594,
+  "prompt_per_second": 125.134604249977,
+  "predicted_n": 3707,
+  "predicted_ms": 213093.19,
+  "predicted_per_token_ms": 57.49951160280626,
+  "predicted_per_second": 17.391452068458875
+ },
+ "tokens": {
+  "reasoning_tokenized": 2732,
+  "content_tokenized": 970,
+  "completion_tokens_usage": 3707,
+  "prompt_tokens_usage": 185,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.661,
+  "to_first_reasoning": 1.661,
+  "to_first_answer_token": 156.719,
+  "to_final_answer": 214.577
+ },
+ "peaks": {
+  "gpu_temp_c": 78,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26275
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26275
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26316
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26277
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26320
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26303
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26301
+  }
+ ]
+}

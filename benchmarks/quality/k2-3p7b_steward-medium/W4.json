@@ -1,0 +1,83 @@
+{
+ "id": "W4",
+ "title": "README installation section, terse rewrite",
+ "prompt_text": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1004,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1004,
+ "started_at": "2026-11-05T04:50:29",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to rewrite README section: at most 60 words, imperative mood, no change to facts, nothing added. So must convey: install with pip install quillcache; need Python 3.9+; optional viz extra requires matplotlib; default cache location ~/.quillcache; can override via QUILCACHE_HOME env var before import.\n\nImperative mood: commands like \"Run\", \"Install\", \"Set\", \"Use\". Keep facts unchanged. Word count <=60.\n\nLet's draft:\n\n\"Run `pip install quillcache`; Python 3.9 or newer is required. For plotting helpers, install the extra: `pip install quillcache[viz]` (requires matplotlib). By default, the cache lives in `~/.quillcache`. To store it elsewhere, set `QUILCACHE_HOME` before importing the library.\"\n\nCount words: Run(1) pip(2) install(3) quillcache;(4) Python(5) 3.9(6) or(7) newer(8) is(9) required.(10) For(11) plotting(12) helpers,(13) install(14) the(15) extra:(16) pip(17) install(18) quillcache[viz](19) (requires(20) matplotlib).(21) By(22) default,(23) the(24) cache(25) lives(26) in(27) ~/.quillcache.(28) To(29) store(30) it(31) elsewhere,(32) set(33) QUILCACHE_HOME(34) before(35) importing(36) the(37) library.(38) That's 38 words, under 60. All facts same, imperative.\n\nCheck imperative mood: \"Run\", \"Install\", \"Set\". Good.\n\nNow final answer.</ifm|think>Run `pip install quillcache`; Python 3.9 or newer is required. For plotting helpers, install the extra: `pip install quillcache[viz]` (requires matplotlib). By default, the cache lives in `~/.quillcache`. To store it elsewhere, set `QUILCACHE_HOME` before importing the library.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 450,
+  "prompt_tokens": 209,
+  "total_tokens": 659,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 209,
+  "prompt_ms": 139.469,
+  "prompt_per_token_ms": 0.6673157894736842,
+  "prompt_per_second": 1498.5408943923023,
+  "predicted_n": 450,
+  "predicted_ms": 8084.209,
+  "predicted_per_token_ms": 18.00491982182628,
+  "predicted_per_second": 55.54037506947186
+ },
+ "tokens": {
+  "reasoning_tokenized": 449,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 450,
+  "prompt_tokens_usage": 209,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.142,
+  "to_first_reasoning": 0.142,
+  "to_first_answer_token": null,
+  "to_final_answer": 8.226
+ },
+ "peaks": {
+  "gpu_temp_c": 67,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22312
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22312
+  }
+ ]
+}

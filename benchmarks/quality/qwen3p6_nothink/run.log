@@ -1,0 +1,28 @@
+[2026-10-30 20:02:43] run start: qwen3p6_nothink, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:02:47] W1: complete finish=stop reasoning_tok=0 answer_tok=43 total_tok=44 time=3.6s peak_temp=53 min_ram=26176
+[2026-10-30 20:02:56] W2: complete finish=stop reasoning_tok=0 answer_tok=136 total_tok=137 time=9.2s peak_temp=56 min_ram=26204
+[2026-10-30 20:04:09] W3: complete finish=stop reasoning_tok=0 answer_tok=1048 total_tok=1050 time=72.8s peak_temp=63 min_ram=26137
+[2026-10-30 20:04:14] W4: complete finish=stop reasoning_tok=0 answer_tok=63 total_tok=64 time=5.3s peak_temp=68 min_ram=26236
+[2026-10-30 20:04:37] W5: complete finish=stop reasoning_tok=0 answer_tok=307 total_tok=308 time=23.2s peak_temp=69 min_ram=26169
+[2026-10-30 20:04:37] run finished
+[2026-10-30 20:07:14] run start: qwen3p6_nothink, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:07:34] P1: complete finish=stop reasoning_tok=0 answer_tok=305 total_tok=306 time=20.6s peak_temp=56 min_ram=26089
+[2026-10-30 20:08:44] P2: complete finish=stop reasoning_tok=0 answer_tok=984 total_tok=985 time=69.2s peak_temp=64 min_ram=26162
+[2026-10-30 20:09:19] P3: complete finish=stop reasoning_tok=0 answer_tok=441 total_tok=442 time=35.1s peak_temp=69 min_ram=26107
+[2026-10-30 20:09:45] P4: complete finish=stop reasoning_tok=0 answer_tok=316 total_tok=317 time=25.9s peak_temp=70 min_ram=26194
+[2026-10-30 20:09:57] P5: complete finish=stop reasoning_tok=0 answer_tok=143 total_tok=144 time=12.0s peak_temp=72 min_ram=26171
+[2026-10-30 20:09:57] run finished
+[2026-10-30 20:13:04] run start: qwen3p6_nothink, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:16:07] R1: complete finish=stop reasoning_tok=0 answer_tok=2469 total_tok=2470 time=183.0s peak_temp=67 min_ram=25991
+[2026-10-30 20:18:17] R2: complete finish=stop reasoning_tok=0 answer_tok=1670 total_tok=1671 time=129.9s peak_temp=74 min_ram=26179
+[2026-10-30 20:20:46] R3: complete finish=stop reasoning_tok=0 answer_tok=1892 total_tok=1893 time=149.4s peak_temp=74 min_ram=26181
+[2026-10-30 20:22:47] R4: complete finish=stop reasoning_tok=0 answer_tok=1507 total_tok=1508 time=121.2s peak_temp=76 min_ram=26158
+[2026-10-30 20:25:40] R5: complete finish=stop reasoning_tok=0 answer_tok=2060 total_tok=2061 time=172.9s peak_temp=77 min_ram=26177
+[2026-10-30 20:25:40] run finished
+[2026-10-30 20:29:44] run start: qwen3p6_nothink, 5 prompts, max_tokens 32768, n_ctx 34816, prompts sha256 8d5e4fa32e02
+[2026-10-30 20:29:52] D1: complete finish=stop reasoning_tok=0 answer_tok=119 total_tok=120 time=8.3s peak_temp=55 min_ram=26112
+[2026-10-30 20:31:30] D2: complete finish=stop reasoning_tok=0 answer_tok=1407 total_tok=1408 time=97.3s peak_temp=65 min_ram=26174
+[2026-10-30 20:31:34] D3: complete finish=stop reasoning_tok=0 answer_tok=52 total_tok=53 time=4.6s peak_temp=70 min_ram=26260
+[2026-10-30 20:33:32] D4: complete finish=stop reasoning_tok=0 answer_tok=1515 total_tok=1516 time=118.1s peak_temp=72 min_ram=26131
+[2026-10-30 20:33:46] D5: complete finish=stop reasoning_tok=0 answer_tok=165 total_tok=166 time=14.1s peak_temp=74 min_ram=26129
+[2026-10-30 20:33:46] run finished

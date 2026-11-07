@@ -1,0 +1,150 @@
+{
+ "id": "R4",
+ "title": "Expected cost of a retry policy",
+ "prompt_text": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1014,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1014,
+ "started_at": "2026-10-30T20:20:46",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Here is the step-by-step deduction to determine the expected total cost for both policies.\n\n### Problem Definition\n\n*   **Probability of failure ($p$):** $0.2$\n*   **Probability of success ($q = 1 - p$):** $0.8$\n*   **Cost per attempt:** $1$ unit\n*   **Penalty for total failure:** $10$ units\n*   **Goal:** Calculate the Expected Total Cost ($E[C]$).\n\nThe process stops when:\n1.  The API call succeeds (cost is just the number of attempts made).\n2.  The maximum number of attempts is reached and all failed (cost is max attempts + penalty).\n\n---\n\n### Part 1: Policy with Limit of 3 Attempts\n\nLet $N$ be the random variable representing the total cost. We analyze the possible outcomes based on when the first success occurs or if all attempts fail.\n\n**Case 1: Success on the 1st attempt**\n*   Probability: $0.8$\n*   Cost: $1$ (only 1 attempt was made)\n*   Contribution to Expectation: $0.8 \\times 1 = 0.8$\n\n**Case 2: Success on the 2nd attempt**\n*   The 1st fails ($0.2$), then the 2nd succeeds ($0.8$).\n*   Probability: $0.2 \\times 0.8 = 0.16$\n*   Cost: $2$ (2 attempts made)\n*   Contribution to Expectation: $0.16 \\times 2 = 0.32$\n\n**Case 3: Success on the 3rd attempt**\n*   The 1st and 2nd fail ($0.2 \\times 0.2$), then the 3rd succeeds ($0.8$).\n*   Probability: $0.2^2 \\times 0.8 = 0.04 \\times 0.8 = 0.032$\n*   Cost: $3$ (3 attempts made)\n*   Contribution to Expectation: $0.032 \\times 3 = 0.096$\n\n**Case 4: Failure on all 3 attempts**\n*   The 1st, 2nd, and 3rd all fail ($0.2^3$).\n*   Probability: $0.2^3 = 0.008$\n*   Cost: $3$ (attempts) $+ 10$ (penalty) $= 13$\n*   Contribution to Expectation: $0.008 \\times 13 = 0.104$\n\n**Total Expected Cost ($E[C_3]$):**\n$$ E[C_3] = 0.8 + 0.32 + 0.096 + 0.104 $$\n$$ E[C_3] = 1.12 + 0.20 $$\n$$ E[C_3] = 1.32 \\text{ units} $$\n\n---\n\n### Part 2: Policy with Limit of 4 Attempts\n\nNow we increase the limit to 4 attempts. We check if this lowers the expected cost.\n\n**Case 1: Success on the 1st attempt**\n*   Probability: $0.8$\n*   Cost: $1$\n*   Contribution: $0.8 \\times 1 = 0.8$\n\n**Case 2: Success on the 2nd attempt**\n*   Probability: $0.2 \\times 0.8 = 0.16$\n*   Cost: $2$\n*   Contribution: $0.16 \\times 2 = 0.32$\n\n**Case 3: Success on the 3rd attempt**\n*   Probability: $0.2^2 \\times 0.8 = 0.032$\n*   Cost: $3$\n*   Contribution: $0.032 \\times 3 = 0.096$\n\n**Case 4: Success on the 4th attempt**\n*   The first 3 fail ($0.2^3$), then the 4th succeeds ($0.8$).\n*   Probability: $0.2^3 \\times 0.8 = 0.008 \\times 0.8 = 0.0064$\n*   Cost: $4$ (4 attempts made)\n*   Contribution: $0.0064 \\times 4 = 0.0256$\n\n**Case 5: Failure on all 4 attempts**\n*   The first 4 all fail ($0.2^4$).\n*   Probability: $0.2^4 = 0.0016$\n*   Cost: $4$ (attempts) $+ 10$ (penalty) $= 14$\n*   Contribution: $0.0016 \\times 14 = 0.0224$\n\n**Total Expected Cost ($E[C_4]$):**\n$$ E[C_4] = 0.8 + 0.32 + 0.096 + 0.0256 + 0.0224 $$\n\nLet's sum them up:\n1.  $0.8 + 0.32 = 1.12$\n2.  $1.12 + 0.096 = 1.216$\n3.  $1.216 + 0.0256 = 1.2416$\n4.  $1.2416 + 0.0224 = 1.264$\n\n$$ E[C_4] = 1.264 \\text{ units} $$\n\n---\n\n### Comparison and Conclusion\n\n1.  **Expected Cost with Limit 3:** $1.32$ units\n2.  **Expected Cost with Limit 4:** $1.264$ units\n\n**Does raising the limit lower the cost?**\nYes, because $1.264 < 1.32$.\n\n**By how much?**\n$$ \\Delta E = E[C_3] - E[C_4] $$\n$$ \\Delta E = 1.32 - 1.264 $$\n$$ \\Delta E = 0.056 \\text{ units} $$\n\n### Final Answer\n\nThe expected total cost per call with a limit of 3 attempts is **1.32 units**.\n\nRaising the limit to 4 attempts **would lower** the expected cost. The reduction in expected cost is **0.056 units** (the new expected cost is 1.264 units).",
+ "usage": {
+  "completion_tokens": 1508,
+  "prompt_tokens": 97,
+  "total_tokens": 1605,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 97,
+  "prompt_ms": 1142.286,
+  "prompt_per_token_ms": 11.776144329896908,
+  "prompt_per_second": 84.91743748938532,
+  "predicted_n": 1508,
+  "predicted_ms": 120085.319,
+  "predicted_per_token_ms": 79.68501592568016,
+  "predicted_per_second": 12.549410806828103
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 1507,
+  "completion_tokens_usage": 1508,
+  "prompt_tokens_usage": 97,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.145,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.145,
+  "to_final_answer": 121.231
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26158
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26158
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26186
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26198
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26219
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26230
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26236
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26239
+  },
+  {
+   "t_s": 71.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26216
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26214
+  },
+  {
+   "t_s": 91.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26237
+  },
+  {
+   "t_s": 101.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26235
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26238
+  }
+ ]
+}

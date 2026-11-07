@@ -1,0 +1,80 @@
+{
+ "id": "W4",
+ "title": "README installation section, terse rewrite",
+ "prompt_text": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1004,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1004,
+ "started_at": "2026-10-31T01:09:05",
+ "status": "complete",
+ "error": null,
+ "finish_reason": null,
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to rewrite the README section to be at most 60 words, imperative mood, no change to facts, nothing added. Original: \"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"\n\nWe need to rewrite to imperative, concise, <=60 words. No added info. Must keep facts: need pip install quillcache, need Python 3.9+, optional plotting helpers via quillcache[viz], default cache location ~/.quillcache, can set QUILLCACHE_HOME env var before import. Imperative mood: \"Install quillcache with pip, ensure Python 3.9 or newer, install plotting helpers with quillcache[viz], set QUILLCACHE_HOME env var before import if you want to change cache location.\" Count words.\n\nLet's craft: \"Install quillcache with `pip install quillcache` after having Python 3.9 or newer. For plotting help",
+ "content": "",
+ "usage": null,
+ "timings": null,
+ "tokens": {
+  "reasoning_tokenized": null,
+  "content_tokenized": 0,
+  "completion_tokens_usage": null,
+  "prompt_tokens_usage": null,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.039,
+  "to_first_reasoning": 0.039,
+  "to_first_answer_token": null,
+  "to_final_answer": 32.129
+ },
+ "peaks": {
+  "gpu_temp_c": 65,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26319
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26364
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 57,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 55,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26366
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26370
+  }
+ ]
+}

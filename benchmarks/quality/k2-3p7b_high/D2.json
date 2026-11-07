@@ -1,0 +1,121 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1017,
+ "started_at": "2026-10-31T00:49:43",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user asks: they want to run a 7-billion-parameter model in bfloat16 on a GPU with 12GB memory. Quantisation not allowed. KV cache costs 0.5 MB per token per sequence at this model size. They want a 4,096-token context. They thought batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should they use, and how much memory will be left over? We need to calculate memory usage: model weights (bfloat16) for 7B parameters: 7e9 * 2 bytes (bfloat16) = ~14 GB. That's already exceeding 12GB. So cannot fit 7B model in 12GB without quantization or offloading. But perhaps we can use some tricks: using model parallelism? But the question might assume they can use 7B bfloat16 but maybe with memory mapping? Or maybe they assume using a GPU with 12GB, but typical 7B models in bfloat16 require ~14GB, which is larger. So we need to state that it's not possible to fully fit the model in memory; you would need to offload to CPU, use gradient checkpointing (but no training), or use a mixture-of-experts or weight sharing. But the user explicitly says quantisation not an option. So the answer may be that you cannot run a 7B bfloat16 model on 12GB GPU. However, maybe they are using a GPU with 12GB but perhaps they have to use a smaller subset of parameters (like using a 7B model but with some layers truncated?). But typical usage: a 7B model in bfloat16 uses ~14GB of weight memory. So you need at least 16GB to be safe. If they have 12GB, they would need to use 8-bit or 4-bit quantisation. Or you could use offloading to CPU or use a GPU with more memory. Alternatively, maybe they mean they have a GPU with 12GB, but they have an H100 or A100 40GB? The user says 12GB, so it's maybe a consumer GPU like RTX 3080 (10GB) or RTX 3090 (24GB). The 3080 is 10GB, not 12GB. 12GB could be used with a \"V100\"? No, V100 is 16GB. Or maybe a RTX 4090 is 24GB. 12GB is unusual. But perhaps they have an RTX 2080 Ti (11GB). So it's 12GB is a ballpark. Thus we need to compute memory usage for model weights: 7B * 2 = 14GB. That's >12GB. So they need to use model parallelism across multiple GPUs (e.g., pipeline parallelism). Or use memory mapping across CPU? Or use a smaller subset. Given the question includes KV cache cost 0.5 MB per token per sequence. For 4,096 tokens, that's 4,096 * 0.5 MB = 2,048 MB = 2GB. So KV cache will cost 2GB. Activations are small, ignoring them. Thus the total memory needed for the model (including KV cache) would be: 14GB (weights) + 2GB (KV) = 16GB. That's already >12GB. So you can't even fit the model + KV on a 12GB GPU. If you choose batch size = 1, you might only need KV for one sequence. But that's still 2GB. So you need at least 14GB + 2GB = 16GB. Thus the answer: you cannot fit it. You would need at least ~16GB of VRAM. If you try batch size 1, you will need 16GB; with batch size 2, you'd need more KV (double), so ~20GB; with batch size 4, ~24GB. So all exceed 12GB. So you need to reduce model size or use quantization, or offloading. Alternatively, you could try to use 8-bit or 4-bit quantisation (but user says no). Could also try to use bfloat16 weight sharing? Not likely. Thus answer: no batch size works, need more memory. You could use multi-GPU pipeline parallelism. Or use CPU offloading for some layers, like using the CPU memory for part of the model. Or use a smaller model. Thus we answer: with 7B bfloat16, you need ~14GB just for weights. Adding KV of ~2GB, total ~16GB. So you need >12GB, thus you cannot run this on a single 12GB GPU. If you use multi-GPU pipeline parallelism, you could split weight storage across GPUs. But the question expects maybe a numeric answer like \"batch size 1 uses 16GB, leaving -4GB (over). So can't run.\" But we need to show calculations. Let's produce a thorough answer: break down memory usage. Compute weight memory: 7e9 * 2 = 14e9 bytes = 14 GB. Compute KV: 4096 tokens * 0.5 MB = 2048 MB = 2 GB. Thus total = ~16GB. Activations ~ negligible. Batch size: each token per sequence has KV; batch size B multiplies KV: KV_total = B * 2GB. So for B=1, total 16GB; B=2 => 18GB; B=4 => 20GB. All >12GB. Thus cannot fit any. If you could reduce weight memory by using bfloat16 + some layer skipping? Not typical. If you could use offloading: maybe you can keep the model on CPU and load layers on GPU on-demand; but inference would be slow. Or use a mixture-of-experts approach, but 7B model may have fewer experts. Thus answer: cannot run on 12GB GPU. Alternatively, maybe the user wants to use the GPU for inference of the model and store weights on CPU? But that defeats GPU memory constraints. Alternatively, maybe the user is thinking about a 7B model that uses bfloat16 weights but maybe some layers can be stored on CPU and loaded on GPU on the fly, but for inference you need all layers to be in GPU. So no. Thus answer: No batch size works; you need at least 16GB for B=1, which is insufficient; need more memory. Thus we should explain that they may need to use a multi-GPU pipeline or use quantization. Thus answer: with 12GB GPU, cannot run 7B model in bfloat16 with 4096 context, even batch size 1. We can also discuss potential techniques: model sharding across GPUs, CPU offloading, weight sharing, using lower-precision weights (but they said no quant). Or use 8-bit weights (but still quant). Thus answer: you need a GPU with at least 16GB VRAM (or at least 14GB for weights) plus KV. Thus answer: batch size 1 uses 16GB, leaving 0GB (but exceed). So none. But the user might be asking \"which batch size should I use, and how much memory will be left over?\" So we can answer: none, memory left over negative. However, the user may also ask about \"KV cache costs 0.5 MB per token per sequence at this model size.\" That seems plausible. So we can compute. Thus final answer: The 7B bfloat16 model requires ~14GB for weights, plus ~2GB for KV at 4096 tokens, thus ~16GB total. With a 12GB GPU, you cannot fit even one sequence. Even batch size 0 is impossible. So you must either reduce context, reduce model size, quantise, or use multi-GPU. We can also mention that some GPUs like 4090 with 24GB would work; with 16GB maybe borderline, but need extra for KV. Thus answer: no viable batch size. But maybe the user might have a GPU with 12GB but they have some extra memory in system (like integrated GPU?). But we ignore that. Thus answer: we cannot run it. But the user asks \"Which batch size should I use, and how much memory will be left over?\" So answer: none; you cannot fit any. Alternatively, maybe we can propose a pipeline parallelism across two GPUs: each holds half the weights (7/2 = 3.5B * 2 = 7GB each). Then each GPU has 7GB for weights, plus KV (2GB) for one sequence => 9GB, fits in 12GB. But batch size maybe 1 per GPU. Thus we could suggest splitting across two GPUs. However, the question asks about a single GPU. Thus answer: no batch size. Thus we produce a thorough answer including calculations and suggestions. Now we should format answer nicely, with calculations, assumptions, suggestions. Use bullet points and maybe a table. Now produce final answer.",
+ "content": "**Short answer:**  \nWith a 12 GB GPU you can’t run a 7 B‑parameter model in bfloat16 and keep a 4 096‑token KV cache, no matter how small the batch size you try. Even for **batch = 1** you would need ≈ 16 GB of VRAM, leaving you ~ ‑4 GB (i.e. you’re over the limit). Below is a step‑by‑step breakdown of the memory requirements and what would be possible (or not) if you change any of the variables. ---\n\n## 1. Memory budget for a 7 B bfloat16 model\n\n| Component | Size (bytes) | Size (GB) |\n|-----------|--------------|------------|\n| **Model weights** (7 B × 2 bytes) | 7 × 10⁹ × 2 = 1.4 × 10¹⁰ B | **≈ 14 GB** |\n| **KV cache** (0.5 MiB / token / seq) × 4 096 tokens | 0.5 MiB × 4096 ≈ 2 048 MiB | **≈ 2 GB** |\n| **Activations** (assumed negligible) | – | ~0 GB |\n| **Total (batch = 1)** | – | **≈ 16 GB** |\n\n### What this means\n- **Weights alone already consume ~14 GB**, which already exceeds a 12 GB GPU. - Adding the KV cache pushes the requirement to **≈ 16 GB** for a single token stream. - Activations are usually only a few hundred megabytes for a 7 B model, so they won’t rescue the situation. ---\n\n## 2. How batch size multiplies the KV cache\n\nThe KV cache is *per sequence* and grows linearly with the batch size **B**. | Batch size **B** | KV cache (B × 2 GB) | Total VRAM needed (≈ 14 GB + KV) |\n|-------------------|----------------------|-----------------------------------|\n| 1 | 2 GB | **≈ 16 GB** |\n| 2 | 4 GB | **≈ 18 GB** |\n| 4 | 8 GB | **≈ 20 GB** |\n\nAll three numbers are **greater than 12 GB**, so **no batch size fits**. ---\n\n## 3. What you can (or can’t) do with a 12 GB card\n\n| Option | What it buys you | Why it’s insufficient (or viable) |\n|--------|------------------|-----------------------------------|\n| **Reduce the KV context** (e.g., 2 K tokens) | Cuts KV to ~1 GB, total ≈ 15 GB | Still >12 GB. |\n| **Trim the model** (e.g., a 5 B or 3 B sub‑model) | Smaller weight footprint | You no longer have the 7 B model you wanted. |\n| **Quantise weights** (8‑bit / 4‑bit) | 7 B × 1 byte ≈ 7 GB (8‑bit) or 3.5 GB (4‑bit) | You explicitly said quantisation isn’t an option. |\n| **Off‑load parts of the model to CPU** (CPU‑RAM + GPU‑swap) | Keeps 7 B in RAM, streams layers to GPU | Inference speed drops dramatically, and you still need a GPU with enough memory to hold the active layers plus KV (≈ 9 GB for a single layer). |\n| **Multi‑GPU pipeline / tensor parallelism** | Split weights across GPUs (e.g., 2 × 7 B/2 ≈ 3.5 B per GPU) | With two 12 GB GPUs you could host ~3.5 B × 2 ≈ 7 GB each, plus KV ≈ 2 GB → ~9 GB per GPU, which *fits* a single GPU in a 2‑GPU pipeline. This is the only realistic way to run the full 7 B model on 12 GB cards. |\n| **Use a larger‑VRAM GPU** (≥ 16 GB, preferably ≥ 18 GB) | Directly fits the 7 B bfloat16 + KV budget | Simple but requires buying a GPU with ≥ 16 GB (e.g., RTX 4090, A100 40 GB, etc.). |\n\n---\n\n## 4. Bottom‑line recommendation\n\n| Goal | Feasibility on a **single 12 GB GPU** |\n|------|--------------------------------------|\n| Run **full 7 B bfloat16** + **4 096‑token KV** with any batch size | **Impossible** (need ~16 GB minimum, ~18 GB for batch 2, ~20 GB for batch 4). |\n| Run a **smaller model** (≤ 5 B) with 4 096 KV | **Possible** – e.g., a 4.7 B bfloat16 model ≈ 9.4 GB + 2 GB KV ≈ 11.4 GB (fits, leaving < 0.6 GB slack). |\n| Keep the 7 B model but **share GPUs** | **Yes** – split weights across 2–4 GPUs using tensor/pipeline parallelism; each GPU holds ~3.5 B × 2 ≈ 7 GB + KV ≈ 2 GB → ~9 GB per GPU. |\n| Off‑load **weights to CPU** and stream layers to GPU | **Works** but will be extremely slow; you’ll still need a GPU with enough free VRAM for the active layers + KV. |\n| **Quantise** the model | **Would fit**, but you said quantisation isn’t an option. |\n\n---\n\n## 5. Quick “what‑if” numbers for a **batch = 1** 7 B run\n\n| Memory component | Bytes |\n|------------------|-------|\n| Model weights (bfloat16) | 14 GB |\n| KV cache (4096 tokens) | 2 GB |\n| Activations (≈ 0.2 GB) | 0.2 GB |\n| **Total** | **≈ 16.2 GB** |\n\n*Result:* You need **≈ 16 GB** of VRAM, i.e. **~4 GB** more than a 12 GB GPU provides. **Therefore the answer to your original question is:**  \n> *You cannot pick a batch size that fits. Even batch = 1 exceeds the GPU’s memory, so the model will not run on a 12 GB GPU without further tricks (multi‑GPU parallelism, weight off‑loading, or a smaller model). *\n\n---\n\n### TL;DR (one‑sentence)\n\n- **No batch size (1, 2, 4) will fit a 7 B bfloat16 model with a 4 096‑token KV cache on a 12 GB GPU; you need roughly 16 GB just for one sequence, so you must either use a larger‑VRAM GPU, split the model across GPUs, or reduce the model size (or quantise, which you ruled out). **",
+ "usage": {
+  "completion_tokens": 3482,
+  "prompt_tokens": 110,
+  "total_tokens": 3592,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 110,
+  "prompt_ms": 82.016,
+  "prompt_per_token_ms": 0.7456,
+  "prompt_per_second": 1341.2017167381973,
+  "predicted_n": 3482,
+  "predicted_ms": 71673.248,
+  "predicted_per_token_ms": 20.58984429761563,
+  "predicted_per_second": 48.56763293328076
+ },
+ "tokens": {
+  "reasoning_tokenized": 1906,
+  "content_tokenized": 1574,
+  "completion_tokens_usage": 3482,
+  "prompt_tokens_usage": 110,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.084,
+  "to_first_reasoning": 0.084,
+  "to_first_answer_token": 36.581,
+  "to_final_answer": 71.758
+ },
+ "peaks": {
+  "gpu_temp_c": 80,
+  "gpu_mem_mib": 4819,
+  "min_mem_available_mib": 26305
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26321
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26344
+  },
+  {
+   "t_s": 31.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26358
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26345
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26363
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26335
+  },
+  {
+   "t_s": 71.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26317
+  }
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "",
+    "reasoning_content": "We need opening paragraph, at most 120 words, using only given facts. Must not invent. Must not overstate SQL. So say \"I have four years of experience using pandas and scikit-learn, built a customer churn model that reduced false-positive alerts by 18% over six months, and led a team of three.\" Role: Data Analyst at mid-sized logistics company. Mention SQL occasionally and no dashboard experience. Keep under 120 words. No employer name etc. Let's craft ~80 words.\n</ifm|think>\nDear Hiring Team,\n\nI am writing to apply for the Data Analyst position at your mid‑sized logistics company. With four years of hands‑on experience using pandas and scikit‑learn, I built a customer‑churn model that reduced false‑positive alerts by 18 % over six months, and I led a team of three to deliver the work. I have used SQL occasionally in my analyses, though I am still building my dashboard experience. I am eager to bring my analytical background to your organization."
+   }
+  }
+ ],
+ "created": 1793845342,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 208,
+  "prompt_tokens": 132,
+  "total_tokens": 340,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-5bmgZGRwIs01QtMtBahWZdlMauhecMbS",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 132,
+  "prompt_ms": 2258.685,
+  "prompt_per_token_ms": 17.11125,
+  "prompt_per_second": 58.441084082109725,
+  "predicted_n": 208,
+  "predicted_ms": 18238.541,
+  "predicted_per_token_ms": 88.10889371980677,
+  "predicted_per_second": 11.34959205344331
+ }
+}

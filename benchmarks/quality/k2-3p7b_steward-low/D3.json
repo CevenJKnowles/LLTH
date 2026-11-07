@@ -1,0 +1,83 @@
+{
+ "id": "D3",
+ "title": "Compress a paragraph without losing facts (looks easy, is hard)",
+ "prompt_text": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\"",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1018,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1018,
+ "started_at": "2026-11-05T04:47:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "tidelog is a Python library, version 0.4.2, that reads newline-delimited JSON logs and writes Parquet files for faster querying. It has been tested on files up to 8 GB, requires Python 3.10+, and only depends on pyarrow. Released under the MIT licence, with new releases roughly every six weeks.",
+ "usage": {
+  "completion_tokens": 73,
+  "prompt_tokens": 182,
+  "total_tokens": 255,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 182,
+  "prompt_ms": 121.823,
+  "prompt_per_token_ms": 0.6693571428571429,
+  "prompt_per_second": 1493.9707608579663,
+  "predicted_n": 73,
+  "predicted_ms": 1315.923,
+  "predicted_per_token_ms": 18.276708333333332,
+  "predicted_per_second": 54.7144475778598
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 71,
+  "completion_tokens_usage": 73,
+  "prompt_tokens_usage": 182,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.143,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.143,
+  "to_final_answer": 1.44
+ },
+ "peaks": {
+  "gpu_temp_c": 73,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22301
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22301
+  }
+ ]
+}

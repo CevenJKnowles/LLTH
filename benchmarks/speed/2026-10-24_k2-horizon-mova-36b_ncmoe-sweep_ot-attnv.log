@@ -1,0 +1,313 @@
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:13:50+02:00  gpu_temp_before=42  mem_available_MiB=24005  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3927
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 48 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           pp512 |        251.70 ± 2.24 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.11 ± 0.57 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2481 gpu_temp_C=56 sm_clock_min_MHz=300 sm_clock_max_MHz=1935 power_max_W=77 mem_available_min_MiB=23515 samples=50 exit=0
+end: 2026-10-24T22:14:42+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:15:02+02:00  gpu_temp_before=51  mem_available_MiB=24078  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3983
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 48 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |       203.99 ± 39.31 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |          9.67 ± 0.93 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3305 gpu_temp_C=74 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=82 mem_available_min_MiB=22573 samples=84 exit=0
+end: 2026-10-24T22:16:30+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=46 (experts of 46 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:17:30+02:00  gpu_temp_before=55  mem_available_MiB=24014  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3758
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 46 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           pp512 |        257.10 ± 1.11 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           tg128 |         10.83 ± 0.88 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3211 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=79 mem_available_min_MiB=23349 samples=46 exit=0
+end: 2026-10-24T22:18:18+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=46 (experts of 46 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:18:59+02:00  gpu_temp_before=55  mem_available_MiB=23820  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3703
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 46 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |       189.57 ± 57.03 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |          9.50 ± 0.75 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4051 gpu_temp_C=77 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=84 mem_available_min_MiB=22503 samples=86 exit=0
+end: 2026-10-24T22:20:28+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=44 (experts of 44 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:21:48+02:00  gpu_temp_before=55  mem_available_MiB=24109  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3677
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 44 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           pp512 |        267.06 ± 0.56 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.34 ± 1.01 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3939 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=80 mem_available_min_MiB=23463 samples=45 exit=0
+end: 2026-10-24T22:22:35+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=44 (experts of 44 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:23:25+02:00  gpu_temp_before=55  mem_available_MiB=23978  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4141
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 44 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |        241.20 ± 0.56 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |         10.76 ± 0.11 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4783 gpu_temp_C=77 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=91 mem_available_min_MiB=22472 samples=79 exit=0
+end: 2026-10-24T22:24:47+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=42 (experts of 42 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:26:13+02:00  gpu_temp_before=55  mem_available_MiB=24097  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4173
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 42 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           pp512 |        272.09 ± 1.01 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.64 ± 1.19 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4667 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=82 mem_available_min_MiB=23325 samples=44 exit=0
+end: 2026-10-24T22:26:59+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=42 (experts of 42 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:27:49+02:00  gpu_temp_before=55  mem_available_MiB=23915  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3847
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 42 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |        254.22 ± 1.26 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |         10.96 ± 0.17 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5511 gpu_temp_C=78 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=91 mem_available_min_MiB=22616 samples=77 exit=0
+end: 2026-10-24T22:29:09+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=40 (experts of 40 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:30:39+02:00  gpu_temp_before=55  mem_available_MiB=24155  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4040
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 40 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         40 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           pp512 |        281.27 ± 1.17 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         40 |   q8_0 |   q8_0 |   1 | attn_v_exps=CPU       |           tg128 |         12.32 ± 1.25 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5349 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=81 mem_available_min_MiB=23268 samples=41 exit=0
+end: 2026-10-24T22:31:22+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q8_0  ncmoe=40 (experts of 40 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:32:17+02:00  gpu_temp_before=55  mem_available_MiB=24134  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4061
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q8_0 -ctv q8_0 -ngl 99 -ncmoe 40 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+ggml_backend_cuda_buffer_type_alloc_buffer: allocating 523.09 MiB on device 0: cudaMalloc failed: out of memory
+ggml_gallocr_reserve_n_impl: failed to allocate CUDA0 buffer of size 548501504
+graph_reserve: failed to allocate compute buffers
+llama_init_from_model: failed to initialize the context: failed to allocate compute pp buffers
+llama_bench: error: failed to create context with model '$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf'
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+peaks: vram_MiB=4707 gpu_temp_C=59 sm_clock_min_MHz=300 sm_clock_max_MHz=1905 power_max_W=47 mem_available_min_MiB=23811 samples=5 exit=1
+end: 2026-10-24T22:32:22+02:00
+
+ncmoe=40, KV=q8_0: did not complete at depth 8192; the q8_0 sweep stops here.
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:32:42+02:00  gpu_temp_before=54  mem_available_MiB=24100  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4112
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 48 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           pp512 |        255.08 ± 0.63 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           tg128 |         10.42 ± 0.84 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2457 gpu_temp_C=66 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=88 mem_available_min_MiB=23687 samples=47 exit=0
+end: 2026-10-24T22:33:31+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=48 (experts of 48 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:34:11+02:00  gpu_temp_before=55  mem_available_MiB=24140  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3858
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 48 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |        239.54 ± 1.09 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         48 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |          9.15 ± 1.34 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=2897 gpu_temp_C=76 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=83 mem_available_min_MiB=22917 samples=85 exit=0
+end: 2026-10-24T22:35:40+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=46 (experts of 46 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:37:00+02:00  gpu_temp_before=55  mem_available_MiB=24141  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3749
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 46 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           pp512 |        254.96 ± 1.04 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           tg128 |         10.81 ± 1.02 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3187 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=79 mem_available_min_MiB=23451 samples=47 exit=0
+end: 2026-10-24T22:37:49+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=46 (experts of 46 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:38:40+02:00  gpu_temp_before=55  mem_available_MiB=24021  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4061
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 46 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |        242.30 ± 0.36 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         46 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |          8.98 ± 0.57 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3647 gpu_temp_C=78 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=85 mem_available_min_MiB=22979 samples=85 exit=0
+end: 2026-10-24T22:40:09+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=44 (experts of 44 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:41:34+02:00  gpu_temp_before=55  mem_available_MiB=24121  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3845
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 44 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           pp512 |        265.88 ± 0.91 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.45 ± 0.82 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=3915 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=81 mem_available_min_MiB=23487 samples=47 exit=0
+end: 2026-10-24T22:42:23+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=44 (experts of 44 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:43:14+02:00  gpu_temp_before=55  mem_available_MiB=24175  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3575
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 44 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |        248.92 ± 1.06 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         44 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |         10.68 ± 0.03 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4375 gpu_temp_C=78 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=90 mem_available_min_MiB=23056 samples=78 exit=0
+end: 2026-10-24T22:44:35+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=42 (experts of 42 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:46:05+02:00  gpu_temp_before=55  mem_available_MiB=24185  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3801
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 42 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           pp512 |        273.87 ± 1.85 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.36 ± 0.89 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=4643 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1875 power_max_W=79 mem_available_min_MiB=23514 samples=43 exit=0
+end: 2026-10-24T22:46:50+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=42 (experts of 42 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:47:45+02:00  gpu_temp_before=55  mem_available_MiB=24148  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3521
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 42 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   pp512 @ d8192 |       239.46 ± 23.84 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         42 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |   tg128 @ d8192 |         10.56 ± 0.08 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5103 gpu_temp_C=77 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=87 mem_available_min_MiB=22935 samples=77 exit=0
+end: 2026-10-24T22:49:05+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=40 (experts of 40 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=0
+start: 2026-10-24T22:50:36+02:00  gpu_temp_before=55  mem_available_MiB=24044  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=4080
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 40 -d 0 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         40 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           pp512 |        279.93 ± 0.93 |
+| k2-horizon 36B Q4_K - Medium   |  20.82 GiB |    37.44 B | CUDA       |  99 |         40 |   q4_0 |   q4_0 |   1 | attn_v_exps=CPU       |           tg128 |         11.95 ± 0.86 |
+
+build: e1e3b2c40 (11839)
+peaks: vram_MiB=5325 gpu_temp_C=67 sm_clock_min_MHz=300 sm_clock_max_MHz=1890 power_max_W=79 mem_available_min_MiB=23413 samples=42 exit=0
+end: 2026-10-24T22:51:19+02:00
+
+### K2-Horizon-MoVA-36B-A4B Q4_K_M  KV=q4_0  ncmoe=40 (experts of 40 of 48 layers on the CPU)  override-tensor=attn_v_exps=CPU  depth=8192
+start: 2026-10-24T22:52:10+02:00  gpu_temp_before=55  mem_available_MiB=24178  governor=powersave epp=performance turbo_disabled=0 cpu_mhz_now=3741
+cmd: $LLTH_HOME/llama.cpp/build/bin/llama-bench -m $LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf -p 512 -n 128 -r 3 -fa on -ctk q4_0 -ctv q4_0 -ngl 99 -ncmoe 40 -d 8192 -ot attn_v_exps=CPU -o md
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5746 MiB):
+  Device 0: NVIDIA GeForce RTX 2060, compute capability 7.5, VMM: yes, VRAM: 5746 MiB
+CUDA error: out of memory
+  current device: 0, in function ggml_cuda_graph_evaluate_and_capture at $LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:4779
+  cudaGraphInstantiate(&graph->instance, graph->graph, __null, __null, 0)
+| model                          |       size |     params | backend    | ngl |  n_cpu_moe | type_k | type_v |  fa | ot                    |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | ---------: | -----: | -----: | --: | --------------------- | --------------: | -------------------: |
+$LLTH_HOME/llama.cpp/ggml/src/ggml-cuda/ggml-cuda.cu:110: CUDA error
+[New LWP 268362]
+[New LWP 268361]
+[New LWP 268357]
+
+This GDB supports auto-downloading debuginfo from the following URLs:
+  <https://debuginfod.archlinux.org>
+Enable debuginfod for this session? (y or [n]) [answered N; input not from terminal]
+Debuginfod has been disabled.
+To make this setting permanent, add 'set debuginfod enabled off' to .gdbinit.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/usr/lib/libthread_db.so.1".
+0x00007f73de6a0952 in ?? () from /usr/lib/libc.so.6
+#0  0x00007f73de6a0952 in ?? () from /usr/lib/libc.so.6
+#1  0x00007f73de70550b in wait4 () from /usr/lib/libc.so.6
+#2  0x00007f73e9d433eb in ggml_print_backtrace () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#3  0x00007f73e9d43550 in ggml_abort () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#4  0x00007f73e5d00541 in ggml_cuda_error(char const*, char const*, char const*, int, char const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#5  0x00007f73e5d179a4 in ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context*, ggml_cgraph*, bool, bool, void const*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#6  0x00007f73e5d18112 in ggml_backend_cuda_graph_compute(ggml_backend*, ggml_cgraph*) () from $LLTH_HOME/llama.cpp/build/bin/libggml-cuda.so.0
+#7  0x00007f73e9d62037 in ggml_backend_sched_graph_compute_async () from $LLTH_HOME/llama.cpp/build/bin/libggml-base.so.0
+#8  0x00007f73e9a299ab in llama_context::graph_compute(ggml_cgraph*, bool) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#9  0x00007f73e9a2d7f6 in llama_context::process_ubatch(llama_ubatch const&, llm_graph_type, llama_memory_context_i*, ggml_status&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#10 0x00007f73e9a371e6 in llama_context::decode(llama_batch_ext const&) () from $LLTH_HOME/llama.cpp/build/bin/libllama.so.0
+#11 0x00007f73ea3dc3fb in test_prompt(llama_context*, int, int, int) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#12 0x00007f73ea3ec742 in llama_bench(int, char**) () from $LLTH_HOME/llama.cpp/build/bin/libllama-bench-impl.so
+#13 0x00007f73de627781 in ?? () from /usr/lib/libc.so.6
+#14 0x00007f73de6278b9 in __libc_start_main () from /usr/lib/libc.so.6
+#15 0x00005564e06e4075 in _start ()
+[Inferior 1 (process 268346) detached]
+peaks: vram_MiB=5743 gpu_temp_C=68 sm_clock_min_MHz=300 sm_clock_max_MHz=1920 power_max_W=81 mem_available_min_MiB=23732 samples=15 exit=134
+end: 2026-10-24T22:52:25+02:00
+
+ncmoe=40, KV=q4_0: did not complete at depth 8192; the q4_0 sweep stops here.
+DONE (ncmoe sweep k2-horizon-mova-36b)

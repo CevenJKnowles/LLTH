@@ -1,0 +1,79 @@
+{
+ "id": "W1",
+ "title": "README opening, three sentences",
+ "prompt_text": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the first three sentences of a README for gridhop, a command-line tool that converts CSV timetables into ICS calendar files. Sentence one says what it does, sentence two says who it is for (people who receive timetables as spreadsheets and want them in a calendar app), sentence three says how to install it (`pip install gridhop`). Plain wording, no marketing language."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1001,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1001,
+ "started_at": "2026-10-31T01:08:04",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce first three sentences of a README for gridhop. Must follow constraints: plain wording, no marketing language. Sentence one: what it does. Sentence two: who it is for. Sentence three: how to install (`pip install gridhop`). So three sentences. Ensure plain wording. Probably something like:\n\n\"gridhop converts CSV timetables into ICS calendar files.\" That's sentence one. Sentence two: \"It is intended for users who receive timetables in spreadsheet format and need to import them into a calendar application.\" Sentence three: \"Install it with pip: pip install gridhop.\" That's three sentences. Ensure no extra punctuation beyond needed. Provide exactly three sentences.\n",
+ "content": "gridhop converts CSV timetables into ICS calendar files. It is intended for users who receive timetables in spreadsheet format and need to import them into a calendar application. Install it with pip: pip install gridhop.",
+ "usage": {
+  "completion_tokens": 206,
+  "prompt_tokens": 97,
+  "total_tokens": 303,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 97,
+  "prompt_ms": 226.197,
+  "prompt_per_token_ms": 2.3319278350515464,
+  "prompt_per_second": 428.82973691074596,
+  "predicted_n": 206,
+  "predicted_ms": 1357.853,
+  "predicted_per_token_ms": 6.623673170731708,
+  "predicted_per_second": 150.97363263917376
+ },
+ "tokens": {
+  "reasoning_tokenized": 154,
+  "content_tokenized": 49,
+  "completion_tokens_usage": 206,
+  "prompt_tokens_usage": 97,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.228,
+  "to_first_reasoning": 0.228,
+  "to_first_answer_token": 1.266,
+  "to_final_answer": 1.586
+ },
+ "peaks": {
+  "gpu_temp_c": 52,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26357
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 52,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26357
+  }
+ ]
+}

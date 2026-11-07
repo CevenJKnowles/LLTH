@@ -1,0 +1,261 @@
+{
+ "id": "W2",
+ "title": "Cover letter opening paragraph with fixed facts",
+ "prompt_text": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1002,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1002,
+ "started_at": "2026-10-30T17:39:41",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Thinking Process:\n\n1.  **Analyze the Request:**\n    *   Goal: Write an opening paragraph of a cover letter.\n    *   Constraint: At most 120 words.\n    *   Allowed Facts:\n        *   4 years experience using pandas and scikit-learn.\n        *   Built a customer churn model reducing false-positive alerts by 18% over six months.\n        *   Led a team of three.\n        *   Role: Data Analyst at a mid-sized logistics company.\n        *   Job asks for SQL and dashboard experience.\n        *   Applicant has used SQL occasionally.\n        *   Applicant has never built a dashboard.\n    *   Forbidden Actions: Do not invent employer name, project name, dates, additional skills. Do not overstate SQL experience. Use only the provided facts (and necessary connecting words).\n\n2.  **Drafting - Attempt 1:**\n    I am writing to apply for the Data Analyst position at your mid-sized logistics company. With four years of experience using pandas and scikit-learn, I developed a customer churn model that reduced false-positive alerts by 18 per cent over six months. I also led a team of three to support this work. While the job advert requests SQL and dashboard experience, I have used SQL occasionally and have never built a dashboard. However, my background in machine learning libraries and project leadership aligns with the analytical demands of this role, and I am eager to bring my skills in pandas and scikit-learn to your team.\n\n3.  **Review and Refine (Word Count and Fact Check):**\n    *   *Text:* \"I am writing to apply for the Data Analyst position at your mid-sized logistics company. With four years of experience using pandas and scikit-learn, I developed a customer churn model that reduced false-positive alerts by 18 per cent over six months. I also led a team of three to support this work. While the job advert requests SQL and dashboard experience, I have used SQL occasionally and have never built a dashboard. However, my background in machine learning libraries and project leadership aligns with the analytical demands of this role, and I am eager to bring my skills in pandas and scikit-learn to your team.\"\n    *   *Word Count:*\n        *   I (1) am (2) writing (3) to (4) apply (5) for (6) the (7) Data (8) Analyst (9) position (10) at (11) your (12) mid-sized (13) logistics (14) company. (15)\n        *   With (16) four (17) years (18) of (19) experience (20) using (21) pandas (22) and (23) scikit-learn, (24) I (25) developed (26) a (27) customer (28) churn (29) model (30) that (31) reduced (32) false-positive (33) alerts (34) by (35) 18 (36) per (37) cent (38) over (39) six (40) months. (41)\n        *   I (42) also (43) led (44) a (45) team (46) of (47) three (48) to (49) support (50) this (51) work. (52)\n        *   While (53) the (54) job (55) advert (56) requests (57) SQL (58) and (59) dashboard (60) experience, (61) I (62) have (63) used (64) SQL (65) occasionally (66) and (67) have (68) never (69) built (70) a (71) dashboard. (72)\n        *   However, (73) my (74) background (75) in (76) machine (77) learning (78) libraries (79) and (80) project (81) leadership (82) aligns (83) with (84) the (85) analytical (86) demands (87) of (88) this (89) role, (90) and (91) I (92) am (93) eager (94) to (95) bring (96) my (97) skills (98) in (99) pandas (100) and (101) scikit-learn (102) to (103) your (104) team. (105)\n        *   Total: 105 words.\n    *   *Constraint Check:*\n        *   Max 120 words? Yes (105 words).\n        *   Only facts used?\n        *   \"machine learning libraries\" -> Is this an additional skill or summary of pandas/scikit-learn? The prompt says \"using only these facts\". Summarizing pandas/scikit-learn as \"machine learning libraries\" might be a slight inference, though accurate. To be strictly safe, I should stick closer to the text. \"skills in pandas and scikit-learn\" is used at the end, which repeats facts. The phrase \"background in machine learning libraries\" adds a category not explicitly stated, even if obvious. Better to remove \"machine learning libraries\" to avoid inventing a descriptor.\n        *   \"aligns with the analytical demands of this role\" -> This is fluff/boilerplate. Is it allowed? The prompt says \"using only these facts\". Usually, cover letters need some connective tissue, but \"only these facts\" suggests strict adherence. If I remove too much structure, it might not read like a cover letter opening. However, phrases like \"I am writing to apply\" are standard conventions. The constraint \"using only these facts\" often means \"don't add qualifications/experience\". Standard greeting/closing phrasing is usually exempted unless specified otherwise. But to be ultra-safe, I should minimize interpretative fluff.\n        *   Let's check the SQL/Dashboard handling. \"While the job advert requests SQL and dashboard experience, I have used SQL occasionally and have never built a dashboard.\" This states the facts about SQL (occasionally) and Dashboard (never). It mentions the job advert asks for them. This is allowed because the input says \"The job advert asks for...\".\n        *   Refinement on \"machine learning libraries\": Change to \"skills in pandas and scikit-learn\" or just drop that summary. The draft ends with \"bring my skills in pandas and scikit-learn\", so repeating the summary might be redundant. Let's rewrite the end to be more fact-dense without new categories.\n        *   Revised ending: \"...and I am ready to contribute my experience leading a team and building models using pandas and scikit-learn.\"\n        *   This avoids \"machine learning libraries\".\n\n    *   *Draft 2:*\n        I am applying for the Data Analyst role at your mid-sized logistics company. Over four years, I have gained experience using pandas and scikit-learn. During this time, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months, while leading a team of three to execute related tasks. The job advert mentions a need for SQL and dashboard experience; regarding these requirements, please note that I have used SQL occasionally and have never built a dashboard. My core strengths lie in my four years of pandas and scikit-learn proficiency and my ability to lead small teams, and I welcome the opportunity to discuss how this technical foundation supports your data needs.\n\n    *   *Word Count 2:*\n        *   I (1) am (2) applying (3) for (4) the (5) Data (6) Analyst (7) role (8) at (9) your (10) mid-sized (11) logistics (12) company. (13)\n        *   Over (14) four (15) years, (16) I (17) have (18) gained (19) experience (20) using (21) pandas (22) and (23) scikit-learn. (24)\n        *   During (25) this (26) time, (27) I (28) built (29) a (30) customer (31) churn (32) model (33) that (34) reduced (35) false-positive (36) alerts (37) by (38) 18 (39) per (40) cent (41) over (42) six (43) months, (44) while (45) leading (46) a (47) team (48) of (49) three (50) to (51) execute (52) related (53) tasks. (54)\n        *   The (55) job (56) advert (57) mentions (58) a (59) need (60) for (61) SQL (62) and (63) dashboard (64) experience; (65) regarding (66) these (67) requirements, (68) please (69) note (70) that (71) I (72) have (73) used (74) SQL (75) occasionally (76) and (77) have (78) never (79) built (80) a (81) dashboard. (82)\n        *   My (83) core (84) strengths (85) lie (86) in (87) my (88) four (89) years (90) of (91) pandas (92) and (93) scikit-learn (94) proficiency (95) and (96) my (97) ability (98) to (99) lead (100) small (101) teams, (102) and (103) I (104) welcome (105) the (106) opportunity (107) to (108) discuss (109) how (110) this (111) technical (112) foundation (113) supports (114) your (115) data (116) needs. (117)\n        *   Total: 117 words.\n        *   \"execute related tasks\" -> Is this an invented fact? The prompt says \"I led a team of three.\" It doesn't say what the team did. Adding \"to execute related tasks\" is a minor inference that might violate \"only these facts\". Better to remove \"to execute related tasks\".\n        *   Also \"small teams\" -> Prompt says \"team of three\". \"Small\" is an adjective not in facts. Should remove \"small\".\n        *   \"technical foundation\" -> Inference? Maybe. \"this technical foundation\" implies pandas/scikit-learn are technical. That's safe. But \"foundation\" is metaphorical. Better to stick to \"skills\".\n        *   \"supports your data needs\" -> Fluff.\n        *   Let's trim more aggressively to be safe.\n\n    *   *Draft 3:*\n        I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. In that time, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months and led a team of three. The job advert asks for SQL and dashboard experience; to address these points, I have used SQL occasionally and have never built a dashboard. My application highlights my four-year tenure with pandas and scikit-learn alongside my experience leading a team of three, and I look forward to the possibility of contributing these capabilities to your organization.\n\n    *   *Word Count 3:*\n        *   I (1) am (2) applying (3) for (4) the (5) Data (6) Analyst (7) position (8) at (9) your (10) mid-sized (11) logistics (12) company. (13)\n        *   I (14) have (15) four (16) years (17) of (18) experience (19) using (20) pandas (21) and (22) scikit-learn. (23)\n        *   In (24) that (25) time, (26) I (27) built (28) a (29) customer (30) churn (31) model (32) that (33) reduced (34) false-positive (35) alerts (36) by (37) 18 (38) per (39) cent (40) over (41) six (42) months (43) and (44) led (45) a (46) team (47) of (48) three. (49)\n        *   The (50) job (51) advert (52) asks (53) for (54) SQL (55) and (56) dashboard (57) experience; (58) to (59) address (60) these (61) points, (62) I (63) have (64) used (65) SQL (66) occasionally (67) and (68) have (69) never (70) built (71) a (72) dashboard. (73)\n        *   My (74) application (75) highlights (76) my (77) four-year (78) tenure (79) with (80) pandas (81) and (82) scikit-learn (83) alongside (84) my (85) experience (86) leading (87) a (88) team (89) of (90) three, (91) and (92) I (93) look (94) forward (95) to (96) the (97) possibility (98) of (99) contributing (100) these (101) capabilities (102) to (103) your (104) organization. (105)\n        *   Total: 105 words.\n        *   Checks:\n        *   \"In that time\" -> Implies the four years covers the model/team. The facts don't explicitly link them, but usually, experience covers achievements. Is linking safe? \"The applicant has four years... They built... They led...\" It's a reasonable summary structure for a cover letter opening without inventing new facts. If the user is extremely pedantic, I might separate them. But \"In that time\" is structural glue.\n        *   \"to address these points\" -> Glue.\n        *   \"My application highlights\" -> Glue.\n        *   \"contributing these capabilities\" -> Glue.\n        *   No new skills? Checked.\n        *   No employer name? Checked.\n        *   No project name? Checked.\n        *   No dates? Checked (dates not in input, just durations like \"four years\", \"six months\").\n        *   SQL overstated? Used \"occasionally\". Checked.\n        *   Dashboard fact included? \"never built a dashboard\". Checked.\n        *   Job details? \"Data Analyst at mid-sized logistics company\". Checked.\n        *   Facts used: 4 years pandas/scikit-learn, churn model, 18% reduction, 6 months, led team of three, SQL occasionally, no dashboard. All present.\n        *   Word count: 105 words. Limit 120. Good.\n\n    *   *Final Polish (Mental check of text flow vs constraints):*\n        \"I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. During this period, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months and led a team of three. The job advert asks for SQL and dashboard experience; please note that I have used SQL occasionally and have never built a dashboard. My background includes four years working with pandas and scikit-learn as well as leadership of a team of three, and I am interested in discussing how these skills fit your requirements.\"\n        *   \"During this period\" -> Glue.\n        *   \"please note that\" -> Glue.\n        *   \"My background includes\" -> Glue.\n        *   \"interested in discussing\" -> Glue.\n        *   Word count: ~95 words.\n        *   \"leadership of a team of three\" vs \"led a team of three\". \"Led\" is the fact. \"Leadership of\" is a noun form. Safe.\n        *   Result looks solid.\n\n    *   *Output Construction:*\n        I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. During this period, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months and led a team of three. The job advert asks for SQL and dashboard experience; please note that I have used SQL occasionally and have never built a dashboard. My background includes four years working with pandas and scikit-learn as well as leading a team of three, and I welcome the chance to discuss how these qualifications apply to this role.\n\n        *   Count:\n        I am applying for the Data Analyst position at your mid-sized logistics company. (13)\n        I have four years of experience using pandas and scikit-learn. (10)\n        During this period, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months and led a team of three. (26)\n        The job advert asks for SQL and dashboard experience; please note that I have used SQL occasionally and have never built a dashboard. (23)\n        My background includes four years working with pandas and scikit-learn as well as leading a team of three, and I welcome the chance to discuss how these qualifications apply to this role. (32)\n        Total: 104 words.\n        Perfect.\n",
+ "content": "I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. During this period, I built a customer churn model that reduced false-positive alerts by 18 per cent over six months and led a team of three. The job advert asks for SQL and dashboard experience; please note that I have used SQL occasionally and have never built a dashboard. My background includes four years working with pandas and scikit-learn as well as leading a team of three, and I welcome the chance to discuss how these qualifications apply to this role.",
+ "usage": {
+  "completion_tokens": 4220,
+  "prompt_tokens": 137,
+  "total_tokens": 4357,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 137,
+  "prompt_ms": 1444.418,
+  "prompt_per_token_ms": 10.54319708029197,
+  "prompt_per_second": 94.84789029214535,
+  "predicted_n": 4220,
+  "predicted_ms": 306360.567,
+  "predicted_per_token_ms": 72.61449798530457,
+  "predicted_per_second": 13.771354588203254
+ },
+ "tokens": {
+  "reasoning_tokenized": 4095,
+  "content_tokenized": 122,
+  "completion_tokens_usage": 4220,
+  "prompt_tokens_usage": 137,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.447,
+  "to_first_reasoning": 1.447,
+  "to_first_answer_token": 298.18,
+  "to_final_answer": 307.808
+ },
+ "peaks": {
+  "gpu_temp_c": 71,
+  "gpu_mem_mib": 5241,
+  "min_mem_available_mib": 26258
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 54,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26323
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26270
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 59,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26328
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26335
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 71.1,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26273
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26268
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26258
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26288
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26301
+  },
+  {
+   "t_s": 151.3,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26295
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 181.4,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26285
+  },
+  {
+   "t_s": 191.4,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 221.5,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 231.5,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26333
+  },
+  {
+   "t_s": 251.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 261.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 271.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26326
+  },
+  {
+   "t_s": 281.6,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 291.7,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26319
+  },
+  {
+   "t_s": 301.7,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5241,
+   "mem_available_mib": 26330
+  }
+ ]
+}

@@ -1,0 +1,85 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1006,
+ "started_at": "2026-10-30T22:52:52",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need answer code and resulting printed frame. Need infer pandas 2.x groupby pivot fill. Need likely produce DataFrame rows months 1,2,3, cities A,B,C, cells totals and total column row sum. Need show code. Maybe use pivot_table, unstack, reindex, fillna, reset_index, sum. Need perhaps avoid deprecated. Let's calculate.\n\nsales:\nmonth1: A10 B20 => C0 total30\nmonth2 A30 B40 C0 total70\nmonth3 A60 B50 C0 total110\n\nDataFrame columns city/month, index month city? pivot_table(index='month', columns='city', values='sales', aggfunc='sum') gives month 1/2/3 rows and cities A,B,C columns. fillna 0. reset_index. total = df.sum(axis=1). Need resulting frame print.\n\nCode:\nimport pandas as pd\ndf = ...\npivot = df.pivot_table(index='month', columns='city', values='sales', aggfunc='sum')\nresult = pivot.reindex(index=sorted(pivot.index), columns=sorted(pivot.columns)).fillna(0).astype(int)\nresult = result.reset_index().assign(total=result.sum(axis=1))\nprint(result)\n\nPotential pandas 2.2.1. Result index Month? If reset_index after index month, column Month with capital M. But frame specified one row per month and columns city. Better index month lowercase and total column. Could use result.reset_index(drop=True) while retain index months. If pivot index named month, reset_index(drop=True) keeps index values 1,2,3? It will reset index to default 0,1,2, not retain month values. Wait if pivot_table index named month. reset_index(drop=True) will drop index and make default integer index, not keep month labels. We need one column per city and one row per month, perhaps index can be Month, not specified. Then total column. Could use pivot with columns city and index month, reset_index() yields columns Month,A,B,C, then total. That's clean. Or use result.reset_index() after fillna; Month becomes column. That meets one row per month one column per city. Then total. Print:\n   Month  A  B  C  total\n0     1 10 20  0     30\n...\nThis is likely expected.\n\nCould alternatively use crosstab.",
+ "content": "```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\nresult = (\n    df.pivot_table(index=\"month\", columns=\"city\", values=\"sales\", aggfunc=\"sum\")\n    .reindex(index=sorted(df[\"month\"].unique()),\n             columns=sorted(df[\"city\"].unique()))\n    .fillna(0)\n    .astype(int)\n    .reset_index()\n    .assign(total=lambda x: x.sum(axis=1))\n)\n\nprint(result)\n```\n\nOutput:\n\n```\n   month  A   B  C  total\n0      1  10  20   0     30\n1      2  30  40   0     70\n2      3  60  50   0    110\n```",
+ "usage": {
+  "completion_tokens": 729,
+  "prompt_tokens": 157,
+  "total_tokens": 886,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 157,
+  "prompt_ms": 553.139,
+  "prompt_per_token_ms": 3.5231783439490445,
+  "prompt_per_second": 283.8346238468088,
+  "predicted_n": 729,
+  "predicted_ms": 19363.174,
+  "predicted_per_token_ms": 26.597766483516484,
+  "predicted_per_second": 37.597141873537886
+ },
+ "tokens": {
+  "reasoning_tokenized": 499,
+  "content_tokenized": 228,
+  "completion_tokens_usage": 729,
+  "prompt_tokens_usage": 157,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.555,
+  "to_first_reasoning": 0.555,
+  "to_first_answer_token": 13.699,
+  "to_final_answer": 19.919
+ },
+ "peaks": {
+  "gpu_temp_c": 65,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26373
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26373
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26432
+  }
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1003,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1003,
+ "started_at": "2026-11-05T04:46:35",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Substack piece, 550–650 words, nontechnical audience, no code, no bullets, no internal headings, one small worked example with made-up numbers, one practical takeaway at the end. Title: Validation accuracy can climb while validation loss worsens — and that is a clue, not a contradiction.",
+ "usage": {
+  "completion_tokens": 64,
+  "prompt_tokens": 166,
+  "total_tokens": 230,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 166,
+  "prompt_ms": 115.254,
+  "prompt_per_token_ms": 0.6943012048192772,
+  "prompt_per_second": 1440.2970829645826,
+  "predicted_n": 64,
+  "predicted_ms": 1042.056,
+  "predicted_per_token_ms": 16.54057142857143,
+  "predicted_per_second": 60.45740344088993
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 62,
+  "completion_tokens_usage": 64,
+  "prompt_tokens_usage": 166,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.135,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.135,
+  "to_final_answer": 1.16
+ },
+ "peaks": {
+  "gpu_temp_c": 51,
+  "gpu_mem_mib": 4817,
+  "min_mem_available_mib": 22320
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 51,
+   "gpu_mem_mib": 4817,
+   "mem_available_mib": 22320
+  }
+ ]
+}

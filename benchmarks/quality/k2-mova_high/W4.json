@@ -1,0 +1,103 @@
+{
+ "id": "W4",
+ "title": "README installation section, terse rewrite",
+ "prompt_text": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1004,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1004,
+ "started_at": "2026-10-30T15:26:49",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to rewrite README section: at most 60 words, imperative mood, no change to facts, nothing added. Must be concise, imperative (commands). Keep facts: need Python 3.9+, install via pip, optional viz extra, default cache location, can set QUILLCACHE_HOME env var before import.\n\nWe need <=60 words. Let's craft:\n\n\"Install QuillCache with `pip install quillcache` (requires Python 3.9+). For plotting helpers, run `pip install quillcache[viz]` (requires matplotlib). By default the cache is stored in `~/.quillcache`; override the location by setting the `QUILLCACHE_HOME` environment variable before importing.\"\n\nCount words. Let's count.\n\nWords: Install(1) QuillCache(2) with(3) `pip(4) install(5) quillcache`(6) (requires(7) Python 3.9+). For(8) plotting(9) helpers,(10) run(11) `pip(12) install(13) quillcache[viz]`(14) (requires(15) matplotlib). By(16) default(17) the(18) cache(19) is(20) stored(21) in(22) `~/.quillcache`;(23) override(24) the(25) location(26) by(27) setting(28) the(29) `QUILLCACHE_HOME`(30) environment(31) variable(32) before(33) importing.(34)\n\n34 words, within limit. Imperative mood? Sentences are imperative: \"Install...\", \"For plotting helpers, run...\", \"override the location by setting...\" The third is a command-ish phrase. It's okay.\n\nMake sure no extra facts added. All facts present. Good.\n",
+ "content": "Install QuillCache with `pip install quillcache` (requires Python 3.9+). For plotting helpers, run `pip install quillcache[viz]` (requires matplotlib). By default the cache is stored in `~/.quillcache`; override the location by setting the `QUILLCACHE_HOME` environment variable before importing.",
+ "usage": {
+  "completion_tokens": 447,
+  "prompt_tokens": 167,
+  "total_tokens": 614,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 167,
+  "prompt_ms": 2211.767,
+  "prompt_per_token_ms": 13.244113772455089,
+  "prompt_per_second": 75.50524083233,
+  "predicted_n": 447,
+  "predicted_ms": 45107.424,
+  "predicted_per_token_ms": 101.13772197309417,
+  "predicted_per_second": 9.887507652842247
+ },
+ "tokens": {
+  "reasoning_tokenized": 375,
+  "content_tokenized": 68,
+  "completion_tokens_usage": 447,
+  "prompt_tokens_usage": 167,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.215,
+  "to_first_reasoning": 2.215,
+  "to_first_answer_token": 40.144,
+  "to_final_answer": 47.322
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 4727,
+  "min_mem_available_mib": 26601
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26667
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26601
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26680
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26702
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4727,
+   "mem_available_mib": 26722
+  }
+ ]
+}

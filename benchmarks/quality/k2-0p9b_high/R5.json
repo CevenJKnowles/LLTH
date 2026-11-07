@@ -1,0 +1,91 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 1015,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1015,
+ "started_at": "2026-10-31T01:33:02",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to produce a plan for routing layer. Provide rules in priority order, quota mechanism, fallback path, log record fields, and three example requests with route each would take. Must satisfy constraints: decision under 5 ms, every decision logged with rule that fired, 30B model serves at most 20% of requests per day; request can carry flag forcing 30B model; if 30B unavailable request still answered. No learned classifier, every rule readable and same result for same input. So essentially deterministic routing based on input features. Provide rules like if input contains certain token X then use 1B else if Y then use 30B else default. Provide priority order. Also quota mechanism: track usage per day per model, enforce max 20% of requests per day for 30B. Fallback path: if 30B unavailable, fallback to 1B. Provide log record fields: request_id, input, rule_applied, model_used, timestamp, maybe status. Provide three example requests. Ensure under 5 ms decision. Provide explanation. Let's craft.\n",
+ "content": "**Routing‑layer specification**  \nThe layer does **not** learn – every decision is a hard‑coded rule that is evaluated in the order it is listed.  \nIf a request carries the flag `force_30b=true` the rule that would normally point to the 1 B model is **overridden** and the 30 B model is used (if it is still available).  \nIf the 30 B model is unavailable (e.g. out‑of‑memory, service‑down) the request is answered with the 1 B model and the flag is ignored.\n\n---\n\n## 1.  Rule set (priority order)\n\n| # | Condition (readable) | Model that fires | Remarks |\n|---|----------------------|------------------|---------|\n| **R‑0** | `input_contains(\"price\")` **AND** `input_contains(\"high\")` | **1 B model** | Cheap, fast, always available. |\n| **R‑1** | `input_contains(\"price\")` **AND** `input_contains(\"low\")` | **30 B model** | Special‑case price‑high/low – needs the heavy model. |\n| **R‑2** | `input_contains(\"price\")` **AND** `input_contains(\"mid\")` | **30 B model** | Mid‑range pricing – still expensive but cheaper than full 30 B. |\n| **R‑3** | `input_contains(\"price\")` **AND** `input_contains(\"unknown\")` | **30 B model** | “unknown” price → safest to use the heavy model. |\n| **R‑4** | `input_contains(\"price\")` **AND** `!force_30b` | **30 B model** | Normal price handling when the flag is not set. |\n| **R‑5** | `input_contains(\"price\")` **AND** `force_30b=true` | **30 B model** | Override – force heavy model even without “unknown”. |\n| **R‑6** | `input_contains(\"price\")` **AND** `!force_30b` **AND** `quota_remaining > 0` | **30 B model** | Normal price, but only if quota still permits the 30 B model. |\n| **R‑7** | `input_contains(\"price\")` **AND** `!force_30b` **AND** `quota_remaining == 0` | **1 B model** | No quota left → fall back to cheap model. |\n| **R‑8** | `input_contains(\"price\")` **AND** `force_30b` **AND** `quota_remaining == 0` | **1 B model** | Force heavy model **and** quota exhausted → fall back. |\n| **R‑9** | `!input_contains(\"price\")` | **1 B model** | Anything without a price request is cheap. |\n| **R‑10**| `input_contains(\"price\")` **AND** `force_30b` **AND** `quota_remaining > 0` | **30 B model** | Force heavy model when quota still free. |\n| **R‑11**| `input_contains(\"price\")` **AND** `force_30b` **AND** `quota_remaining == 0` | **1 B model** | Force heavy model but quota exhausted → cheap fallback. |\n| **R‑12**| `!input_contains(\"price\")` **AND** `force_30b` | **30 B model** | Force heavy model for non‑price inputs (e.g. “order‑status”). |\n| **R‑13**| `!input_contains(\"price\")` **AND** `!force_30b` | **1 B model** | Default cheap path. |\n\n*`input_contains(phrase)`* is a simple string‑match rule (e.g. using a tiny regex or keyword list).  \nAll rules are evaluated sequentially until the first true one; the rule that fires is recorded in the log.\n\n---\n\n## 2.  Quota mechanism (per‑day per model)\n\n* **Quota definition** – For the 30 B model we enforce a **maximum of 20 % of all requests** in any 24‑hour calendar day.  \n* **How it is tracked** – A lightweight counter `quota_remaining` is stored in the routing‑layer’s in‑memory state (e.g. a `Redis` hash `30b_quota` with a counter `quota_used`.  \n* **Quota calculation** – On each request we compute  \n\n```\nmax_30b_per_day = 0.20 * (total_requests_in_day)   // total_requests_in_day is a rolling counter\n```\n\n* **Threshold check** – Before a request that would normally hit the 30 B path is admitted, we test  \n\n```\nif (model == 30B && quota_used >= max_30b_per_day) → reject the request and route to the 1 B model.\n```\n\n* **Exhaustion handling** – When `quota_used` reaches the limit the layer will **not** accept any further 30 B requests for that day.  \n  *If a request arrives with `force_30b=true` **and** the quota is already at the limit, the request is still answered with the 1 B model (the “force” flag is ignored because the quota is exhausted).*\n\n---\n\n## 3.  Fallback path\n\n1. **Normal flow** – The first rule that evaluates to `true` is executed.  \n2. **Quota‑blocked request** – If the rule that would use the 30 B model fails the quota test, the layer stops and executes the *next* rule in the list.  \n3. **End of list** – If no rule matches the request, the layer falls back to the **cheapest known rule** (R‑9 or R‑13).  \n4. **Fallback to 1 B** – If the chain ends without a rule that calls the 30 B model, the request is answered using the **1 B model**.  \n\nThus the 30 B model is never invoked when it is unavailable; the request is always answered.\n\n---\n\n## 4.  Log record fields  \n\n| Field | Type | Meaning |\n|-------|------|---------|\n| `request_id` | string | Unique identifier of the incoming request (e.g. UUID). |\n| `timestamp` | ISO‑8601 UTC | Time the decision was made. |\n| `input` | string | Original request payload (the part that triggered the rule). |\n| `rule_applied` | string | The rule number that fired (e.g. `\"R‑2\"`). |\n| `model_used` | enum `[\"1B\",\"30B\"]` | Model that was actually invoked. |\n| `force_30b` | boolean | Was the request carrying `force_30b=true`? |\n| `quota_status` | enum `[\"OK\",\"EXHAUSTED\",\"FORCED\"]` | State of the quota check for this request. |\n| `fallback_reason` | enum `[\"NONE\",\"QUOTA\",\"FORCED\"]` | Why the request may have been routed to the 1 B model (optional, for debugging). |\n| `status` | enum `[\"SUCCESS\",\"FALLBACK\"]` | High‑level outcome of the routing decision. |\n\nAll fields are written to an ordered append‑only log (e.g. a Kafka topic `routing.log`).\n\n---\n\n## 5.  Example requests  \n\nAssume the current day’s request count = **12 000** → `max_30b_per_day = 0.20 × 12 000 = 2 400`.  \nQuota counter = `0` (still under limit).\n\n| # | Request payload (truncated) | `force_30b` | Which rule fires (first matching rule) | Model used |\n|---|----------------------------|--------------|--------------------------------------|------------|\n| **1** | `{\"price\":\"high\",\"discount\":\"10%\"}` | `false` | **R‑1** – price + high → heavy model | **30 B** |\n| **2** | `{\"price\":\"mid\",\"discount\":\"5%\"}` | `false` | **R‑2** – price + mid → heavy model | **30 B** |\n| **3** | `{\"price\":\"unknown\",\"discount\":\"0%\"}` | `false` | **R‑3** – price + unknown → heavy model | **30 B** |\n| **4** | `{\"price\":\"low\",\"discount\":\"0%\"}` | `false` | **R‑0** – price + low → cheap model (price‑low rule) | **1 B** |\n| **5** | `{\"price\":\"high\",\"discount\":\"0%\"}` | `true` | **R‑5** – force heavy model (quota still free) | **30 B** |\n| **6** | `{\"price\":\"mid\",\"discount\":\"0%\"}` | `false` | **R‑6** – normal price but quota still free → heavy model | **30 B** |\n\n*If request 6 had reached quota (`quota_used == 2 400`) and `force_30b` were `true`, it would have been routed to the 1 B model instead.*\n\n---\n\n### Summary of the routing layer\n* **Decision time** – All rule checks are simple string containments; with a few regexes the whole decision finishes well under **5 ms** on a single‑core VM.  \n* **Logging** – Every request generates exactly one log line with the rule that fired.  \n* **Quota enforcement** – 30 B model is never served beyond 20 % of the day’s traffic; when exhausted it is automatically dropped to the 1 B model.  \n* **Fallback** – If the 30 B model is unavailable (out‑of‑memory, service‑down) the layer falls back to the 1 B model and still returns a correct answer.  \n\nFeel free to adapt the keyword lists or regexes to the concrete feature set of your application.",
+ "usage": {
+  "completion_tokens": 2543,
+  "prompt_tokens": 181,
+  "total_tokens": 2724,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 181,
+  "prompt_ms": 59.114,
+  "prompt_per_token_ms": 0.32659668508287293,
+  "prompt_per_second": 3061.88043441486,
+  "predicted_n": 2543,
+  "predicted_ms": 25414.018,
+  "predicted_per_token_ms": 9.997646734854445,
+  "predicted_per_second": 100.0235381906159
+ },
+ "tokens": {
+  "reasoning_tokenized": 231,
+  "content_tokenized": 2309,
+  "completion_tokens_usage": 2543,
+  "prompt_tokens_usage": 181,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.062,
+  "to_first_reasoning": 0.062,
+  "to_first_answer_token": 2.219,
+  "to_final_answer": 25.477
+ },
+ "peaks": {
+  "gpu_temp_c": 89,
+  "gpu_mem_mib": 2315,
+  "min_mem_available_mib": 26368
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26368
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26380
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 89,
+   "gpu_mem_mib": 2315,
+   "mem_available_mib": 26401
+  }
+ ]
+}

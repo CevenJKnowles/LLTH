@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Gridhop is a command‑line tool that reads CSV timetables and writes them out as .ics calendar files. It is intended for anyone who receives schedules as spreadsheets and wants them directly in a calendar app. Install it with `pip install gridhop`.",
+    "reasoning_content": "We need to write first three sentences of a README for gridhop, a CLI tool that converts CSV timetables into ICS calendar files. Sentence one: what it does. Sentence two: who it is for (people who receive timetables as spreadsheets and want them in a calendar app). Sentence three: how to install it (`pip install gridhop`). Plain wording, no marketing language.\n\nSo something like:\n\n\"Gridhop is a command‑line tool that reads CSV timetables and writes them out as .ics files for calendar apps. It is intended for anyone who gets schedules as spreadsheets and wants them directly in a calendar app. Install it with `pip install gridhop`.\"\n\nThat satisfies. Provide exactly three sentences. Use plain wording, no marketing. Should be fine."
+   }
+  }
+ ],
+ "created": 1793844421,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 209,
+  "prompt_tokens": 87,
+  "total_tokens": 296,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-0JITKn5msZrw3pHwqhZaXfWm48xPGOC4",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 60.672,
+  "prompt_per_token_ms": 0.6973793103448276,
+  "prompt_per_second": 1433.9398734177216,
+  "predicted_n": 209,
+  "predicted_ms": 3481.036,
+  "predicted_per_token_ms": 16.73575,
+  "predicted_per_second": 59.75232660621723
+ }
+}

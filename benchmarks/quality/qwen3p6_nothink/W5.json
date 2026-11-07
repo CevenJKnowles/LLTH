@@ -1,0 +1,96 @@
+{
+ "id": "W5",
+ "title": "Full cover letter from a fact list",
+ "prompt_text": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a complete cover letter of 120 to 200 words from these facts, and these facts only. The applicant worked two years as a data scientist at a retailer, where their demand-forecasting model improved stock accuracy by 11 per cent. They took an eight-month career break in 2024 for caring responsibilities. They designed and taught a six-week internal Python course to twelve colleagues. They are applying for a Junior Machine Learning Engineer role at a renewable-energy company. The advert asks for PyTorch and German at B2 level. The applicant has used PyTorch only in personal projects and speaks German at C1. Rules: mention the career break honestly in a single sentence, do not claim professional PyTorch experience, no superlatives or intensifiers (such as best, most, passionate, extremely), no bullet points, no invented names for the employer, the applicant, the retailer or the projects. Use placeholders in square brackets for names."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1005,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1005,
+ "started_at": "2026-10-30T20:04:14",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "[Your Name]\n[Your Address]\n[Your Email]\n[Your Phone Number]\n\n[Date]\n\n[Hiring Manager Name]\n[Renewable Energy Company Name]\n[Company Address]\n\nDear [Hiring Manager Name],\n\nI am writing to apply for the Junior Machine Learning Engineer position at [Renewable Energy Company Name]. My background includes two years as a data scientist at [Retailer Name], where I developed a demand-forecasting model that improved stock accuracy by 11 per cent. During this time, I also designed and taught a six-week internal Python course to twelve colleagues, which strengthened my ability to communicate complex technical concepts clearly.\n\nI took an eight-month career break in 2024 to manage caring responsibilities for a family member. Since returning to the workforce, I have focused on expanding my technical skills in machine learning frameworks. While I have not used PyTorch in a professional capacity, I have applied it extensively in personal projects to build and deploy models. This hands-on experience has allowed me to understand the framework’s architecture and debugging processes effectively.\n\nRegarding language requirements, I speak German at a C1 level, which exceeds the B2 requirement listed in the job advertisement. I am eager to bring my analytical skills and teaching experience to your team. I welcome the opportunity to discuss how my background aligns with the goals of [Renewable Energy Company Name]. Thank you for your time and consideration.\n\nSincerely,\n\n[Your Name]",
+ "usage": {
+  "completion_tokens": 308,
+  "prompt_tokens": 213,
+  "total_tokens": 521,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 213,
+  "prompt_ms": 1469.407,
+  "prompt_per_token_ms": 6.89862441314554,
+  "prompt_per_second": 144.95643480669415,
+  "predicted_n": 308,
+  "predicted_ms": 21765.218,
+  "predicted_per_token_ms": 70.89647557003258,
+  "predicted_per_second": 14.105073516837736
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 307,
+  "completion_tokens_usage": 308,
+  "prompt_tokens_usage": 213,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.473,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.473,
+  "to_final_answer": 23.238
+ },
+ "peaks": {
+  "gpu_temp_c": 69,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26169
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26225
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26169
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26173
+  }
+ ]
+}

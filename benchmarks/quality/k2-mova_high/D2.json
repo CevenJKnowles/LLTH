@@ -1,0 +1,415 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1017,
+ "started_at": "2026-10-30T16:58:23",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants to run a 7-billion-parameter model (likely LLaMA-2-7B or similar) on a GPU with 12 GB VRAM, using bfloat16 (bf16) precision, no quantization.\n\n Key constraints:\n - Model: 7B parameters\n - Precision: bf16 (2 bytes per parameter)\n - GPU memory: 12 GB\n - KV cache: 0.5 MB per token per sequence (this seems like a specific claim, need to verify or use as given)\n - Context length: 4,096 tokens\n - Batch sizes to consider: 1, 2, or 4\n - Activations: negligible\n\n Let's calculate the memory requirements:\n\n 1. Model weights:\n    - 7 billion parameters × 2 bytes/parameter = 14 GB\n    - Wait, that's already 14 GB, which exceeds 12 GB!\n\n But the user says \"Quantisation is not an option\" and wants to run it. Maybe they mean:\n - The model is 7B but perhaps they have a version that's already quantized? No, they said no quantization.\n - Maybe the 7B is in a different precision? No, they said bfloat16.\n - Maybe the model is actually smaller? Or maybe they mean 7B parameters but the actual memory is less due to some compression? No, bf16 is 2 bytes.\n\n Wait, 7B × 2 bytes = 14 GB. That's more than 12 GB. So it wouldn't fit at all.\n\n But let's re-read the question. Maybe I'm misunderstanding. Perhaps:\n - The model is 7B but the user is asking which batch size to use, implying it might fit somehow?\n - Maybe the 7B is a typo and they mean something else?\n - Or maybe the model is 7B parameters but in a format that uses less memory? Like 4-bit? No, they said bf16.\n\n Actually, looking at the KV cache spec: 0.5 MB per token per sequence.\n Let's check if this is plausible for a 7B model.\n\n For a 7B model (like LLaMA-2-7B), the hidden size is typically 4096, number of layers is 32, number of attention heads is 32 (or 32 for LLaMA-2).\n\n KV cache memory = 2 (K and V) × num_layers × num_heads × head_dim × context_length × bytes_per_element\n\n For LLaMA-2-7B:\n - num_layers = 32\n - num_heads = 32\n - head_dim = 128\n - context_length = 4096\n - bytes_per_element = 2 (bf16)\n\n Memory per sequence = 2 × 32 × 32 × 128 × 4096 × 2 bytes\n = 2 × 32 × 32 × 128 × 4096 × 2\n = 2 × 32 × 4096 × 4096 × 2\n Wait, let me calculate properly.\n\n Actually, for each layer, K and V are separate:\n - K: [num_heads, head_dim] × [1, context_length]\n - V: same\n So per layer: 2 × num_heads × head_dim × context_length × bytes\n\n Total: num_layers × 2 × num_heads × head_dim × context_length × bytes\n\n For LLaMA-2-7B:\n - num_layers = 32\n - num_heads = 32\n - head_dim = 4096/32 = 128\n - context_length = 4096\n - bytes = 2\n\n Memory = 32 × 2 × 32 × 128 × 4096 × 2 bytes\n = 64 × 32 × 128 × 4096 × 2\n = 64 × 32 = 2048\n 2048 × 128 = 262144\n 262144 × 4096 = 1,073,741,824 (that's 1 GiB)\n × 2 bytes = 2,147,483,648 bytes = 2 GB\n\n So for one sequence with 4096 tokens, it's about 2 GB for LLaMA-2-7B.\n\n The user says 0.5 MB per token per sequence.\n 4096 tokens × 0.5 MB = 2048 MB = 2 GB.\n\n So the user is indeed talking about LLaMA-2-7B or similar architecture where:\n - Model weights: 7B × 2 bytes = 14 GB (but this exceeds 12 GB!)\n\n This is a problem. If the model weights alone are 14 GB in bf16, it cannot fit in 12 GB VRAM.\n\n Unless... the user made a mistake in the question, or I'm missing something.\n Possibilities:\n 1. The user meant 7B parameters but in a format that's actually 4-bit or 8-bit, but they said no quantization.\n 2. The user meant a different model size (like 3B or 4B).\n 3. The user is confused about memory requirements.\n 4. The GPU has 12 GB but they are using some kind of CPU offloading? But they didn't mention it.\n 5. The model is 7B but they are using some kind of memory-efficient attention that reduces KV cache, but weights are still 14GB.\n\n Actually, looking at the numbers again: if the model is 7B and bf16, that's 14GB. But maybe the user is asking a theoretical question where we ignore the weight memory? No, that doesn't make sense.\n\n Wait - could the 7B be the total model including everything? No, 7B parameters is standard.\n\n Or maybe the user meant 7 billion parameters but the GPU is 12GB, and they want to know why it won't work? But they ask \"which batch size should I use\", implying one of them works.\n\n Let me reconsider the KV cache number: 0.5 MB per token per sequence.\n 0.5 MB × 4096 = 2048 MB = 2 GB. This matches my calculation above for LLaMA-2-7B.\n\n So the user is definitely talking about a 7B model (like LLaMA-2-7B) in bf16.\n\n But 7B × 2 bytes = 14 GB > 12 GB.\n\n Unless... the model is not fully loaded into VRAM? Or they are using something like DeepSpeed with CPU offloading? But the question doesn't mention that.\n\n Or maybe the \"7-billion-parameter\" is a mistake and they meant 3-billion or 4-billion? Let's check:\n - 3B × 2 = 6 GB\n - 4B × 2 = 8 GB\n\n If it's a 3B model:\n - Weights: 6 GB\n - KV cache for 1 sequence: 2 GB (at 0.5 MB/token)\n - Total: 8 GB, leaving 4 GB\n - For batch 2: +2 GB = 10 GB, leaving 2 GB\n - For batch 4: +4 GB = 14 GB, exceeds 12 GB\n\n But the user specifically said 7-billion-parameter.\n\n Another possibility: The user is asking about a model that is 7B but they are using quantization but said it's not an option... no, that contradicts.\n\n Or maybe the GPU memory is 12 GB but the model is 7B in a format that uses 12GB? That would be about 1.7 bytes per parameter, which is close to 4-bit (0.5 bytes) or 8-bit (1 byte), but not bf16.\n\n Actually, looking at the question structure, it seems like a puzzle where I need to calculate based on the given numbers:\n - Model: 7B params (but we need to calculate memory)\n - Precision: bf16 (2 bytes)\n - KV cache: 0.5 MB/token/sequence\n - Context: 4096 tokens\n - GPU: 12 GB\n\n If we calculate strictly:\n - Weights: 7,000,000,000 × 2 bytes = 14,000,000,000 bytes = 14 GB (decimal) or ~13 GiB\n\n This exceeds 12 GB. So technically, the answer should be \"None, it doesn't fit.\"\n\n But maybe the user expects me to point this out? Or maybe I should assume the 7B is a typo and proceed with 3B? No, I should address the inconsistency.\n\n However, looking at the KV cache spec (0.5 MB/token), let's verify what model size that corresponds to.\n\n For a model with:\n - L layers\n - H heads\n - D head_dim\n - C context length\n - bf16 (2 bytes)\n\n KV memory = L × 2 × H × D × C × 2 bytes\n = 4 × L × H × D × C bytes\n\n If this equals 0.5 MB per token (per sequence), then for C=4096, total KV = 0.5 × 4096 = 2048 MB = 2 GB.\n\n So 4 × L × H × D × 4096 × 4096 = 2,000,000,000 (approx, using 1GB = 10^9 bytes) or 2,147,483,648 (2 GiB).\n\n L × H × D = 2,147,483,648 / (4 × 4096 × 4096) = 2,147,483,648 / 16,777,216 = 128.\n\n So L × H × D = 128.\n\n For LLaMA-2-7B: L=32, H=32, D=128, so L×H×D = 32×32×128 = 131,072. That's not 128.\n\n Wait, I think I messed up the calculation.\n\n Let's recalculate:\n KV cache for one sequence = 2 (K and V) × L × H × D_head × C × bytes_per_element\n\n If bytes = 2:\n = 4 × L × H × D_head × C bytes\n\n If this equals 0.5 MB per token... wait, the user says \"0.5 MB per token per sequence\". This means:\n Memory per sequence = 0.5 MB × C\n\n So 4 × L × H × D_head × C = 0.5 × C × 10^6 (if using MB = 10^6)\n Then 4 × L × H × D_head = 500,000\n L × H × D_head = 125,000\n\n For LLaMA-2-7B: 32 × 32 × 128 = 131,072. Close to 125,000. So yes, this is consistent with LLaMA-2-7B (the difference is rounding or using 10^6 vs 2^20).\n\n So the user is definitely describing LLaMA-2-7B.\n\n Now, the weight memory:\n 7B params × 2 bytes = 14 GB.\n\n This is greater than 12 GB.\n\n So the model does not fit.\n\n But maybe the user meant 12 GB of memory for the KV cache and activations, and the model weights are somewhere else? No, that's not how it works.\n\n Or maybe the 7B is the number of parameters, but they are using a format like \"7B (bf16)\" which is 14GB, and the GPU is 12GB, so they need to know that it doesn't fit, but among the batch sizes, the answer is \"none\".\n\n But the question asks \"Which batch size should I use\", implying one of them is correct.\n\n Another interpretation: Maybe the model is 7B but they are using 4-bit quantization and the question says quantization is not an option, meaning they want to know what happens if they use bf16 (which is 2 bytes) and it doesn't fit, so they can't use any batch size?\n\n Or maybe \"7-billion-parameter\" refers to the total memory? No, that's not standard terminology.\n\n Let me consider if there's any way a 7B model fits in 12GB in bf16.\n - 7B × 2 bytes = 14 GB > 12 GB.\n - Unless the model is 7B but uses shared embeddings? Some models share input/output embeddings, so the actual stored parameters might be slightly less, but not enough to reduce 14GB to <12GB. You'd need to reduce by ~15%.\n - Or maybe the model is 7B but has been pruned? No.\n\n Actually, maybe the user made a typo and meant 3B or 4B?\n If 4B: 4B × 2 = 8 GB.\n Then KV cache per sequence = 2 GB (as calculated).\n Batch 1: 8 + 2 = 10 GB (2 GB left)\n Batch 2: 8 + 4 = 12 GB (0 GB left)\n Batch 4: 8 + 8 = 16 GB (exceeds)\n\n If 3B: 3B × 2 = 6 GB.\n Batch 1: 6 + 2 = 8 GB (4 GB left)\n Batch 2: 6 + 4 = 10 GB (2 GB left)\n Batch 4: 6 + 8 = 14 GB (exceeds)\n\n If 6B: 6B × 2 = 12 GB.\n Then no room for KV cache. So batch size 0? Doesn't make sense.\n\n So if the model is 7B, it doesn't fit. If it's 4B, batch size 2 is the max (just fits). If it's 3B, batch size 2 fits with 2GB left.\n\n But the user explicitly said \"7-billion-parameter\".\n\n Maybe they are asking about a model that is 7B but running with some kind of CPU offloading for weights? But they didn't mention that.\n\n Or maybe the 12GB GPU is actually 16GB? No, they said 12GB.\n\n Another thought: In some contexts, \"7-billion-parameter\" might refer to a model that is actually 6.7B or 6.9B, and with bf16 it might be 13.4GB, still >12GB.\n\n Or maybe the model uses a different precision for weights but the question is hypothetical?\n\n Given the constraints as stated, the only honest answer is that the model does not fit in 12GB VRAM in bf16 precision, so no batch size from {1,2,4} is feasible.\n\n However, if I assume the user made a mistake and the model is actually 4B or 6B, I could provide an answer for that. But that's risky.\n\n Let me look at the KV cache number again. 0.5 MB per token per sequence.\n If the model were 4B (like LLaMA-2-7B is 7B, but maybe a 4B model?):\n Actually, if it's a 4B model with similar architecture (L=32, H=32, D=128), it's still 7B parameters? No, LLaMA-2-7B has 7B params. LLaMA-2-13B has 13B params (L=40). LLaMA-2-3B has 3B (L=32, H=32, D=128? No, LLaMA-2-3B has L=28, H=32, D=128 or something).\n\n Actually, for LLaMA-2-7B:\n - Hidden size 4096\n - 32 layers\n - 32 heads\n - 128 head dim\n - 7B params\n\n KV cache per token per sequence = 2 (K,V) × 32 layers × 32 heads × 128 dim × 2 bytes = 2 × 32 × 32 × 128 × 2 = 524,288 bytes = 0.5 MB.\n\n Yes! So the user is definitely talking about LLaMA-2-7B.\n\n So the calculation is:\n - Weights: 14 GB (7B × 2 bytes)\n - KV cache per sequence: 0.5 MB × 4096 = 2 GB\n - Total for batch B: 14 + 2B GB\n\n For B=1: 16 GB\n For B=2: 18 GB\n For B=4: 22 GB\n\n All exceed 12 GB.\n\n So the answer is: None of the batch sizes will work because the model weights alone (14 GB) exceed the GPU memory (12 GB).\n\n But maybe the user expects me to notice that and say so? Or maybe they want to know the leftover memory if they could magically fit the weights?\n\n Or maybe the 7B is a red herring and I should calculate based on the KV cache and assume the weights are a separate consideration? No, that doesn't make sense.\n\n Another interpretation: The user is asking which batch size to use given that the model is 7B, but they might have made a mistake in the GPU size (maybe it's 24GB?) or the model size (maybe it's 3B?).\n\n Given the specificity of the KV cache number (0.5 MB/token), which matches LLaMA-2-7B exactly, and the context length of 4096, it's very likely the user is working with LLaMA-2-7B.\n\n So I should point out the inconsistency: the model weights require 14 GB, which exceeds the 12 GB GPU memory, so it cannot run at all, regardless of batch size.\n\n However, to be helpful, I should also calculate what the memory usage would be for the different batch sizes, showing that they all exceed 12 GB.\n\n Or, I could interpret \"7-billion-parameter\" as a mistake and assume they meant a model where 7B is the total including everything? No.\n\n Let me reconsider: is there any way to run a 7B model in bf16 on a 12GB card?\n - With CPU offloading: Yes, but then the batch size question is about the GPU part only, and the KV cache would still be on GPU (or also offloaded?).\n - With DeepSpeed ZeRO-Offload: Weights on CPU, optimizer states on CPU, but forward pass uses GPU. But the question seems to imply the model is loaded in GPU.\n - With 8-bit or 4-bit quantization: Yes, but user said not an option.\n\n So the strict answer is: It doesn't fit.\n\n But maybe the question is a trick question to see if I notice that 7B × 2 = 14 > 12?\n\n I will provide the calculation showing that the model weights alone require 14 GB, which exceeds the 12 GB GPU memory, making it impossible to run any of the batch sizes. I'll also provide the calculations for the KV cache to show I understood the context, but emphasize that the weight memory is the blocker.\n\n Wait, I should double-check: is there any interpretation where \"7-billion-parameter\" means something else?\n - Maybe it's a mixture of experts model? No, MoE models usually have more parameters.\n - Maybe it's the total size including the KV cache? No, that's not standard.\n\n Okay, I'll go with pointing out that it doesn't fit, but I'll also provide the formula and calculations for when it would fit (e.g., if they had a 24GB card, or a 3B model), to be helpful.\n\n Actually, looking at the question again, maybe the user thinks 7B params in bf16 is 7 GB? (i.e., they think 1 byte per param, or they confuse bits with bytes?)\n - 7B params × 1 byte = 7 GB (8-bit)\n - 7B params × 2 bytes = 14 GB (16-bit/bf16)\n\n If they mistakenly think bf16 is 1 byte, then:\n - Weights: 7 GB\n - KV cache batch 1: 2 GB\n - Total: 9 GB, leaving 3 GB\n - Batch 2: 11 GB, leaving 1 GB\n - Batch 4: 15 GB, exceeds\n\n Then the answer would be batch size 2, with 1 GB left.\n\n This is a common mistake. Maybe the user made this mistake and wants to know the answer assuming the weights take 7 GB?\n\n But the question says \"bfloat16\", which is 2 bytes. I should not assume they are confused, but I should probably mention that bf16 is 2 bytes per parameter.\n\n However, if I say \"it doesn't fit\", the user might be disappointed. But if I assume they meant 1 byte (8-bit), then the answer is batch size 2.\n\n But the user specifically said \"Quantisation is not an option\", which implies they know the difference between 8-bit, 4-bit, and bf16. So they probably know bf16 is 2 bytes.\n\n So I'll stick with: The model does not fit because weights alone require 14 GB.\n\n But to be thorough and helpful, I'll provide the full calculation table showing that all batch sizes fail.\n\n Calculations:\n - Weight memory: 7,000,000,000 × 2 bytes = 14,000,000,000 bytes = 14 GB (or 13.04 GiB)\n - KV cache per sequence: 0.5 MB/token × 4096 tokens = 2048 MB = 2 GB (or 1.91 GiB)\n - Batch 1: 14 + 2 = 16 GB > 12 GB\n - Batch 2: 14 + 4 = 18 GB > 12 GB\n - Batch 4: 14 + 8 = 22 GB > 12 GB\n\n All fail.\n\n If I want to be extra helpful, I can note that if the model were 3B or 4B, then:\n - 3B: 6 GB + 2B GB KV\n   - Batch 1: 8 GB (4 GB left)\n   - Batch 2: 10 GB (2 GB left)\n   - Batch 4: 14 GB (fail)\n - 4B: 8 GB + 2B GB KV\n   - Batch 1: 10 GB (2 GB left)\n   - Batch 2: 12 GB (0 GB left)\n   - Batch 4: 16 GB (fail)\n\n But I shouldn't assume the model size is wrong unless I mention it as a possibility.\n\n Actually, looking at the question structure, it's possible that the user is testing my ability to calculate and notice that 7B × 2 = 14 > 12.\n\n I will answer that none of the batch sizes are viable because the model weights exceed the GPU memory, and provide the detailed breakdown.\n\n Final check: Is there any way a 7B model fits in 12GB?\n - If it uses shared weights (tied embeddings)? LLaMA-2 doesn't share input/output embeddings I think? Actually, LLaMA-2 does tie embeddings? Let me check.\n - LLaMA-2-7B: vocab size 32000, hidden 4096. Embedding matrix: 32000 × 4096 × 2 bytes = 262 MB. If tied, you save 262 MB. Not enough.\n - If the model is 6.7B and with some overhead, it's still >13 GB.\n\n So no, it doesn't fit.\n\n I will provide the answer stating that the model cannot fit, but I'll also provide the calculation for the KV cache as requested.\n\n Wait, one last thought: Could \"7-billion-parameter\" refer to the number of parameters excluding embeddings? No, usually includes everything.\n\n Could the GPU have 12 GB but the model is 7B and they are using some kind of model parallelism where parts are on CPU? The question doesn't mention this.\n\n I'll go with the straightforward calculation.\n",
+ "content": "**None of the batch sizes will work.** A 7-billion-parameter model in bfloat16 requires **14 GB** of GPU memory for weights alone (7B × 2 bytes), which already exceeds your 12 GB GPU.\n\nHere is the full breakdown:\n\n| Component | Memory Calculation | Size |\n|-------------|------------------|------|\n| **Model Weights** | 7,000,000,000 params × 2 bytes | **14 GB** |\n| **KV Cache (per seq)** | 0.5 MB × 4,096 tokens | **2 GB** |\n| **Batch 1 Total** | 14 GB + 2 GB | **16 GB** |\n| **Batch 2 Total** | 14 GB + (2 × 2 GB) | **18 GB** |\n| **Batch 4 Total** | 14 GB + (4 × 2 GB) | **22 GB** |\n\nAll configurations exceed 12 GB.\n\n---\n\n**If you had a larger GPU** (e.g., 24 GB), here is how the memory would break down for each batch size:\n*   **Batch 1:** 16 GB used → **8 GB left over**\n*   **Batch 2:** 18 GB used → **6 GB left over**\n*   **Batch 4:** 22 GB used → **2 GB left over**\n\n**If you have a smaller model** (e.g., a 3B or 4B model in bf16), it would fit, but a 7B model cannot run in bf16 on 12 GB VRAM without quantization or CPU offloading.",
+ "usage": {
+  "completion_tokens": 5406,
+  "prompt_tokens": 110,
+  "total_tokens": 5516,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 110,
+  "prompt_ms": 2045.977,
+  "prompt_per_token_ms": 18.59979090909091,
+  "prompt_per_second": 53.76404524586542,
+  "predicted_n": 5406,
+  "predicted_ms": 564610.611,
+  "predicted_per_token_ms": 104.46079759481962,
+  "predicted_per_second": 9.572969219312103
+ },
+ "tokens": {
+  "reasoning_tokenized": 5069,
+  "content_tokenized": 334,
+  "completion_tokens_usage": 5406,
+  "prompt_tokens_usage": 110,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.049,
+  "to_first_reasoning": 2.049,
+  "to_first_answer_token": 531.515,
+  "to_final_answer": 566.66
+ },
+ "peaks": {
+  "gpu_temp_c": 79,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26691
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26760
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26748
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26755
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26705
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26750
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26757
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26749
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26743
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26770
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26758
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26751
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 151.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 171.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26740
+  },
+  {
+   "t_s": 181.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 191.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 201.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26714
+  },
+  {
+   "t_s": 211.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26750
+  },
+  {
+   "t_s": 221.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 241.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 251.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26750
+  },
+  {
+   "t_s": 261.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26721
+  },
+  {
+   "t_s": 271.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 281.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 291.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 301.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 312.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26748
+  },
+  {
+   "t_s": 322.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26760
+  },
+  {
+   "t_s": 332.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26768
+  },
+  {
+   "t_s": 342.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 352.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 362.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26755
+  },
+  {
+   "t_s": 372.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26752
+  },
+  {
+   "t_s": 382.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26760
+  },
+  {
+   "t_s": 392.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26744
+  },
+  {
+   "t_s": 402.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26775
+  },
+  {
+   "t_s": 412.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26748
+  },
+  {
+   "t_s": 422.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 432.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26742
+  },
+  {
+   "t_s": 442.3,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 452.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 462.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26718
+  },
+  {
+   "t_s": 472.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26691
+  },
+  {
+   "t_s": 482.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26707
+  },
+  {
+   "t_s": 492.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26716
+  },
+  {
+   "t_s": 502.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26720
+  },
+  {
+   "t_s": 512.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26748
+  },
+  {
+   "t_s": 522.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 532.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 542.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 552.7,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26714
+  },
+  {
+   "t_s": 562.7,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26725
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+{
+ "id": "D2",
+ "title": "Will the model fit (looks hard, is easy)",
+ "prompt_text": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory. Quantisation is not an option. The KV cache costs 0.5 MB per token per sequence at this model size, I want a 4,096-token context, and I was thinking of batch sizes of 1, 2 or 4. Activations are small enough to ignore. Which batch size should I use, and how much memory will be left over?"
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 15000,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1017,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1017,
+ "started_at": "2026-10-30T23:38:00",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants to run a 7B-parameter model in bfloat16 on a GPU with 12 GB memory.\nParameters: 7 billion.\nPrecision: bfloat16 (16-bit). So 2 bytes per parameter.\nKV cache cost: 0.5 MB per token per sequence.\nContext: 4,096 tokens.\nBatch sizes considered: 1, 2, or 4.\nActivations are small enough to ignore (stated by user).\nQuestion: Which batch size should I use, and how much memory will be left over?\n\nLet's calculate the memory required.\n1. Model weights:\n7e9 parameters * 2 bytes/parameter = 14 GB.\nWait, the GPU has 12 GB.\nSo even with batch size 1, the model weights alone are 14 GB.\nThis exceeds the 12 GB VRAM.\nLet's re-read carefully.\n\"7-billion-parameter model in bfloat16\"\n\"12 GB of memory\"\nIs it possible the user made a mistake, or is this a trick question?\nIf model weights are 14 GB, and memory is 12 GB, batch size 1 is impossible.\nBatch size 2 or 4 would be even more impossible.\nSo the answer should be \"None\" or \"It won't fit\".\nWait, let me double check the math.\n7 * 10^9 * 2 bytes = 14,000,000,000 bytes = 14 GB.\nYes, 14 GB.\nGPU memory = 12 GB.\n14 GB > 12 GB.\nSo no batch size will work.\nMemory left over = 12 - 14 = -2 GB (deficit).\nLet me think if there's any nuance.\nMaybe the model is 7B, but quantised? No, \"Quantisation is not an option.\"\nMaybe \"bfloat16\" implies something else? No, 16 bits.\nMaybe the user means 12 GB but it's shared memory? No, \"GPU with 12 GB of memory\".\nPerhaps the model is smaller in practice? No, 7B params is 7B.\nIs there any way to fit 14GB model on 12GB GPU?\nNo.\nMaybe the user meant 12 GB total system memory? No, \"GPU with 12 GB of memory\".\nMaybe the user made a typo and meant 7B model on 16GB? No, I must answer the question as asked.\nThe question is a straightforward calculation.\nModel size = 14 GB.\nAvailable = 12 GB.\nDeficit = 2 GB.\nBatch size: None.\n\nLet me verify the KV cache cost.\n0.5 MB * 4096 tokens * batch_size.\nFor batch size 1: 0.5 * 4096 = 2048 MB = 2 GB.\nTotal memory for batch 1 = 14 GB (weights) + 2 GB (KV) = 16 GB.\nThis is way over 12 GB.\n\nSo the premise is impossible.\nThe answer must be that no batch size works.\nLet me double check if \"7-billion-parameter model\" usually refers to something else? No, it means 7e9 parameters.\n7e9 * 2 bytes = 14e9 bytes.\n14 GB.\nThe user explicitly states \"Quantisation is not an option\", implying they are aware of the size issue if they considered it.\nWait, maybe they want me to point out that it won't fit?\n\"Which batch size should I use, and how much memory will be left over?\"\nAnswer: None of the above, it won't fit.\n\nLet me review the prompt again to ensure I'm not missing a trick.\n\"I want to run a 7-billion-parameter model in bfloat16 on a GPU with 12 GB of memory.\"\n7B params * 2 bytes = 14GB.\nGPU = 12GB.\nSo it doesn't fit.\n\nLet me formulate the response.\nCalculate the memory for the model weights.\n7,000,000,000 parameters * 2 bytes/parameter = 14,000,000,000 bytes.\n14 GB.\nCompare with 12 GB.\n14 GB > 12 GB.\nConclusion: Batch size 1, 2, or 4 is impossible.\nMemory left over: Negative 2 GB (or 2 GB deficit).\nKV cache memory:\nFor batch 1: 0.5 MB * 4096 = 2048 MB = 2 GB.\nTotal = 16 GB.\nFor batch 2: 4 GB. Total = 18 GB.\nFor batch 4: 8 GB. Total = 22 GB.\nAll are larger than 12 GB.\n\nSo the answer is clearly that none of them work.\nI should state this clearly.\n\"The model weights alone require 14 GB of memory (7 billion parameters × 2 bytes). Since the GPU only has 12 GB of memory, the model does not fit in memory, regardless of the batch size. Therefore, no batch size (1, 2, or 4) can be used, and you would have a 2 GB deficit.\"\n\nLet me just check if \"7-billion-parameter\" could mean something like 7B total but mostly small matrices? No, 7B params means 7B params.\nIs there any other interpretation? \"bfloat16\" -> 16 bits.\nYes.\nIs it possible the user has 12 GB shared memory or something? No.\n\nI will output the calculation and the conclusion.\n1. Calculate model size.\n2. Calculate KV cache size for batch sizes (optional but good for completeness).\n3. Compare with available memory.\n4. State the verdict.\n\nModel size: 7e9 * 2 = 14 GB.\nKV cache size for 1 sequence: 0.5 MB * 4096 = 2 GB.\nTotal for batch 1: 16 GB.\nGPU memory: 12 GB.\nDeficit: 4 GB? Wait, the question asks \"how much memory will be left over?\"\nIf batch 1, weights 14 GB, KV 2 GB. Total 16 GB.\n12 GB - 16 GB = -4 GB.\nBut even just the weights: 12 GB - 14 GB = -2 GB.\nSo there is a 2 GB deficit just for weights, and 4 GB total deficit for batch 1.\nI should mention that the model alone doesn't fit.\n\nLet me write down the exact numbers.\nModel size: 7,000,000,000 * 2 bytes = 14,000,000,000 bytes = 14 GB.\nAvailable: 12 GB.\nWeights alone exceed capacity by 2 GB.\nFor batch size 1: KV cache = 0.5 MB * 4096 = 2048 MB = 2 GB. Total = 16 GB. Deficit = 4 GB.\nFor batch size 2: KV cache = 4 GB. Total = 18 GB. Deficit = 6 GB.\nFor batch size 4: KV cache = 8 GB. Total = 22 GB. Deficit = 10 GB.\n\nSo the answer is none of them.\nI will write a clear response showing the math.\n\nLet me check if there's any ambiguity in \"7-billion-parameter model\". Sometimes people use 7B to mean 7,000,000,000.\nYes.\nAnd bfloat16 is 16-bit, so 2 bytes.\n7e9 * 2 = 14e9 bytes = 14 GB.\nNo ambiguity there.\n\nIs there any chance the user meant 7B model but only a fraction of parameters are loaded (e.g. experts)? No, standard LLM.\nIs it possible they meant 12GB total system memory? \"GPU with 12 GB of memory\".\nSo no.\n\nI will answer that none of the batch sizes will work because the model weights alone exceed the available VRAM.\nI'll include the KV cache calculation for batch size 1 just to show how much worse it is.\nTotal required for batch 1: 16 GB.\nAvailable: 12 GB.\nMemory left over: -4 GB (or 2 GB deficit just for weights).\n\nLet me draft the response.\n\"Model size: 7B parameters * 2 bytes = 14 GB.\nGPU memory: 12 GB.\nSince 14 GB > 12 GB, the model weights alone do not fit in the GPU's memory.\nEven with a batch size of 1, the KV cache would require an additional 0.5 MB * 4096 = 2 GB, bringing the total to 16 GB.\nTherefore, no batch size (1, 2, or 4) can be used. There is a 2 GB deficit for the weights alone, and a 4 GB deficit for a single sequence.\"\n\nThis is straightforward.\nI will present this clearly.",
+ "content": "To run a 7-billion-parameter model in bfloat16 on a 12 GB GPU, we need to calculate the memory required for the model weights and the KV cache, and compare it to the available VRAM.\n\n**1. Model Weights Memory:**\nA 7-billion-parameter model uses 7,000,000,000 parameters.\nIn bfloat16 (16-bit), each parameter takes up 2 bytes.\n- Memory for weights = 7,000,000,000 × 2 bytes = 14,000,000,000 bytes = **14 GB**\n\n**2. KV Cache Memory:**\nFor a single sequence (batch size of 1):\n- KV cache per token = 0.5 MB\n- Context length = 4,096 tokens\n- Memory for KV cache (batch 1) = 0.5 MB × 4,096 = 2,048 MB = **2 GB**\n\nFor a batch size of 2 or 4, the KV cache would be 4 GB or 8 GB respectively.\n\n**3. Total Memory vs. Available Memory:**\n- **Batch size 1:** 14 GB (weights) + 2 GB (KV cache) = 16 GB total.\n- **GPU Memory:** 12 GB.\n\nSince the model weights alone require 14 GB, they **exceed the GPU's 12 GB memory capacity by 2 GB**. Adding the KV cache makes the deficit even larger (4 GB for batch size 1).\n\n**Conclusion:**\nNone of the proposed batch sizes (1, 2, or 4) will work because the model simply does not fit in the GPU's memory. There is no batch size that can be used; you would have a **2 GB deficit** just to load the weights, and a **4 GB deficit** if you attempt to run a single sequence.",
+ "usage": {
+  "completion_tokens": 2207,
+  "prompt_tokens": 110,
+  "total_tokens": 2317,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 110,
+  "prompt_ms": 157.036,
+  "prompt_per_token_ms": 1.4276,
+  "prompt_per_second": 700.4763239002522,
+  "predicted_n": 2207,
+  "predicted_ms": 66069.066,
+  "predicted_per_token_ms": 29.949712601994563,
+  "predicted_per_second": 33.389302037355876
+ },
+ "tokens": {
+  "reasoning_tokenized": 1822,
+  "content_tokenized": 383,
+  "completion_tokens_usage": 2207,
+  "prompt_tokens_usage": 110,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.159,
+  "to_first_reasoning": 0.159,
+  "to_first_answer_token": 53.944,
+  "to_final_answer": 66.228
+ },
+ "peaks": {
+  "gpu_temp_c": 82,
+  "gpu_mem_mib": 5683,
+  "min_mem_available_mib": 26377
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26377
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26405
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26396
+  },
+  {
+   "t_s": 31.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26380
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26409
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26405
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 5683,
+   "mem_available_mib": 26394
+  }
+ ]
+}

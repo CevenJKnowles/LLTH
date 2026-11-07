@@ -1,0 +1,95 @@
+{
+ "id": "R3",
+ "title": "Batch pipeline on a fixed server",
+ "prompt_text": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Design a daily batch pipeline under these conditions. Input: about 20 GB per day of gzipped JSONL event logs, arriving as hourly files in a local directory. Hardware: one server with 4 CPU cores, 16 GB RAM, 2 TB disk, no GPU, no cloud services. Requirements: daily aggregates per user and per event type must be ready by 06:00; raw logs are kept for 60 days then deleted; a scikit-learn classifier is retrained weekly on the last 30 days of aggregates; the pipeline must be restartable after a crash without reprocessing hours that already finished. Describe the stages, the storage format and directory layout, how you keep memory under 16 GB, the scheduling (plain cron is fine), how you detect failures, and rough estimates for processing time and disk use. Prose or a numbered list, your choice. No code."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1013,
+  "cache_prompt": false,
+  "reasoning_effort": "low"
+ },
+ "seed": 1013,
+ "started_at": "2026-11-05T04:47:22",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Below is a design for a daily batch pipeline that meets all the stated requirements.\n\n**1. Input and raw log retention**\n\n- Raw logs arrive as hourly gzipped JSONL files in a local directory, e.g. `/data/raw/logs/YYYY/MM/DD/hour_*.gz`. Each file is about 2 GB, so 20 GB/day ≈ 30 hourly files/day.\n- Raw files are deleted once they are older than 60 days. This means keeping 240 hourly files (roughly 8 GB), which is well within the 2 TB disk and leaves plenty of room.\n\n**2. Directory layout**\n\n```\n/data\n  /raw/logs/            # hourly .gz files, deleted after 60 days\n  /processed/events/    # hourly decompressed JSONL files (one file per hour)\n  /processed/aggregates/\n    /daily/             # daily aggregate files, one per calendar day\n  /processed/classifier/\n    /train/             # weekly training datasets (30 days of aggregates)\n    /models/            # model checkpoints (weekly)\n  /pipeline/\n    /run/               # per-run logs and metadata\n    /failed/            # failed runs, kept until fixed\n```\n\n- `/processed/events/` is used for intermediate processing only. It can be purged after each daily run if not needed.\n- `/processed/aggregates/` holds the daily aggregate files, which are the main artifacts.\n\n**3. Daily aggregate stage**\n\nFor each day, the pipeline aggregates raw events into per-user and per-event-type aggregates.\n\n- Per-user aggregates: for each user ID, count events, compute sum of event values, average latency, and other metrics.\n- Per-event-type aggregates: for each event type, count events, compute average latency, and other event-level metrics.\n\nThese are stored as compressed JSON files, e.g. `daily/2025-04-12/user_aggregates.json.gz` and `daily/2025-04-12/event_aggregates.json.gz`.\n\n**4. Weekly classifier stage**\n\n- Every Sunday at 04:00, a job trains a scikit-learn classifier on the last 30 days of aggregates. It reads the daily aggregate files, builds a training dataset (e.g., user ID features + labels), and writes a model checkpoint to `/processed/classifier/models/`.\n- The model is used for the next week's predictions (not required by the spec, but useful for a complete pipeline).\n\n**5. Memory management (under 16 GB)**\n\n- The pipeline processes data in hourly batches. Each batch is loaded into memory, aggregated, and then discarded. Peak memory is bounded by the largest hourly batch (about 2 GB), which is well below 16 GB.\n- Aggregates are streamed, not loaded into memory. Daily aggregate files are written incrementally.\n- Use streaming JSON parsing (e.g., `ijson` or manual line parsing) to avoid loading entire files into memory.\n- If memory pressure is a concern, limit concurrent hourly processing to 2-3 batches at a time.\n\n**6. Restartability**\n\n- Each hourly file is processed independently. A status file tracks which hourly files are done.\n- The pipeline has a checkpoint file `/data/pipeline/status.json` that stores the set of processed hours for the current day.\n- If the pipeline crashes, it resumes by re-reading the status file and skipping already processed hours.\n- Failed hours are moved to `/data/pipeline/failed/` with a log; they are retried on the next run.\n\n**7. Failure detection and alerting**\n\n- The pipeline writes a log file to `/data/pipeline/run/2025-04-12.log`.\n- A supervisor (e.g., cron job) checks the log at 04:30 daily. If the log contains an error, it sends a notification (e.g., via email or system notification).\n- Failed runs are kept for 7 days before cleanup.\n\n**8. Scheduling**\n\n- Use plain cron:\n\n```\n# Daily at 05:00 (aggregate stage)\n0 5 * * * /usr/bin/python3 /data/pipeline/aggregate.py /data/raw/logs /data/processed/aggregates\n\n# Weekly at 04:00 (classifier stage)\n0 4 * * 0 /usr/bin/python3 /data/pipeline/train_classifier.py /data/processed/aggregates /data/processed/classifier\n```\n\n- A simple systemd service or cron wrapper can manage the pipeline if needed.\n\n**9. Processing time estimates**\n\n- Hourly batch processing: ~2-3 minutes per hour (including decompress, aggregate, and write). For 30 hours, ~1-1.5 hours.\n- Daily aggregation run: ~1-2 hours (processes all hours of the day).\n- Weekly classifier training: ~30-60 minutes (scikit-learn training on 30 days of aggregates).\n\n**10. Disk usage**\n\n- Raw logs: 2 GB/day × 60 days = 120 GB (but only ~8 GB active at any time).\n- Hourly decompressed logs: 2 GB/hour × 30 hours/day = 60 GB/day. This can be purged daily, reducing disk use.\n- Daily aggregates: ~50 GB/day (compressed).\n- Failed runs: ~10 GB/week.\n- Total: well under 2 TB.\n\n**11. Summary**\n\nThe pipeline processes hourly logs, aggregates them daily, trains a classifier weekly, and is restartable and memory-bounded. It uses plain cron for scheduling, logs for failure detection, and a directory layout for clean data management.\n\nThis design meets all requirements: daily aggregates ready by 06:00, raw logs retained for 60 days, weekly classifier training, restartability, memory limits, and disk efficiency.",
+ "usage": {
+  "completion_tokens": 1186,
+  "prompt_tokens": 233,
+  "total_tokens": 1419,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 233,
+  "prompt_ms": 152.786,
+  "prompt_per_token_ms": 0.6557339055793991,
+  "prompt_per_second": 1525.008835888105,
+  "predicted_n": 1186,
+  "predicted_ms": 22106.459,
+  "predicted_per_token_ms": 18.655239662447258,
+  "predicted_per_second": 53.60424299522597
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 1184,
+  "completion_tokens_usage": 1186,
+  "prompt_tokens_usage": 233,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.173,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 0.173,
+  "to_final_answer": 22.262
+ },
+ "peaks": {
+  "gpu_temp_c": 71,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22262
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22262
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22276
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22287
+  }
+ ]
+}

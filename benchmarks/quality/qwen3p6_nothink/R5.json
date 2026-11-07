@@ -1,0 +1,186 @@
+{
+ "id": "R5",
+ "title": "Deterministic routing layer for two local models",
+ "prompt_text": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Plan a routing layer that sits in front of two local models, a 1B fast model and a 30B slow model, and decides per request which one answers. No learned classifier: every rule must be readable and give the same result for the same input. Constraints: the decision must take under 5 ms; every decision is logged with the rule that fired; the 30B model may serve at most 20 per cent of requests over any calendar day; a request can carry a flag that forces the 30B model; if the 30B model is unavailable the request must still be answered. Give the rules in priority order, the quota mechanism and what happens when it is exhausted, the fallback path, the fields of the log record, and three example requests with the route each would take."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1015,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1015,
+ "started_at": "2026-10-30T20:22:47",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "Here is a complete design for the routing layer. The system is deterministic, stateless (except for the quota counter), and prioritizes latency and cost control while ensuring availability.\n\n### 1. Routing Rules (Priority Order)\n\nThe router evaluates rules in strict order. The first rule that matches determines the route.\n\n| Priority | Rule Name | Condition | Action |\n| :--- | :--- | :--- | :--- |\n| **1** | `FORCE_30B` | Request contains explicit header/flag `X-Force-Model: 30B` | Route to **30B Model** |\n| **2** | `QUOTA_CHECK` | Current daily quota usage for 30B model < 20% of total daily requests processed by the router | Route to **30B Model** |\n| **3** | `FAST_MODEL_DEFAULT` | All other requests | Route to **1B Model** |\n\n> **Note on Rule 2:** The quota is calculated as a rolling or calendar-day counter. Since the constraint specifies \"over any calendar day,\" we use a fixed-window counter for Jan 00:00–23:59 UTC (or local server time). The threshold is dynamic: `quota_limit = floor(Total_Daily_Requests * 0.20)`.\n\n---\n\n### 2. Quota Mechanism & Exhaustion Handling\n\n#### **Quota Counter Design**\n- **Storage:** A simple in-memory integer counter per day, persisted to a lightweight key-value store (e.g., Redis or local SQLite) to survive restarts.\n- **Reset:** At midnight UTC each day, the counter resets to 0.\n- **Calculation:** \n  - `total_requests_today`: Total number of requests routed by this router instance today.\n  - `thirty_b_used_today`: Number of requests routed to the 30B model today.\n  - `quota_limit = floor(total_requests_today * 0.20)`\n  - **Decision:** If `thirty_b_used_today < quota_limit`, allow 30B; else, deny.\n\n#### **When Quota is Exhausted**\n- If Rule 1 (`FORCE_30B`) fires but the quota is already exhausted:\n  - **Fallback:** The request is **downgraded** to the **1B Model**.\n  - **Logging:** Log with `rule_fired = \"QUOTA_EXHAUSTED_OVERRIDE\"` and a warning flag.\n  - **Reasoning:** We cannot violate the 20% cap, but we must answer the request. The 1B model is always available and fast.\n\n---\n\n### 3. Fallback Path (Model Unavailability)\n\nIf the selected model is unavailable (e.g., timeout, error, service down):\n\n1. **Primary Failure:** If the chosen model fails, log `error_type = \"MODEL_UNAVAILABLE\"`.\n2. **Fallback Logic:**\n   - If the request was routed to the **30B Model** and it fails → **Fall back to 1B Model**.\n   - If the request was routed to the **1B Model** and it fails → **Return HTTP 503 Service Unavailable** (no further fallback).\n3. **Latency:** The fallback decision is immediate upon receiving an error response from the primary model. This adds minimal overhead (<1 ms) if handled via non-blocking callbacks or simple try-catch in the routing function.\n\n---\n\n### 4. Log Record Fields\n\nEvery request must be logged with the following fields for auditability and debugging:\n\n| Field | Type | Description |\n| :--- | :--- | :--- |\n| `request_id` | UUID | Unique ID for the request. |\n| `timestamp` | ISO8601 | Time of request arrival. |\n| `route_taken` | Enum | `\"30B\"`, `\"1B\"`, or `\"FALLBACK_30B_TO_1B\"` |\n| `rule_fired` | String | The name of the rule that decided the route (e.g., `\"FORCE_30B\"`, `\"QUOTA_CHECK\"`, `\"FAST_MODEL_DEFAULT\"`, `\"QUOTA_EXHAUSTED_OVERRIDE\"`). |\n| `quota_used_pct` | Float | Percentage of daily 30B quota used at decision time (e.g., `0.15`). |\n| `model_latency_ms` | Float | Time taken by the selected model to respond (or timeout). |\n| `status` | String | `\"SUCCESS\"`, `\"ERROR_30B_FALLBACK\"`, `\"ERROR_1B_FAILED\"` |\n| `input_hash` | SHA256 | Hash of the first 100 chars of the prompt (for privacy-preserving deduplication/debugging). |\n\n---\n\n### 5. Three Example Requests\n\n#### **Example 1: Simple Question (No Flag, Quota Available)**\n- **Input:** `\"What is the capital of France?\"`\n- **Flags:** None\n- **State:** \n  - Total requests today: 10,000\n  - 30B used today: 1,500\n  - Quota limit: `floor(10,000 * 0.20) = 2,000`\n  - Since `1,500 < 2,000`, quota is available.\n- **Routing Decision:**\n  1. Rule 1 (`FORCE_30B`): No flag → Skip.\n  2. Rule 2 (`QUOTA_CHECK`): Quota available → **Route to 30B Model**.\n- **Log Entry:**\n  ```json\n  {\n    \"request_id\": \"req-001\",\n    \"timestamp\": \"2024-05-20T10:00:00Z\",\n    \"route_taken\": \"30B\",\n    \"rule_fired\": \"QUOTA_CHECK\",\n    \"quota_used_pct\": 0.15,\n    \"model_latency_ms\": 850,\n    \"status\": \"SUCCESS\"\n  }\n  ```\n\n#### **Example 2: Flagged Request (Quota Exhausted)**\n- **Input:** `\"Explain quantum entanglement in detail.\"`\n- **Flags:** `X-Force-Model: 30B`\n- **State:** \n  - Total requests today: 10,000\n  - 30B used today: 2,000 (Quota limit reached)\n- **Routing Decision:**\n  1. Rule 1 (`FORCE_30B`): Flag present → Attempt 30B.\n  2. **But:** Quota is exhausted. Per fallback rule, downgrade to 1B.\n  - **Route to 1B Model** (due to quota override).\n- **Log Entry:**\n  ```json\n  {\n    \"request_id\": \"req-002\",\n    \"timestamp\": \"2024-05-20T10:05:00Z\",\n    \"route_taken\": \"1B\",\n    \"rule_fired\": \"QUOTA_EXHAUSTED_OVERRIDE\",\n    \"quota_used_pct\": 0.20,\n    \"model_latency_ms\": 45,\n    \"status\": \"SUCCESS\"\n  }\n  ```\n\n#### **Example 3: Complex Reasoning (Quota Available, No Flag)**\n- **Input:** `\"Write a Python function to solve the traveling salesman problem using dynamic programming.\"`\n- **Flags:** None\n- **State:** \n  - Total requests today: 5,000\n  - 30B used today: 800\n  - Quota limit: `floor(5,000 * 0.20) = 1,000`\n  - Since `800 < 1,000`, quota is available.\n- **Routing Decision:**\n  1. Rule 1 (`FORCE_30B`): No flag → Skip.\n  2. Rule 2 (`QUOTA_CHECK`): Quota available → **Route to 30B Model**.\n- **Log Entry:**\n  ```json\n  {\n    \"request_id\": \"req-003\",\n    \"timestamp\": \"2024-05-20T10:10:00Z\",\n    \"route_taken\": \"30B\",\n    \"rule_fired\": \"QUOTA_CHECK\",\n    \"quota_used_pct\": 0.16,\n    \"model_latency_ms\": 920,\n    \"status\": \"SUCCESS\"\n  }\n  ```\n\n---\n\n### 6. Performance Constraint Compliance (<5 ms)\n\n- **Rule Evaluation:** Simple if-else checks and integer comparison. Execution time: **<0.1 ms**.\n- **Quota Check:** In-memory integer access or single Redis GET/INCR call (if distributed). Using in-memory counter with periodic sync, it’s **<0.05 ms**.\n- **No ML Classifier:** No model inference needed for routing.\n- **Logging:** Async log write (non-blocking) ensures it doesn’t impact the 5 ms latency budget.\n\nThis design meets all constraints: deterministic, readable rules, <5 ms decision time, full logging, 20% daily quota cap with fallback, and forced override handling.",
+ "usage": {
+  "completion_tokens": 2061,
+  "prompt_tokens": 181,
+  "total_tokens": 2242,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 181,
+  "prompt_ms": 1466.274,
+  "prompt_per_token_ms": 8.10096132596685,
+  "prompt_per_second": 123.44213973650218,
+  "predicted_n": 2061,
+  "predicted_ms": 171451.345,
+  "predicted_per_token_ms": 83.22880825242719,
+  "predicted_per_second": 12.015070514611594
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 2060,
+  "completion_tokens_usage": 2061,
+  "prompt_tokens_usage": 181,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.469,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.469,
+  "to_final_answer": 172.921
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26177
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26177
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26204
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26225
+  },
+  {
+   "t_s": 41.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26214
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26229
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26255
+  },
+  {
+   "t_s": 71.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26243
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26232
+  },
+  {
+   "t_s": 91.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26232
+  },
+  {
+   "t_s": 101.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26219
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26215
+  },
+  {
+   "t_s": 121.5,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26227
+  },
+  {
+   "t_s": 131.5,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26233
+  },
+  {
+   "t_s": 141.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26215
+  },
+  {
+   "t_s": 151.6,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26228
+  },
+  {
+   "t_s": 161.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26214
+  },
+  {
+   "t_s": 171.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  }
+ ]
+}

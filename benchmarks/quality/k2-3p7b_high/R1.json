@@ -1,0 +1,151 @@
+{
+ "id": "R1",
+ "title": "Minimum-cost worker schedule",
+ "prompt_text": "A nightly job must process 4,320 records within 120 minutes. Two workers are available. Worker A processes 24 records per minute and costs 3 credits per minute while running. Worker B processes 40 records per minute and costs 6 credits per minute while running. Both can run at the same time, each can be started and stopped at any whole minute, and records can be split between them in any way. Find the schedule that minimises total credits, and state the minimum cost. Show the reasoning.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "A nightly job must process 4,320 records within 120 minutes. Two workers are available. Worker A processes 24 records per minute and costs 3 credits per minute while running. Worker B processes 40 records per minute and costs 6 credits per minute while running. Both can run at the same time, each can be started and stopped at any whole minute, and records can be split between them in any way. Find the schedule that minimises total credits, and state the minimum cost. Show the reasoning."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1011,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1011,
+ "started_at": "2026-10-31T00:10:37",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "The user wants me to solve an optimization problem about scheduling two workers to process records.\n\n Let me break down the problem:\n - Total records to process: 4,320\n - Time limit: 120 minutes\n - Worker A: 24 records/minute, cost $3$ credits/minute\n - Worker B: 40 records/minute, cost $6$ credits/minute\n - Both can run simultaneously\n - Records can be split between them\n - Need to minimize total credits\n\n This is a classic integer linear programming or optimization problem. Since the workers can be started/stopped at whole minutes, this is essentially about allocating minutes to each worker.\n\n Let $x$ be the number of minutes Worker A runs\n Let $y$ be the number of minutes Worker B runs\n\n Constraints:\n 1. $24x + 40y \\geq 4320$ (total records processed)\n 2. $0 \\leq x, y \\leq 120$ (time limit, but since we want to minimize cost, we likely don't need the full 120 minutes)\n\n Objective: Minimize $3x + 6y$\n\n Actually, since both can run simultaneously, the time limit of 120 minutes means:\n - $x \\leq 120$ and $y \\leq 120$\n\n But also, we need to consider that if we run both for $t$ minutes, we can use that time. But actually, the constraint is that the total records processed must be at least 4320, and each can run for at most 120 minutes.\n\n Wait, let me reconsider. The constraint is:\n - Total capacity: $24x + 40y \\geq 4320$\n - Time limit: We can't run both for more than 120 minutes each, but we could run A for 120 min and B for 120 min simultaneously? Actually, looking at the problem, it says \"Two workers are available\" and \"Both can run at the same time\". \n\n But there's a constraint I need to think about: the total time available is 120 minutes. So if we schedule:\n - Worker A runs for $x$ minutes\n - Worker B runs for $y$ minutes\n\n These can happen simultaneously. So we don't need $x + y \\leq 120$. Instead, we need:\n - $x \\leq 120$\n - $y \\leq 120$\n - And $24x + 40y \\geq 4320$\n\n Actually, wait. Is there a constraint that we can only use 120 minutes of total \"processing time\"? No, that would be wrong. The 120 minutes is the time window in which we have this nightly job. Both workers are available during this window. So:\n - Worker A can work at most 120 minutes (the entire window)\n - Worker B can work at most 120 minutes (the entire window)\n - They can work simultaneously\n\n So the constraints are:\n - $0 \\leq x \\leq 120$\n - $0 \\leq y \\leq 120$  \n - $24x + 40y \\geq 4320$\n\n Objective: Minimize $3x + 6y$\n\n This is a linear programming problem.\n\n Cost per record:\n - Worker A: $3/24 = 0.125$ credits per record\n - Worker B: $6/40 = 0.15$ credits per record\n\n Worker A is cheaper per record, but Worker B is faster.\n\n Since both can work simultaneously, we should use both workers as much as possible, or at least we need to think about the optimal combination.\n\n Actually, since A is cheaper per record, we want to use as much of A as possible. But A can only work 120 minutes, which processes $24 \\times 120 = 2880$ records.\n\n We need 4320 records total.\n $4320 - 2880 = 1440$ records remaining.\n\n Worker B can process these 1440 records in $1440/40 = 36$ minutes.\n\n So schedule:\n - Worker A: 120 minutes\n - Worker B: 36 minutes\n - Cost: $120 \\times 3 + 36 \\times 6 = 360 + 216 = 576$ credits\n\n Wait, but we could also consider:\n - Worker A: 100 minutes ($2400$ records)\n - Worker B: $2400/40 = 60$ minutes\n - Cost: $300 + 360 = 660$ credits - worse\n\n Or:\n - Worker A: 90 minutes ($2160$ records)\n - Worker B: $(4320-2160)/40 = 54$ minutes\n - Cost: $270 + 324 = 594$ credits - worse\n\n Or:\n - Worker A: 60 minutes ($1440$ records)\n - Worker B: $(4320-1440)/40 = 72$ minutes\n - Cost: $180 + 432 = 612$ credits - worse\n\n Or:\n - Worker A: 0 minutes\n - Worker B: $4320/40 = 108$ minutes\n - Cost: $0 + $648 = $648$ credits - worse\n\n So using Worker A as much as possible (120 min) seems best.\n\n But wait, we need to check if we can do better by using both workers for the full 120 minutes or not.\n\n Actually, since both can work simultaneously, we could have:\n - Worker A: 120 minutes ($2880$ records)\n - Worker B: 120 minutes ($4800$ records)\n - But that's more than enough. We only need 4320.\n \n But we can stop Worker B after 36 minutes while A keeps working, or we can stop A after some time and have B do the rest. But since A is cheaper, we want to maximize A's usage.\n\n Is there a scenario where we use less than 120 minutes of A and compensate with B that costs less?\n\n Let's compare marginal cost per record:\n - A: $3/24 = 0.125$ credits/record\n - B: $6/40 = 0.15$ credits/record\n\n Since $0.125 < 0.15$, A is strictly cheaper. So we should use as much A as possible, then fill the gap with B.\n\n Max A: 120 minutes → 2880 records\n Remaining: 1440 records → 36 minutes of B\n Total cost: $120 \\times 3 + 36 \\times 6 = 360 + 216 = 576$ credits\n\n Alternative: What if we don't use full 120 minutes of A?\n Suppose we use $x$ minutes of A and $y$ minutes of B.\n Cost = $3x + 6y$\n Records = $24x + 40y \\geq 4320$\n\n We want to minimize $3x + 6y$ subject to $24x + 40y \\geq 4320$, $0 \\leq x \\leq 120$, $0 \\leq y \\leq 120$.\n\n Since A is cheaper, the optimal solution should use the maximum possible A (120 min) and then fill with B.\n\n Let's verify with linear programming theory. The cost coefficients are $c_1 = 3$, $c_2 = 6$.\n The \"record\" coefficients are $a_1 = 24$, $a_2 = 40$.\n\n The \"bang per buck\" for A is $24/3 = 8$ records per credit.\n For B is $40/6 \\approx 6.67$ records per credit.\n\n Since A gives more records per credit, we use A as much as possible.\n\n With x = 120: records = 2880\n Remaining needed: 1440\n With y = 1440/40 = 36: records = 1440\n Total cost: $3(120) + 6(36) = 360 + 216 = 576$.\n\n Is there a constraint violation? y = 36 ≤ 120, yes.\n\n Could we do better with x < 120?\n Suppose x = 119: records = 2856. Remaining = 1464. y = 1464/40 = 36.6 minutes.\n But y must be a whole number! Wait, the problem says \"each can be started and stopped at any whole minute\".\n\n This is important. The minutes must be whole numbers.\n\n Let's re-examine with integer constraints.\n\n We need $24x + 40y \\geq 4320$ with integers $x, y$.\n\n Since we can have more than 4320 records, that's fine.\n\n We want to minimize $3x + 6y$.\n\n Since A is cheaper, we want x as large as possible. But we also need to ensure that we can reach 4320 records.\n\n Maximum x is 120.\n 24(120) = 2880\n 4320 - 2880 = 1440\n 1440/40 = 36 exactly.\n\n So x=120, y=36 works perfectly.\n\n Cost = 3(120) + 6(36) = 360 + 216 = 576.\n\n But wait, could we do better with a different combination?\n Let's check if any x < 120 allows us to save money.\n\n The incremental cost of 1 minute of A is $3.\n The incremental cost of 1 minute of B is $6.\n\n So A is cheaper. If we reduce A by 1 minute, we save $3.\n This means we need to reduce the required B time by $3/6 = 0.5$ minutes.\n But B processes 40 records/min, A processes 24 records/min.\n The records saved by removing 1 min of A = 24 records.\n Records needed to replace = $24/40 = 0.6$ minutes of B.\n\n Cost change: -$3 + 6(0.6) = -3 + 3.6 = +0.6.\n So using one more minute of A always saves money compared to using B for the same records.\n\n Therefore, we should use as much A as possible, i.e., x = 120.\n\n Then y = ceil((4320 - 2880)/40) = ceil(1440/40) = 36.\n\n Cost = 3(120) + 6(36) = 360 + 216 = 576.\n\n Is there any issue with the 120 minute constraint?\n x = 120 means Worker A runs the entire 120 minutes.\n y = 36 means Worker B runs 36 minutes.\n This is feasible since 36 ≤ 120.\n\n Could we reduce y further by reducing x further? No, because x is already maxed out.\n\n Could we have x < 120 but y smaller such that total cost is lower?\n Total cost = $3x + 6y$\n Constraint: $24x + 40y \\geq 4320$, $0 \\leq x \\leq 120$, $0 \\leq y \\leq 120$\n\n Since A is cheaper per minute ($3 < $6) and also cheaper per record ($3/24 < 6/40$), replacing A with B always increases cost for the same records. Therefore, to minimize cost, we maximize A.\n\n Max A is 120.\n With A = 120, we need B to cover 1440 records = 36 minutes.\n Cost = 576.\n\n What if we don't fill A to 120?\n Suppose A = 119.\n Records from A = 2856.\n Remaining = 1464.\n B time = 1464/40 = 36.6 → must round up to 37 (since we need at least 4320 records).\n Cost = 3(119) + 6(37) = 357 + 222 = 579.\n This is worse than 576.\n\n A = 118.\n Records = 2832.\n Remaining = 1488.\n B = 1488/40 = 37.2 → 38.\n Cost = 354 + 228 = 582. Worse.\n\n A = 100.\n Records = 2400.\n Remaining = 1920.\n B = 48.\n Cost = 300 + 288 = 588. Worse.\n\n A = 0.\n Records = 0.\n B = 108.\n Cost = 648. Worse.\n\n So yes, x=120, y=36 is optimal.\n\n But wait, is there any other interpretation?\n Could we run A for some time, then stop, and run B for some time, but the total time used by both is constrained differently?\n\n Actually, reading carefully: \"A nightly job must process 4,320 records within 120 minutes.\"\n This means the job has a deadline of 120 minutes.\n\n \"Both can run at the same time\" - so they can be concurrent.\n\n So my interpretation is correct.\n\n But let me double-check the calculation.\n 4,320 records.\n Worker A: 24 records/min for 120 min = 2,880 records.\n Worker B: 40 records/min for 36 min = 1,440 records.\n Total = 2,880 + 1,440 = 4,320. Perfect.\n\n Cost: \n Worker A: 120 min × $3 = $360\n Worker B: 36 min × $6 = $216\n Total: $576.\n\n Is there any way to use less total minutes of work?\n Total work minutes = 120 + 36 = 156 minutes of work.\n But since they run concurrently, the wall-clock time is max(120, 36) = 120 minutes.\n This fits within the 120-minute limit.\n\n Could we do:\n Worker A: 90 min = 2,160 records\n Worker B: 60 min = 2,400 records\n Total: 4,560 records (≥ 4,320). \n Cost: 270 + 360 = 630. Worse.\n\n Worker A: 72 min = 1,728 records\n Worker B: 48 min = 1,920 records\n Total: 3,648. Not enough. Need more.\n\n Worker A: 60 min = 1,440 records\n Worker B: 54 min = 2,160 records\n Total: 3,600. Not enough.\n\n Worker A: 48 min = 1,152 records\n Worker B: 45 min = 1,800 records\n Total: 2,952. Not enough.\n\n Worker A: 40 min = 960 records\n Worker B: 40 min = 1,600 records\n Total: 2,560. Not enough.\n\n Worker A: 30 min = 720 records\n Worker B: 30 min = 1,200 records\n Total: 1,920. Not enough.\n\n So indeed, we need A to run most of the time.\n\n Another way to look at it: We need 4,320 records.\n If we used only B, we need 4320/40 = 108 minutes.\n If we use A for 120 minutes (the full time), we get 2880 records.\n Then we need 1440 more from B in 36 minutes.\n Total cost is $3×120 + 6×36 = 576$.\n\n What if we stop A after 110 minutes?\n Records: 2640.\n Remaining: 1680.\n B time: 42 minutes.\n Cost: 3(110) + 6(42) = 330 + 252 = 582. Worse.\n\n What if we stop A after 100 minutes?\n Records: 2400.\n Remaining: 1920.\n B time: 48 minutes.\n Cost: 300 + 288 = 588. Worse.\n\n So yes, 120 minutes of A is optimal.\n\n But wait, could we have a scenario where we use less than 120 minutes of A and less total cost?\n No, because A is cheaper than B.\n The cost per record for A is 3/24 = 1/8 = 0.125.\n Cost per record for B is 6/40 = 3/20 = 0.15.\n 0.125 < 0.15, so A is always better for any record.\n\n Since we want to minimize cost for at least 4320 records, and A is cheaper per record, we should maximize the usage of A (up to its limit of 120 min).\n\n Max usage of A gives us 2880 records at cost 360.\n We need 1440 more at cost 216 from B.\n Total 576.\n\n Is there any constraint I missed?\n \"Both can run at the same time, each can be started and stopped at any whole minute\"\n This allows x and y to be any integers 0 to 120.\n\n So the answer is:\n Schedule: Worker A runs for 120 minutes, Worker B runs for 36 minutes (simultaneously with A for the first 36 minutes, or any 36 minutes within the 120).\n Minimum cost: 576 credits.\n\n Actually, the timing: Worker B can run at any time. Since both can run simultaneously, we can have Worker A running the entire 120 minutes, and Worker B running for any 36 consecutive minutes within that 120-minute window (or split into parts, but continuous is fine).\n\n Cost = 120 × 3 + 36 × 6 = 360 + 216 = 576.\n\n Let me verify one more time.\n 4320 records.\n A: 24/min.\n B: 40/min.\n\n Option: A for 120 min, B for 36 min.\n Records: 24(120) + 40(36) = 2880 + 1440 = 4320. Good.\n Cost: 3(120) + 6(36) = 360 + 216 = 576.\n\n Could we reduce B time below 36 by increasing A time beyond 120? No, A is limited to 120 min.\n\n Could we reduce total cost by using more A? No, A is maxed at 120.\n\n Could we use B for some and A for some such that B does less than 36?\n Suppose B does 35 min: 1400 records.\n Need 1920 from A.\n A time: 1920/24 = 80 min.\n Cost: 3(80) + 6(35) = 240 + 210 = 450.\n Wait! This is less than 576!\n\n Wait, what?\n 24 × 80 = 1920.\n 40 × 35 = 1400.\n Total: 1920 + 1400 = 3320. That's NOT 4320.\n I made a calculation error.\n\n 4320 - 1400 = 2920.\n A time: 2920/24 = 121.666... minutes.\n But A can only run 120 minutes max.\n So this doesn't work.\n\n Let's recalculate:\n Need 4320.\n If B does 35 min: 35 × 40 = 1400.\n Need 4320 - 1400 = 2920 from A.\n But A can only do 24 × 120 = 2880 in 120 min.\n 2880 < 2920. Not enough.\n\n So B must do at least ceil((4320 - 2880)/40) = ceil(1440/40) = 36 minutes.\n And that requires A to run full 120 minutes.\n\n So my initial answer was correct. The \"cheaper per record\" logic holds, and since A is limited to 120 min, that's the max we can use.\n\n Another check:\n Is there any constraint that x + y ≤ 120?\n \"A nightly job must process 4,320 records within 120 minutes.\"\n This means the deadline is 120 minutes.\n It doesn't mean the total worker-minutes are limited to 120.\n It means that after 120 minutes, the job must be done.\n\n Since they can run simultaneously, the constraint is not x + y ≤ 120.\n It is x ≤ 120 and y ≤ 120.\n And we need to finish processing within 120 minutes, meaning the records must be processed by the end of minute 120.\n\n Since records can be split and processed continuously, as long as the total records processed by minute 120 is at least 4320, it's fine.\n\n With x=120, A processes 2880 records by minute 120.\n With y=36, B processes 1440 records by minute 120 (if it runs in the first 36 minutes).\n Total processed by minute 120: 4320. Good.\n\n If B runs in minutes 90-120, it still processes by minute 120.\n\n So the interpretation is correct.\n\n Final check: Are there any other constraints?\n \"Records can be split between them in any way\" - this means we don't need to worry about indivisibility of records; it's all about total capacity.\n\n \"Each can be started and stopped at any whole minute\" - x and y are integers.\n\n So the schedule is:\n - Worker A: 120 minutes (full run)\n - Worker B: 36 minutes (any time within the 120-minute window)\n\n Minimum cost: 576 credits.\n\n Actually, could we stop B after 36 minutes and A continues to run? Yes.\n Could we stop A after 120 minutes? Yes, that's the limit.\n Could we run B for 36 minutes and A for 120 minutes, where the 36 minutes of B are, say, minutes 0-36? Then A runs 0-120.\n Or B runs minutes 60-96 and A runs 0-120. Both fit within the 120-minute window.\n\n The total cost is simply 3×120 + 6×36 = 576.\n\n I should present the reasoning clearly:\n 1. Calculate records processed by A for full 120 min: 2,880.\n 2. Calculate remaining records: 4,320 - 2,880 = 1,440.\n 3. Calculate minutes of B needed: 1,440 / 40 = 36 minutes.\n 4. Verify cost comparison: A costs $3/min and processes 24 records/min ($0.125/record). B costs $6/min and processes 40 records/min ($0.15/record). Since A is cheaper per record, maximize A usage up to its 120-min limit.\n 5. Calculate total cost: 120×3 + 36×6 = 360 + 216 = 576 credits.\n\n Also, check that 36 ≤ 120, which is satisfied.\n\n Is there any possibility that we could run both workers for less than 120 minutes of A but use fewer total worker-minutes such that cost is lower? No, because A is cheaper.\n\n Actually, one subtle point: if we use x minutes of A and y minutes of B, and both are constrained to be ≤ 120, but the deadline is 120 minutes, is there any issue with running B for 36 minutes while A runs 120 minutes?\n No, because the deadline is on the wall-clock time (120 minutes), not on the sum of worker-minutes.\n\n The problem says: \"A nightly job must process 4,320 records within 120 minutes.\"\n This is a time constraint on the job completion.\n With A running 120 minutes and B running 36 minutes (concurrently), both complete their work within the 120-minute window.\n\n So the answer is solid.\n\n Let me also consider if the problem meant that the total worker time is limited to 120 minutes. But that doesn't make sense because \"Both can run at the same time\" would be pointless if total worker-minutes were limited to 120.\n Also, if total worker-minutes were 120, then with A at 24/min and B at 40/min, the maximum records would be achieved by using all 120 minutes of A (120×24=2880), and we couldn't get 4320 records at all. So that interpretation is impossible.\n\n Therefore, the constraint is definitely that the wall-clock time available is 120 minutes.\n\n Final answer: 576 credits, with Worker A running 120 minutes and Worker B running 36 minutes.",
+ "content": "**Minimum cost: 576 credits**\n\n**Reasoning:**\n\n1.  **Cost per record comparison:**\n    *   Worker A: $3$ credits ÷ $24$ records = **0.125 credits per record**\n    *   Worker B: $6$ credits ÷ $40$ records = **0.15 credits per record**\n    Since Worker A is cheaper per record, we should maximize Worker A's runtime up to its 120-minute limit.\n\n2.  **Worker A's maximum contribution:**\n    *   Run for the full $120$ minutes available.\n    *   Records processed: $24 \\times 120 = 2,880$ records.\n    *   Cost for this time: $3 \\times 120 = 360$ credits.\n\n3.  **Remaining work:**\n    *   Total needed: $4,320$ records.\n    *   Records already covered by A: $2,880$.\n    *   Records still needed: $4,320 - 2,880 = 1,440$ records.\n\n4.  **Worker B's required time:**\n    *   At $40$ records per minute, the remaining $1,440$ records take: $1,440 \\div 40 = 36$ minutes.\n    *   Cost for this time: $6 \\times 36 = 216$ credits.\n\n5.  **Schedule verification:**\n    *   Worker A runs for $120$ minutes (the entire window).\n    *   Worker B runs for $36$ minutes (concurrently with A within the 120-minute window).\n    *   Total records: $2,880 + 1,440 = 4,320$ (meets requirement).\n    *   Time check: Both workers finish within the $120$-minute deadline.\n\n6.  **Total cost:**\n    $$3(120) + 6(36) = 360 + 216 = \\boxed{576\\text{ credits}}$$\n\n    *Note: Any reduction in Worker A's time would require Worker B to run for more than 36 minutes to cover the same records (since B is slower per minute), and since B is more expensive per minute, the total cost would increase.*",
+ "usage": {
+  "completion_tokens": 5488,
+  "prompt_tokens": 115,
+  "total_tokens": 5603,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 115,
+  "prompt_ms": 344.933,
+  "prompt_per_token_ms": 2.999417391304348,
+  "prompt_per_second": 333.39808020688076,
+  "predicted_n": 5488,
+  "predicted_ms": 121166.928,
+  "predicted_per_token_ms": 22.082545653362494,
+  "predicted_per_second": 45.28463410411791
+ },
+ "tokens": {
+  "reasoning_tokenized": 5023,
+  "content_tokenized": 463,
+  "completion_tokens_usage": 5488,
+  "prompt_tokens_usage": 115,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.347,
+  "to_first_reasoning": 0.347,
+  "to_first_answer_token": 109.042,
+  "to_final_answer": 121.515
+ },
+ "peaks": {
+  "gpu_temp_c": 83,
+  "gpu_mem_mib": 4819,
+  "min_mem_available_mib": 26155
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26155
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26404
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26400
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26405
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26413
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26395
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26374
+  },
+  {
+   "t_s": 71.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26374
+  },
+  {
+   "t_s": 81.1,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26406
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 81,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26400
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26393
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26402
+  },
+  {
+   "t_s": 121.2,
+   "gpu_temp_c": 83,
+   "gpu_mem_mib": 4819,
+   "mem_available_mib": 26390
+  }
+ ]
+}

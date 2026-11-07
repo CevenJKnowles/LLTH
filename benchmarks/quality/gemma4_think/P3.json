@@ -1,0 +1,124 @@
+{
+ "id": "P3",
+ "title": "scikit-learn pipeline with mixed types and an unseen category",
+ "prompt_text": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "scikit-learn 1.5 or later, pandas 2.x. Data:\n\n```python\nimport pandas as pd\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n```\n\nBuild a single `Pipeline` that one-hot encodes `colour`, standardises the two numeric columns, and fits a `LogisticRegression`. Fit it on `X, y`. Then call `predict_proba` on this one-row frame, which contains a colour never seen in training, and it must not raise: `{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}`. Give the complete runnable code and explain in two sentences why the unseen colour does not cause an error. Do not use any library beyond pandas and scikit-learn."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1008,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1008,
+ "started_at": "2026-10-30T21:30:13",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Scikit-learn $\\ge$ 1.5, Pandas $\\ge$ 2.x.\n*   Data: `X` (features), `y` (target).\n*   Task: Build a single `Pipeline`.\n*   Preprocessing:\n    *   One-hot encode `colour`.\n    *   Standardize `size_cm` and `weight_g`.\n*   Model: `LogisticRegression`.\n*   Goal: Call `predict_proba` on a one-row DataFrame containing a new category (`\"purple\"`) without raising an error.\n*   Constraint: Use *only* pandas and scikit-learn.\n*   Output: Complete runnable code + 2-sentence explanation.\n\n    *   To handle unseen categories in One-Hot Encoding, `OneHotEncoder(handle_unknown='ignore')` is the standard tool.\n    *   To apply different transformations to different columns within a `Pipeline`, `ColumnTransformer` is required.\n\n    *   Step 1: Define the `ColumnTransformer`.\n        *   Transformer 1: `OneHotEncoder(handle_unknown='ignore')` on `['colour']`.\n        *   Transformer 2: `StandardScaler()` on `['size_cm', 'weight_g']`.\n    *   Step 2: Define the `Pipeline`.\n        *   Step 1: The `ColumnTransformer`.\n        *   Step 2: `LogisticRegression()`.\n    *   Step 3: Fit on `X, y`.\n    *   Step 4: Define the test data `X_test` (as a DataFrame to match input format).\n    *   Step 5: Call `predict_proba`.\n\n    *   `OneHotEncoder(handle_unknown='ignore')` is the key. When it encounters \"purple\" (which wasn't in the training set's \"colour\" column), it will represent it as a row of all zeros for that specific feature's encoded columns, rather than throwing a `ValueError`.\n\n    *   *Imports:*\n        ```python\n        import pandas as pd\n        from sklearn.compose import ColumnTransformer\n        from sklearn.pipeline import Pipeline\n        from sklearn.preprocessing import OneHotEncoder, StandardScaler\n        from sklearn.linear_model import LogisticRegression\n        ```\n    *   *Data:*\n        ```python\n        X = pd.DataFrame({\n            \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n            \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n            \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n        })\n        y = [0, 1, 0, 1, 1, 1, 0, 1]\n        ```\n    *   *Pipeline Construction:*\n        ```python\n        preprocessor = ColumnTransformer(\n            transformers=[\n                ('cat', OneHotEncoder(handle_unknown='ignore'), ['colour']),\n                ('num', StandardScaler(), ['size_cm', 'weight_g'])\n            ]\n        )\n\n        pipeline = Pipeline(steps=[\n            ('preprocessor', preprocessor),\n            ('classifier', LogisticRegression())\n        ])\n\n        pipeline.fit(X, y)\n        ```\n    *   *Prediction:*\n        ```python\n        X_new = pd.DataFrame([{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}])\n        probs = pipeline.predict_proba(X_new)\n        print(probs)\n        ```\n\n    *   \"The `OneHotEncoder` is configured with `handle_unknown='ignore'`, which instructs it to represent any category not seen during training as a vector of all zeros. This prevents the transformer from raising a `ValueError` when it encounters the 'purple' category.\"\n\n    *   Scikit-learn 1.5+? Yes, this code is standard.\n    *   Pandas 2.x? Yes.\n    *   Single `Pipeline`? Yes.\n    *   One-hot encode `colour`? Yes.\n    *   Standardize `size_cm` and `weight_g`? Yes.\n    *   Fit `LogisticRegression`? Yes.\n    *   `predict_proba` on unseen `purple` without error? Yes.\n    *   Only pandas and scikit-learn? Yes.\n    *   Two sentences explanation? Yes.",
+ "content": "```python\nimport pandas as pd\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.linear_model import LogisticRegression\n\n# Data\nX = pd.DataFrame({\n    \"colour\":   [\"red\", \"blue\", \"red\", \"green\", \"blue\", \"green\", \"red\", \"blue\"],\n    \"size_cm\":  [10.0, 12.5, 9.0, 15.0, 11.0, 14.0, 10.5, 13.0],\n    \"weight_g\": [120, 150, 110, 200, 140, 190, 125, 160],\n})\ny = [0, 1, 0, 1, 1, 1, 0, 1]\n\n# Build the Pipeline\n# 1. ColumnTransformer handles different preprocessing for different columns\n# 2. OneHotEncoder uses handle_unknown='ignore' to prevent errors on new categories\npreprocessor = ColumnTransformer(\n    transformers=[\n        (\"cat\", OneHotEncoder(handle_unknown='ignore'), [\"colour\"]),\n        (\"num\", StandardScaler(), [\"size_cm\", \"weight_g\"]),\n    ]\n)\n\n# 3. Combine preprocessor and model into a single Pipeline\npipeline = Pipeline(steps=[\n    (\"preprocessor\", preprocessor),\n    (\"classifier\", LogisticRegression())\n])\n\n# Fit the pipeline\npipeline.fit(X, y)\n\n# Test on the unseen category \"purple\"\nX_new = pd.DataFrame([{\"colour\": \"purple\", \"size_cm\": 12.0, \"weight_g\": 150}])\nprobabilities = pipeline.predict_proba(X_new)\n\nprint(\"Prediction Probabilities for 'purple':\")\nprint(probabilities)\n```\n\n**Explanation:**\nThe `OneHotEncoder` is initialized with `handle_unknown='ignore'`, which instructs it to represent any category not encountered during training as a row of all zeros. This ensures that when \"purple\" is encountered, the encoder produces a zeroed-out one-hot vector instead of raising a `ValueError`.",
+ "usage": {
+  "completion_tokens": 1558,
+  "prompt_tokens": 341,
+  "total_tokens": 1899,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 341,
+  "prompt_ms": 1625.217,
+  "prompt_per_token_ms": 4.7660322580645165,
+  "prompt_per_second": 209.81813505519568,
+  "predicted_n": 1558,
+  "predicted_ms": 77351.633,
+  "predicted_per_token_ms": 49.67991843288375,
+  "predicted_per_second": 20.12885752521863
+ },
+ "tokens": {
+  "reasoning_tokenized": 1050,
+  "content_tokenized": 503,
+  "completion_tokens_usage": 1558,
+  "prompt_tokens_usage": 341,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.756,
+  "to_first_reasoning": 1.756,
+  "to_first_answer_token": 53.357,
+  "to_final_answer": 78.981
+ },
+ "peaks": {
+  "gpu_temp_c": 72,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26178
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26272
+  },
+  {
+   "t_s": 11.1,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26178
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26221
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26233
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26240
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26231
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26241
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26227
+  }
+ ]
+}

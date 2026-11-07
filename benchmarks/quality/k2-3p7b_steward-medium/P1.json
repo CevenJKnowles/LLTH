@@ -1,0 +1,89 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1006,
+ "started_at": "2026-11-05T04:51:12",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to provide code that uses pivot_table or groupby. Pandas 2.x. Provide code and resulting frame as printed. Need to ensure pivot_table with aggfunc='sum', fill_value=0, then add total column. Show resulting frame:\n\ncity columns A,B,C. rows month 1..3.\n\nMonth 1: A=10, B=20, C=0 => total 30\nMonth 2: A=30, B=0, C=40 => total 70\nMonth 3: A=60, B=50, C=0 => total 110\n\nPrint representation with column names.\n\nWill present code:\n\ndf.pivot_table(index='month', columns='city', values='sales', aggfunc='sum', fill_value=0).reset_index().add_suffix('')? Actually pivot_table returns city columns as columns. Then add total.\n\nUse .add_prefix('')? Not needed.\n\nCode:\n\npivot = df.pivot_table(index='month', columns='city', values='sales', aggfunc='sum', fill_value=0)\npivot = pivot.reset_index()\npivot['total'] = pivot.sum(axis=1)\nprint(pivot)\n\nWill show as:\n\n   month  A  B  C  total\n0      1 10 20  0    30\n1      2 30   0 40    70\n2      3 60 50  0   110\n\nMake sure city order alphabetical? pivot_table sorts columns by default? It sorts by column order of input? It sorts alphabetically by default? Actually pivot_table sorts columns alphabetically? I think it sorts columns alphabetically by default (sort=False sorts). Actually default sort=True, sorts index and columns alphabetically. City order A,B,C alphabetical, month numeric sorted. Good.\n\nProvide code block.</ifm|think>Here’s a compact way to do it with **pandas 2.x**:\n\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\n# pivot on month (rows) and city (columns)\npivot = df.pivot_table(\n    index=\"month\",\n    columns=\"city\",\n    values=\"sales\",\n    aggfunc=\"sum\",      # total sales per month‑city pair\n    fill_value=0,        # 0 where a city had no sales that month\n)\n\n# turn the month index into a regular column\npivot = pivot.reset_index()\n\n# add a total column (sum across the city columns)\npivot[\"total\"] = pivot.sum(axis=1)\n\nprint(pivot)\n```\n\n**Output (as printed):**\n\n```\n   month  A  B  C  total\n0      1 10 20  0    30\n1      2 30   0 40    70\n2      3 60 50  0   110\n```\n\nThe resulting frame has one row per month, one column per city, the summed sales for each month‑city pair (with `0` for missing combinations), and a final `total` column that contains the sum of all cities for each month.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 703,
+  "prompt_tokens": 199,
+  "total_tokens": 902,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 199,
+  "prompt_ms": 141.757,
+  "prompt_per_token_ms": 0.7123467336683418,
+  "prompt_per_second": 1403.8107465592527,
+  "predicted_n": 703,
+  "predicted_ms": 13298.208,
+  "predicted_per_token_ms": 18.94331623931624,
+  "predicted_per_second": 52.7890675194733
+ },
+ "tokens": {
+  "reasoning_tokenized": 702,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 703,
+  "prompt_tokens_usage": 199,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.144,
+  "to_first_reasoning": 0.144,
+  "to_first_answer_token": null,
+  "to_final_answer": 13.442
+ },
+ "peaks": {
+  "gpu_temp_c": 76,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22239
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22352
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22239
+  }
+ ]
+}

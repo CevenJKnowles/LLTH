@@ -1,0 +1,29 @@
+{"event": "watch_start", "boot": 137818.775, "wall": "05:17:43"}
+{"event": "proc_start", "pid": 152165, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seen_after_s": 0.014, "human_gap_s": null, "wall": "05:19:15"}
+{"event": "ready", "pid": 152165, "model": "K2-Horizon-4B-Q5_K_M.gguf", "load_s": 1.874, "load_no": 1, "wall": "05:19:17"}
+{"event": "first_token", "pid": 152165, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seconds": 0.018, "wall": "05:19:17"}
+{"event": "proc_gone", "pid": 152165, "model": "K2-Horizon-4B-Q5_K_M.gguf", "stop_s_upper": 0.109, "wall": "05:19:37"}
+{"event": "proc_start", "pid": 152777, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seen_after_s": 0.039, "human_gap_s": 7.824, "wall": "05:19:44"}
+{"event": "ready", "pid": 152777, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "load_s": 15.152, "load_no": 2, "wall": "05:20:00"}
+{"event": "first_token", "pid": 152777, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seconds": 0.506, "wall": "05:20:00"}
+{"event": "proc_gone", "pid": 152777, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "stop_s_upper": 1.252, "wall": "05:20:08"}
+{"event": "proc_start", "pid": 153809, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seen_after_s": 0.048, "human_gap_s": 44.023, "wall": "05:20:52"}
+{"event": "ready", "pid": 153809, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "load_s": 11.007, "load_no": 3, "wall": "05:21:03"}
+{"event": "first_token", "pid": 153809, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seconds": 0.349, "wall": "05:21:03"}
+{"event": "proc_gone", "pid": 153809, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "stop_s_upper": 1.308, "wall": "05:21:30"}
+{"event": "proc_start", "pid": 154734, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seen_after_s": 0.058, "human_gap_s": 29.734, "wall": "05:22:00"}
+{"event": "ready", "pid": 154734, "model": "K2-Horizon-4B-Q5_K_M.gguf", "load_s": 4.115, "load_no": 4, "wall": "05:22:04"}
+{"event": "first_token", "pid": 154734, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seconds": 0.018, "wall": "05:22:04"}
+{"event": "proc_gone", "pid": 154734, "model": "K2-Horizon-4B-Q5_K_M.gguf", "stop_s_upper": 0.164, "wall": "05:22:08"}
+{"event": "proc_start", "pid": 155329, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seen_after_s": 0.015, "human_gap_s": 19.533, "wall": "05:22:27"}
+{"event": "ready", "pid": 155329, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "load_s": 12.61, "load_no": 5, "wall": "05:22:40"}
+{"event": "first_token", "pid": 155329, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seconds": 1.067, "wall": "05:22:41"}
+{"event": "proc_gone", "pid": 155329, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "stop_s_upper": 1.304, "wall": "05:22:45"}
+{"event": "proc_start", "pid": 155853, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seen_after_s": 0.045, "human_gap_s": 6.22, "wall": "05:22:52"}
+{"event": "ready", "pid": 155853, "model": "K2-Horizon-4B-Q5_K_M.gguf", "load_s": 4.682, "load_no": 6, "wall": "05:22:56"}
+{"event": "first_token", "pid": 155853, "model": "K2-Horizon-4B-Q5_K_M.gguf", "seconds": 0.018, "wall": "05:22:56"}
+{"event": "proc_gone", "pid": 155853, "model": "K2-Horizon-4B-Q5_K_M.gguf", "stop_s_upper": 0.167, "wall": "05:22:59"}
+{"event": "proc_start", "pid": 156361, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seen_after_s": 0.038, "human_gap_s": 7.954, "wall": "05:23:07"}
+{"event": "ready", "pid": 156361, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "load_s": 13.854, "load_no": 7, "wall": "05:23:21"}
+{"event": "first_token", "pid": 156361, "model": "K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf", "seconds": 0.32, "wall": "05:23:21"}
+{"event": "watch_end", "loads": 7, "wall": "05:23:21"}

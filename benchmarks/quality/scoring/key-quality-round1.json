@@ -1,0 +1,196 @@
+{
+ "name": "quality-round1",
+ "mode": "quality",
+ "script": "quality_blind.py v1.1",
+ "runs": {
+  "k2-mova_high": "$LLTH_HOME/benchmarks/quality/k2-mova_high",
+  "qwen3p6_think": "$LLTH_HOME/benchmarks/quality/qwen3p6_think",
+  "qwen3p6_nothink": "$LLTH_HOME/benchmarks/quality/qwen3p6_nothink",
+  "gemma4_think": "$LLTH_HOME/benchmarks/quality/gemma4_think",
+  "k2-7b_high": "$LLTH_HOME/benchmarks/quality/k2-7b_high",
+  "k2-3p7b_high": "$LLTH_HOME/benchmarks/quality/k2-3p7b_high",
+  "k2-0p9b_high": "$LLTH_HOME/benchmarks/quality/k2-0p9b_high"
+ },
+ "key": {
+  "W1": {
+   "A": "k2-3p7b_high",
+   "B": "k2-7b_high",
+   "C": "qwen3p6_nothink",
+   "D": "k2-0p9b_high",
+   "E": "qwen3p6_think",
+   "F": "k2-mova_high",
+   "G": "gemma4_think"
+  },
+  "W2": {
+   "A": "qwen3p6_think",
+   "B": "k2-mova_high",
+   "C": "k2-0p9b_high",
+   "D": "k2-7b_high",
+   "E": "qwen3p6_nothink",
+   "F": "gemma4_think",
+   "G": "k2-3p7b_high"
+  },
+  "W3": {
+   "A": "k2-mova_high",
+   "B": "k2-3p7b_high",
+   "C": "qwen3p6_think",
+   "D": "k2-7b_high",
+   "E": "gemma4_think",
+   "F": "k2-0p9b_high",
+   "G": "qwen3p6_nothink"
+  },
+  "W4": {
+   "A": "qwen3p6_think",
+   "B": "k2-3p7b_high",
+   "C": "k2-0p9b_high",
+   "D": "qwen3p6_nothink",
+   "E": "gemma4_think",
+   "F": "k2-7b_high",
+   "G": "k2-mova_high"
+  },
+  "W5": {
+   "A": "k2-3p7b_high",
+   "B": "gemma4_think",
+   "C": "k2-mova_high",
+   "D": "qwen3p6_think",
+   "E": "k2-0p9b_high",
+   "F": "qwen3p6_nothink",
+   "G": "k2-7b_high"
+  },
+  "P1": {
+   "A": "k2-7b_high",
+   "B": "k2-0p9b_high",
+   "C": "k2-mova_high",
+   "D": "qwen3p6_think",
+   "E": "qwen3p6_nothink",
+   "F": "k2-3p7b_high",
+   "G": "gemma4_think"
+  },
+  "P2": {
+   "A": "k2-0p9b_high",
+   "B": "k2-mova_high",
+   "C": "k2-7b_high",
+   "D": "qwen3p6_think",
+   "E": "qwen3p6_nothink",
+   "F": "k2-3p7b_high",
+   "G": "gemma4_think"
+  },
+  "P3": {
+   "A": "k2-7b_high",
+   "B": "k2-mova_high",
+   "C": "qwen3p6_think",
+   "D": "qwen3p6_nothink",
+   "E": "gemma4_think",
+   "F": "k2-3p7b_high",
+   "G": "k2-0p9b_high"
+  },
+  "P4": {
+   "A": "gemma4_think",
+   "B": "k2-0p9b_high",
+   "C": "k2-7b_high",
+   "D": "k2-mova_high",
+   "E": "qwen3p6_think",
+   "F": "qwen3p6_nothink",
+   "G": "k2-3p7b_high"
+  },
+  "P5": {
+   "A": "k2-mova_high",
+   "B": "qwen3p6_think",
+   "C": "qwen3p6_nothink",
+   "D": "k2-0p9b_high",
+   "E": "k2-3p7b_high",
+   "F": "k2-7b_high",
+   "G": "gemma4_think"
+  },
+  "R1": {
+   "A": "k2-mova_high",
+   "B": "k2-0p9b_high",
+   "C": "qwen3p6_think",
+   "D": "k2-3p7b_high",
+   "E": "qwen3p6_nothink",
+   "F": "gemma4_think",
+   "G": "k2-7b_high"
+  },
+  "R2": {
+   "A": "qwen3p6_think",
+   "B": "k2-7b_high",
+   "C": "k2-mova_high",
+   "D": "k2-0p9b_high",
+   "E": "qwen3p6_nothink",
+   "F": "k2-3p7b_high",
+   "G": "gemma4_think"
+  },
+  "R3": {
+   "A": "qwen3p6_think",
+   "B": "qwen3p6_nothink",
+   "C": "k2-mova_high",
+   "D": "k2-7b_high",
+   "E": "gemma4_think",
+   "F": "k2-3p7b_high",
+   "G": "k2-0p9b_high"
+  },
+  "R4": {
+   "A": "qwen3p6_think",
+   "B": "k2-3p7b_high",
+   "C": "k2-0p9b_high",
+   "D": "k2-7b_high",
+   "E": "qwen3p6_nothink",
+   "F": "gemma4_think",
+   "G": "k2-mova_high"
+  },
+  "R5": {
+   "A": "k2-mova_high",
+   "B": "k2-0p9b_high",
+   "C": "k2-7b_high",
+   "D": "k2-3p7b_high",
+   "E": "qwen3p6_nothink",
+   "F": "gemma4_think",
+   "G": "qwen3p6_think"
+  },
+  "D1": {
+   "A": "k2-0p9b_high",
+   "B": "qwen3p6_think",
+   "C": "k2-mova_high",
+   "D": "gemma4_think",
+   "E": "qwen3p6_nothink",
+   "F": "k2-7b_high",
+   "G": "k2-3p7b_high"
+  },
+  "D2": {
+   "A": "k2-mova_high",
+   "B": "qwen3p6_nothink",
+   "C": "gemma4_think",
+   "D": "k2-0p9b_high",
+   "E": "k2-3p7b_high",
+   "F": "qwen3p6_think",
+   "G": "k2-7b_high"
+  },
+  "D3": {
+   "A": "qwen3p6_nothink",
+   "B": "gemma4_think",
+   "C": "qwen3p6_think",
+   "D": "k2-0p9b_high",
+   "E": "k2-mova_high",
+   "F": "k2-7b_high",
+   "G": "k2-3p7b_high"
+  },
+  "D4": {
+   "A": "k2-7b_high",
+   "B": "gemma4_think",
+   "C": "k2-mova_high",
+   "D": "qwen3p6_nothink",
+   "E": "k2-0p9b_high",
+   "F": "qwen3p6_think",
+   "G": "k2-3p7b_high"
+  },
+  "D5": {
+   "A": "k2-mova_high",
+   "B": "gemma4_think",
+   "C": "k2-7b_high",
+   "D": "k2-0p9b_high",
+   "E": "qwen3p6_nothink",
+   "F": "qwen3p6_think",
+   "G": "k2-3p7b_high"
+  }
+ }
+}

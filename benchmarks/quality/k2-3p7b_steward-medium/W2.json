@@ -1,0 +1,83 @@
+{
+ "id": "W2",
+ "title": "Cover letter opening paragraph with fixed facts",
+ "prompt_text": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience.",
+ "system_prompt": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else.",
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "system",
+    "content": "Answer directly if you can do so reliably in a few sentences or a short snippet. If the task needs long multi-step reasoning, reply with exactly the word ESCALATE and nothing else."
+   },
+   {
+    "role": "user",
+    "content": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1002,
+  "cache_prompt": false,
+  "reasoning_effort": "medium"
+ },
+ "seed": 1002,
+ "started_at": "2026-11-05T04:50:03",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to write opening paragraph of cover letter, max 120 words, using only given facts, no invented info. Include that role Data Analyst at mid-sized logistics company. Need to mention experience using pandas and scikit-learn, built churn model reducing false-positive alerts by 18% over six months, led team of three. Need to address job advert asks for SQL and dashboard experience; applicant used SQL occasionally, never built dashboard. We must not overstate SQL. Should be careful: maybe say \"I have used SQL on an occasional basis.\" And mention dashboard experience? We cannot claim experience; maybe say \"I am eager to develop dashboard skills.\" But must not invent skills. Could say \"I have not built dashboards, but am ready to learn.\" Ensure not to overstate. Word count ≤120.\n\nLet's craft around 110 words. Count words.\n\nDraft:\n\nDear Hiring Manager,\n\nI am writing to apply for the Data Analyst position at your mid‑sized logistics company. With four years of experience using pandas and scikit‑learn, I built a customer churn model that reduced false‑positive alerts by 18 percent over six months and led a team of three. I have used SQL on an occasional basis and am eager to apply my analytical strengths to your operations, while developing dashboard expertise. Thank you for considering my application.\n\nCount words:\n\nDear(1) Hiring2 Manager,3\n\nI4 am5 writing6 to7 apply8 for9 the10 Data11 Analyst12 position13 at14 your15 mid‑sized16 logistics17 company.18 With19 four20 years21 of22 experience23 using24 pandas25 and26 scikit‑learn,27 I28 built29 a30 customer31 churn32 model33 that34 reduced35 false‑positive36 alerts37 by38 1839 percent40 over41 six42 months43 and44 led45 a46 team47 of48 three.49 I50 have51 used52 SQL53 on54 an55 occasional56 basis57 and58 am59 eager60 to61 apply62 my63 analytical64 strengths65 to66 your67 operations,68 while69 developing70 dashboard71 expertise.72 Thank73 you74 for75 considering76 my77 application.78\n\n78 words, under 120. Good.</ifm|think>Dear Hiring Manager,\n\nI am writing to apply for the Data Analyst position at your mid‑sized logistics company. With four years of experience using pandas and scikit‑learn, I built a customer churn model that reduced false‑positive alerts by 18 percent over six months and led a team of three. I have used SQL on an occasional basis and am eager to apply my analytical strengths to your operations, while developing dashboard expertise. Thank you for considering my application.",
+ "content": "",
+ "usage": {
+  "completion_tokens": 552,
+  "prompt_tokens": 174,
+  "total_tokens": 726,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 174,
+  "prompt_ms": 118.236,
+  "prompt_per_token_ms": 0.6795172413793104,
+  "prompt_per_second": 1471.6330051760885,
+  "predicted_n": 552,
+  "predicted_ms": 9588.118,
+  "predicted_per_token_ms": 17.401303085299457,
+  "predicted_per_second": 57.46696066944524
+ },
+ "tokens": {
+  "reasoning_tokenized": 551,
+  "content_tokenized": 0,
+  "completion_tokens_usage": 552,
+  "prompt_tokens_usage": 174,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 0.121,
+  "to_first_reasoning": 0.121,
+  "to_first_answer_token": null,
+  "to_final_answer": 9.709
+ },
+ "peaks": {
+  "gpu_temp_c": 58,
+  "gpu_mem_mib": 4821,
+  "min_mem_available_mib": 22323
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 4821,
+   "mem_available_mib": 22323
+  }
+ ]
+}

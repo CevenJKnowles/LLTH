@@ -1,0 +1,190 @@
+{
+ "id": "W4",
+ "title": "README installation section, terse rewrite",
+ "prompt_text": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Rewrite the following README section so that it is at most 60 words, in the imperative mood, with no change to the facts and nothing added.\n\n\"So, getting quillcache up and running is really straightforward, honestly. All you need to do is run `pip install quillcache` and you're basically good to go, as long as you have Python 3.9 or something newer installed on your machine. If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra `pip install quillcache[viz]`. One more thing worth knowing: by default the cache lives in `~/.quillcache`, but you can point it somewhere else by setting the `QUILLCACHE_HOME` environment variable before you import the library.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1004,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1004,
+ "started_at": "2026-10-30T21:00:52",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Source text: A paragraph explaining how to install and configure `quillcache`.\n*   Constraint 1: Maximum 60 words.\n*   Constraint 2: Imperative mood (commanding style).\n*   Constraint 3: No change to the facts.\n*   Constraint 4: Nothing added (no extra info, no fluff).\n\n    *   Install: `pip install quillcache`.\n    *   Requirement: Python 3.9 or newer.\n    *   Optional: `pip install quillcache[viz]` for plotting helpers (requires `matplotlib`).\n    *   Default cache location: `~/.quillcache`.\n    *   Configuring cache location: Set `QUILLCACHE_HOME` environment variable.\n\n    *   *Attempt 1 (Mental Draft):*\n        Install quillcache using `pip install quillcache`. Ensure Python 3.9 or newer is installed. For plotting helpers, use `pip install quillcache[viz]`. Use `~/.quillcache` as the default cache location, or set the `QUILLCACHE_HOME` environment variable to change it.\n\n    *   *Attempt 2 (Applying Imperative Mood more strictly):*\n        Install quillcache via `pip install quillcache`. Ensure Python 3.9 or newer is installed. For matplotlib-dependent plotting helpers, run `pip install quillcache[viz]`. Use the default cache location at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to specify a different path.\n\n    *   *Attempt 3 (Refining for \"no change to facts/nothing added\" and word count):*\n        Install `quillcache` using `pip install quillcache` (requires Python 3.9+). For matplotlib-dependent plotting helpers, run `pip install quillcache[viz]`. Use the default cache directory `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to specify a different location.\n\n    *   *Attempt 4 (Tightening even more):*\n        Install `quillcache` via `pip install quillcache` (requires Python 3.9+). For plotting helpers requiring `matplotlib`, run `pip install quillcache[viz]`. Use the default cache directory `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change the location.\n\n    *   *Checking facts:*\n        *   `pip install quillcache`? Yes.\n        *   Python 3.9+? Yes.\n        *   `pip install quillcache[viz]` for plotting (matplotlib)? Yes.\n        *   Default `~/.quillcache`? Yes.\n        *   `QUILLCACHE_HOME` for custom location? Yes.\n\n    *   *Checking constraints:*\n        *   < 60 words? Yes (~45 words).\n        *   Imperative mood? \"Install\", \"Run\", \"Use\", \"Set\". Yes.\n        *   No added facts? Yes.\n        *   No changed facts? Yes.\n\n    \"Install `quillcache` using `pip install quillcache` (requires Python 3.9+). For plotting helpers (requires `matplotlib`), run `pip install quillcache[viz]`. Use the default cache location `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to specify a different directory.\"\n\n    *Word count check:*\n    1. Install\n    2. quillcache\n    3. using\n    4. pip\n    5. install\n    6. quillcache\n    7. (requires\n    8. Python\n    9. 3.9+)\n    10. For\n    11. plotting\n    12. helpers\n    13. (requires\n    14. matplotlib),\n    15. run\n    16. pip\n    17. install\n    18. quillcache[viz].\n    19. Use\n    20. the\n    21. default\n    22. cache\n    23. location\n    24. ~/.quillcache\n    25. or\n    26. set\n    27. the\n    28. QUILLCACHE_HOME\n    29. environment\n    30. variable\n    31. to\n    32. specify\n    33. a\n    34. different\n    35. directory.\n\n    Total: ~35 words.\n\n    \"Install `quillcache` with `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for matplotlib-dependent plotting helpers. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location.\"\n\n    *Word count check:*\n    Install (1) quillcache (2) with (3) pip (4) install (5) quillcache (6) (requires (7) Python (8) 3.9+) (9). Run (10) pip (11) install (12) quillcache[viz] (13) for (14) matplotlib-dependent (15) plotting (16) helpers (17). Use (18) the (19) default (20) cache (21) at (22) ~/.quillcache (23) or (24) set (25) the (26) QUILLCACHE_HOME (27) environment (28) variable (29) to (30) change (31) its (32) location (33).\n\n    This is perfect. It's strictly imperative, keeps all facts, and is well under the limit.\n\n    *One final check:* The prompt says \"no change to the facts and nothing added\".\n    Original: \"as long as you have Python 3.9 or something newer installed\" -> My version: \"(requires Python 3.9+)\" -> This is a condensation, not an addition or change.\n    Original: \"If you also want the plotting helpers, which depend on matplotlib, you can install them with the extra pip install quillcache[viz]\" -> My version: \"Run pip install quillcache[viz] for matplotlib-dependent plotting helpers.\" -> Correct.\n    Original: \"by default the cache lives in ~/.quillcache, but you can point it somewhere else by setting the QUILLCACHE_HOME environment variable before you import the library.\" -> My version: \"Use the default cache at ~/.quillcache or set the QUILLCACHE_HOME environment variable to change its location.\" -> Correct.\n\n    Actually, I should ensure the \"before you import the library\" part isn't lost if it's considered a \"fact\". The prompt says \"no change to the facts\". The fact is the timing of setting the variable.\n\n    *Revised Version:*\n    Install `quillcache` via `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for matplotlib-dependent plotting helpers. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\n\n    Word count: ~40 words.\n\n    Let's do one more pass to make sure \"matplotlib-dependent\" isn't \"adding\" anything. The original says \"which depend on matplotlib\". \"matplotlib-dependent\" is just a grammatical transformation.\n\n    Final Polish:\n    Install `quillcache` via `pip install quillcache` (requires Python 3.9+). For matplotlib-dependent plotting helpers, run `pip install quillcache[viz]`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change the location before importing the library.\n\n    Count: 39 words.\n\n    \"Install `quillcache` via `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for matplotlib-dependent plotting helpers. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\"\n\n    Facts:\n    1. pip install quillcache (Yes)\n    2. Python 3.9+ (Yes)\n    3. pip install quillcache[viz] for plotting/matplotlib (Yes)\n    4. Default ~/.quillcache (Yes)\n    5. Set QUILLCACHE_HOME to change (Yes)\n    6. Set before importing (Yes)\n\n    Imperative mood?\n    Install (Yes)\n    Run (Yes)\n    Use (Yes)\n    Set (Yes)\n\n    Under 60 words? Yes.\n\n    Wait, let's check if \"matplotlib-dependent\" is considered \"adding\".\n    Original: \"plotting helpers, which depend on matplotlib\"\n    My version: \"matplotlib-dependent plotting helpers\"\n    This is a stylistic choice to maintain the imperative mood and brevity. It conveys the same fact.\n\n    Final Check of the prompt \"nothing added\".\n    Original: \"If you also want the plotting helpers... you can install them\"\n    My version: \"Run [command] for [feature]\"\n    This is standard for documentation.\n\n    One more refinement to be absolutely safe on \"nothing added\":\n    \"Install `quillcache` via `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for plotting helpers (requires `matplotlib`). Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\"\n\n    Word count: 41 words.\n\n    Let's try to get even closer to the original wording to avoid \"adding\" via adjectives.\n\n    \"Install `quillcache` with `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for plotting helpers which depend on `matplotlib`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\"\n\n    Word count: 41.\n\n    This looks like the winner. It is strictly imperative.\n\n    1. Install\n    2. `quillcache`\n    3. with\n    4. `pip install quillcache`\n    5. (requires\n    6. Python\n    7. 3.9+)\n    8. Run\n    9. `pip install quillcache[viz]`\n    10. for\n    11. plotting\n    12. helpers\n    13. which\n    14. depend\n    15. on\n    16. `matplotlib`.\n    17. Use\n    18. the\n    19. default\n    20. cache\n    21. at\n    22. `~/.quillcache`\n    23. or\n    24. set\n    25. the\n    26. `QUILLCACHE_HOME`\n    27. environment\n    28. variable\n    29. to\n    30. change\n    31. its\n    32. location\n    33. before\n    34. importing\n    35. the\n    36. library.\n\n    Total: 36 words. Perfect.\n\n    One final check: \"no change to the facts\".\n    Original: \"as long as you have Python 3.9 or something newer installed\"\n    My version: \"(requires Python 3.9+)\" -> This is the same fact.\n\n    Original: \"by default the cache lives in ~/.quillcache\"\n    My version: \"Use the default cache at ~/.quillcache\" -> This is the same fact.\n\n    Original: \"If you also want the plotting helpers... you can install them with...\"\n    My version: \"Run [command] for plotting helpers...\" -> This is the same fact.\n\n    Original: \"you can point it somewhere else by setting the QUILLCACHE_HOME environment variable before you import the library.\"\n    My version: \"set the QUILLCACHE_HOME environment variable to change its location before importing the library.\" -> This is the same fact.\n\n    Final wording:\n    Install `quillcache` with `pip install quillcache` (requires Python 3.9+). Run `pip install quillcache[viz]` for plotting helpers which depend on `matplotlib`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\n\n    Wait, is \"Install `quillcache` with `pip install quillcache`\" redundant?\n    The prompt says \"no change to the facts\". The fact is \"run `pip install quillcache`\".\n    Let's try:\n    Run `pip install quillcache` (requires Python 3.9+). For plotting helpers which depend on `matplotlib`, run `pip install quillcache[viz]`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.\n\n    This is 41 words.\n\n    Wait, \"Run `pip install quillcache`\" is better than \"Install `quillcache` with...\" because it's more direct.\n\n    Let's check \"nothing added\".\n    I have added \"(requires Python 3.9+)\" instead of \"as long as you have Python 3.9 or something newer installed\".\n    I have added \"Run\" to the start of the plotting sentence to make it imperative.\n    I have added \"Use\" to the start of the cache sentence to make it imperative.\n    These are grammatical requirements for the \"imperative mood\" constraint.\n\n    Final version:\n    Run `pip install quillcache` (requires Python 3.9+). For plotting helpers which depend on `matplotlib`, run `pip install quillcache[viz]`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.",
+ "content": "Run `pip install quillcache` (requires Python 3.9+). For plotting helpers which depend on `matplotlib`, run `pip install quillcache[viz]`. Use the default cache at `~/.quillcache` or set the `QUILLCACHE_HOME` environment variable to change its location before importing the library.",
+ "usage": {
+  "completion_tokens": 3170,
+  "prompt_tokens": 176,
+  "total_tokens": 3346,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 176,
+  "prompt_ms": 1626.863,
+  "prompt_per_token_ms": 9.243539772727273,
+  "prompt_per_second": 108.18366389794346,
+  "predicted_n": 3170,
+  "predicted_ms": 183067.443,
+  "predicted_per_token_ms": 57.76820542757968,
+  "predicted_per_second": 17.310560239812823
+ },
+ "tokens": {
+  "reasoning_tokenized": 3097,
+  "content_tokenized": 68,
+  "completion_tokens_usage": 3170,
+  "prompt_tokens_usage": 176,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.791,
+  "to_first_reasoning": 1.791,
+  "to_first_answer_token": 180.632,
+  "to_final_answer": 184.7
+ },
+ "peaks": {
+  "gpu_temp_c": 82,
+  "gpu_mem_mib": 5161,
+  "min_mem_available_mib": 26272
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 82,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26313
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26320
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26308
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26311
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26281
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26307
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26305
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26287
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26272
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26300
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26291
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26280
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26298
+  }
+ ]
+}

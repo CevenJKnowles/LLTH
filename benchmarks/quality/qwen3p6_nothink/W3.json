@@ -1,0 +1,126 @@
+{
+ "id": "W3",
+ "title": "Substack article, validation loss versus accuracy",
+ "prompt_text": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write a Substack article of 550 to 650 words for readers who have trained a model or two but have no maths background. Title it yourself. The topic: why validation accuracy can keep improving while validation loss gets worse during training, what that pattern tells you about the model, and what to do about it. Include one small worked example with made-up numbers (a handful of examples with their predicted probabilities before and after a few more epochs) that shows the effect. Finish with one practical takeaway. No code, no bullet points, no headings inside the body."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "seed": 1003,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  },
+  "presence_penalty": 1.5
+ },
+ "seed": 1003,
+ "started_at": "2026-10-30T20:02:56",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": false,
+ "reasoning_text": "",
+ "content": "The Silent Betrayal: When Accuracy Lies and Loss Screams\n\nYou have spent weeks curating your dataset, tweaking hyperparameters, and watching the training progress bar crawl toward completion. The charts on your screen tell a story of success. The validation accuracy curve climbs steadily, inching closer to that elusive ninety percent mark. It feels like victory. Yet, right next to it, the validation loss chart is behaving erratically, spiking upward or plateauing at a high value. This contradiction can be deeply frustrating. You are getting better at guessing the right label, yet the model seems increasingly confused about how confident it should be in those guesses. If you have ever stared at this specific divergence and wondered what went wrong, you are not alone. This phenomenon is common, counterintuitive, and reveals crucial information about the internal state of your neural network that accuracy alone fails to capture.\n\nTo understand why this happens, we must first distinguish between what accuracy measures and what loss measures. Accuracy is a blunt instrument. It only cares about the final verdict. If your model predicts a cat with seventy percent confidence and a dog with thirty percent confidence, it counts as a correct prediction if the image is indeed a cat. It does not care that the model was barely convinced. Loss functions, particularly cross-entropy loss which is standard for classification tasks, are far more sensitive. They punish uncertainty and overconfidence harshly. When accuracy rises while loss increases, it usually means your model has become overconfident in its wrong answers or is struggling to assign high probabilities to the correct classes even when it picks them.\n\nConsider a small, made-up scenario to illustrate this dynamic. Imagine you are training a model to classify emails as spam or not spam. You have three specific test emails. In the first epoch, your model outputs these predicted probabilities for the class \"spam\": Email One is 0.60, Email Two is 0.55, and Email Three is 0.40. The true labels are Spam, Not Spam, and Not Spam. Here, the model gets Email One right, but it is wrong about Emails Two and Three because it thinks they might be spam. Now, imagine you train for a few more epochs. The probabilities shift dramatically. For Email One, the confidence jumps to 0.99. For Email Two, it drops to 0.01. But here is the twist: for Email Three, which is actually Not Spam, the model shifts its prediction to 0.05, meaning it is now extremely confident that this email is Not Spam. Wait, let us adjust the scenario slightly to show the divergence. Suppose after training, the model predicts Email One as 0.99 (Spam), Email Two as 0.98 (Spam), and Email Three as 0.95 (Not Spam). The true labels are Spam, Not Spam, and Not Spam.\n\nIn this new state, the accuracy is one hundred percent because the model picked the highest probability label for all three. It got every label right. However, look at the loss. For Email Two, which is truly Not Spam, the model assigned a 0.98 probability to it being Spam. This is a catastrophic error in probability estimation. The model is almost certain it is spam when it is not. This massive overconfidence generates a huge penalty in the loss function. Meanwhile, for Email Three, if the model predicted 0.95 for Not Spam, that is good, but if it had previously predicted 0.60 for Not Spam, the change in probability might still result in higher overall loss depending on the specific mathematical formulation and other examples. The key takeaway from this example is that accuracy sees three correct labels and smiles, while the loss function screams because two of those predictions were dangerously overconfident and wrong, or one was confidently wrong. This pattern tells you that your model is not just learning to classify; it is learning to be arrogant. It is collapsing its probability distributions, pushing values toward zero or one without necessarily improving the fundamental separation of features.\n\nThis behavior often signals that your model has too much capacity for the amount of data you have, or that your learning rate is causing the weights to overshoot optimal values. The model finds a local minimum where it can guess labels correctly by accident or due to bias in the data, but it fails to learn meaningful probabilistic distinctions. To fix this, you need to regularize the model. You can try adding dropout layers to prevent co-adaptation of neurons, use weight decay to keep weights small, or apply label smoothing which prevents the model from becoming too confident in its predictions. By forcing the model to remain slightly uncertain, you encourage it to learn more robust features rather than memorizing edge cases with false confidence.\n\nThe practical takeaway is simple but vital. Never rely on accuracy as your sole metric for success during training. Always monitor loss alongside accuracy. If they move in opposite directions, trust the loss. It is telling you that while your model might be right today, it is fragile and likely to fail unpredictably when faced with new, unseen data.",
+ "usage": {
+  "completion_tokens": 1050,
+  "prompt_tokens": 130,
+  "total_tokens": 1180,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 130,
+  "prompt_ms": 1248.794,
+  "prompt_per_token_ms": 9.606107692307694,
+  "prompt_per_second": 104.10043610074999,
+  "predicted_n": 1050,
+  "predicted_ms": 71543.709,
+  "predicted_per_token_ms": 68.201819828408,
+  "predicted_per_second": 14.662365352067502
+ },
+ "tokens": {
+  "reasoning_tokenized": 0,
+  "content_tokenized": 1048,
+  "completion_tokens_usage": 1050,
+  "prompt_tokens_usage": 130,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.251,
+  "to_first_reasoning": null,
+  "to_first_answer_token": 1.251,
+  "to_final_answer": 72.795
+ },
+ "peaks": {
+  "gpu_temp_c": 63,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26137
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26178
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26177
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26162
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 59,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26200
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26137
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 61,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26159
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26183
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26184
+  }
+ ]
+}

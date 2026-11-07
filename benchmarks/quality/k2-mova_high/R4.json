@@ -1,0 +1,445 @@
+{
+ "id": "R4",
+ "title": "Expected cost of a retry policy",
+ "prompt_text": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1014,
+  "cache_prompt": false,
+  "reasoning_effort": "high"
+ },
+ "seed": 1014,
+ "started_at": "2026-10-30T16:35:54",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "We need to understand the problem.\n\nWe have an API call that fails independently with probability p=0.2 (success probability q=0.8) on each attempt. Each attempt costs 1 unit. There is a policy that allows up to 3 attempts. If all 3 attempts fail, a penalty of 10 units is paid and the call is abandoned (so no further attempts). The question: what is the expected total cost per call under the current policy (max 3 attempts)? Then, does raising the limit to 4 attempts lower the expected cost, and by how much? Show arithmetic.\n\nWe need to compute expected total cost = cost of attempts + expected penalty if all attempts fail.\n\nWe need to consider the random variable of number of attempts. We try up to N attempts, stop early if success occurs. So the cost is equal to number of attempts attempted (including successful attempt) plus penalty if all attempts failed.\n\nLet's denote N=3 initially. The cost C_3 = (# attempts) + 10 * I{all 3 attempts failed}. The number of attempts can be 1,2,3 (if success on first or second or third attempt). Actually if all 3 fail, number of attempts is 3, and penalty 10.\n\nThus compute:\n\n- If success on first attempt: prob = 0.8 (q), attempts=1, penalty=0.\n- If fail first then success on second: prob = 0.2 * 0.8 = 0.16, attempts=2, penalty=0.\n- If fail first two then success on third: prob = (0.2)^2 * 0.8 = 0.04 * 0.8 = 0.032, attempts=3, penalty=0.\n- If all three fail: prob = (0.2)^3 = 0.008, attempts=3, penalty=10.\n\nThus expected cost = sum over outcomes cost * prob.\n\nCompute: \n\n- Outcome 1: cost =1, prob 0.8 => contribution 0.8\n- Outcome 2: cost =2, prob 0.16 => contribution 0.32\n- Outcome 3: cost =3, prob 0.032 => contribution 0.096\n- Outcome 4: cost =3 + 10 =13, prob 0.008 => contribution 0.104\n\nSum: 0.8 + 0.32 = 1.12; +0.096 = 1.216; +0.104 = 1.32.\n\nThus expected total cost per call = 1.32 units.\n\nNow compute for N=4.\n\nWe can compute similarly.\n\nDefine N=4. The attempt cost is 1 each. If all attempts fail (4 fails), penalty=10. The attempts stop if success occurs. The number of attempts can be 1,2,3,4. For N=4, we have extra chance of success on 4th attempt, and probability of all 4 failing is (0.2)^4 = 0.0016.\n\nCompute:\n\n- Success on attempt 1: prob = 0.8, attempts=1, penalty=0.\n- Success on attempt 2: prob = 0.2 * 0.8 = 0.16, attempts=2.\n- Success on attempt 3: prob = (0.2)^2 * 0.8 = 0.032, attempts=3.\n- Success on attempt 4: prob = (0.2)^3 * 0.8 = 0.008 * 0.8? Wait (0.2)^3 = 0.008; times 0.8 = 0.0064, attempts=4.\n- All fail: prob = (0.2)^4 = 0.0016, attempts=4, penalty=10 => total cost = 4 + 10 = 14.\n\nNow compute expected cost:\n\n- 1*0.8 = 0.8\n- 2*0.16 = 0.32\n- 3*0.032 = 0.096\n- 4*0.0064 = 0.0256\n- 14*0.0016 = 0.0224\n\nSum: 0.8 + 0.32 = 1.12; +0.096 = 1.216; +0.0256 = 1.2416; +0.0224 = 1.264.\n\nThus expected total cost for N=4 is 1.264.\n\nSo the reduction is 1.32 - 1.264 = 0.056 units.\n\nAlternatively, we can compute difference: about 0.056 (i.e., 5.6% reduction).\n\nWe need to answer: expected cost under 3 attempts is 1.32. Raising limit to 4 attempts lowers expected cost by 0.056 units (approx) to 1.264.\n\nWe can show arithmetic step by step.\n\nBut maybe we should also consider whether raising the limit to 4 attempts actually reduces expected cost if there is also penalty of 10 on failure. The penalty is large relative to attempt cost, but the probability of needing a 4th attempt (i.e., needing 4 attempts) is small: probability that first three attempts fail is (0.2)^3=0.008. Among these, the cost if we allow a 4th attempt is: if success on 4th attempt, we incur 4 attempts and no penalty: cost =4; if still fails, we incur 4 attempts + penalty=14. Under the 3-attempt policy, for the 0.008 probability we incur cost = 3+10=13. So the extra cost for these cases if we increase to 4 attempts is:\n\n- If 4th attempt succeeds: cost =4 vs 13 under previous policy, saving 9 units.\n- If 4th attempt fails: cost =14 vs 13, increase 1 unit.\n\nProbability of 4th attempt succeeding conditional on first three fails: 0.8. Probability of 4th attempt failing: 0.2.\n\nThus expected difference = 0.008 * (0.8 * (13 - 4) + 0.2 * (13 - 14)). Actually we should compute the change in expected cost from N=3 to N=4.\n\nChange Δ = E[C_4] - E[C_3] = (0.8*(4-13?) No, compute per-case difference.\n\nBetter: For the events where first three attempts fail (probability 0.008):\n\n- Under 3-attempt policy: cost =13 (3 attempts + penalty).\n- Under 4-attempt policy: cost = 4 (if success on 4th) or 14 (if fails on 4th). Weighted by conditional probabilities: P(success on 4th | first three fail) = 0.8; P(failure on 4th | first three fail) = 0.2.\n\nSo expected cost under 4 attempts for this group = 0.8*4 + 0.2*14 = 3.2 + 2.8 = 6.0.\n\nThus conditional expected cost for these scenarios is 6.0 vs 13.0, saving 7 units on average. Weighted by probability 0.008 gives reduction = 0.008 * 7 = 0.056. This matches the difference computed.\n\nThus raising limit to 4 attempts reduces expected total cost by 0.056 units (or 5.6% reduction), to 1.264.\n\nAlternatively, if we want to express cost in the original units, we can say expected cost reduces from 1.32 to 1.264. The question may ask \"by how much?\" So answer: reduces by 0.056 units.\n\nWe could also compute exact expression for expected cost for general N. But not required. But we can also provide a general formula.\n\nGeneral formula: Let p=0.2 (failure), q=1-p=0.8 (success). N attempts limit. Cost = N attempts + penalty if all fail. Expected cost = sum_{k=1}^{N-1} k * p^{k-1} q + N * p^{N-1} q + (N+penalty)*p^{N}. Actually we need to incorporate the case where success occurs on Nth attempt: probability p^{N-1} q, cost N. And case where all N attempts fail: probability p^{N}, cost N+penalty. So expected cost = Σ_{k=1}^{N} k * p^{k-1} q + (N+penalty)*p^{N}. But we can also incorporate the Nth success as part of the sum; then add penalty term.\n\nFor N=3: Σ_{k=1}^{3} k * p^{k-1} q + (3+10)*p^3. That yields 1*0.8 + 2*0.2*0.8 + 3*(0.2)^2*0.8 + 13*(0.2)^3 = 0.8 + 0.32 + 0.096 + 13*0.008 = 0.8 + 0.32 + 0.096 + 0.104 = 1.32.\n\nFor N=4: Σ_{k=1}^{4} k * p^{k-1} q + (4+10)*p^4 = 0.8 + 0.32 + 0.096 + 4*(0.2)^3*0.8 + 14*(0.2)^4 = 0.8 + 0.32 + 0.096 + 4*0.008*0.8? Actually (0.2)^3 = 0.008; *0.8 = 0.0064; *4 = 0.0256; plus 14*(0.0016) = 0.0224. Sum = 1.264.\n\nThus the difference = 0.056.\n\nThus answer: expected cost per call under 3 attempts = 1.32 units. Raising limit to 4 attempts reduces expected cost by 0.056 units (to 1.264). Show arithmetic.\n\nNow the user asked: \"An API call fails independently with probability 0.2 on each attempt. Every attempt costs 1 unit. The policy allows up to 3 attempts; if all 3 fail, a penalty of 10 units is paid and the call is abandoned. What is the expected total cost per call? Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic.\"\n\nThus we need to answer accordingly.\n\nWe should also provide some explanation of the logic and maybe a table of outcomes.\n\nThus we can produce final answer:\n\n- Compute probabilities of success on attempts 1-3 and failure of all three.\n- Compute expected cost = sum(cost * probability).\n- Show numbers: 0.8*1 + 0.16*2 + 0.032*3 + 0.008*13 = 1.32.\n- Then compute for 4 attempts: add the extra chance of success on 4th attempt (prob 0.0064) and extra failure (prob 0.0016) with cost 14. Compute sum = 0.8*1 + 0.16*2 + 0.032*3 + 0.0064*4 + 0.0016*14 = 1.264.\n- Difference = 0.056.\n\nWe could also show the incremental analysis: The only change from 3 to 4 attempts is for the case where first three attempts fail (probability 0.008). Under 3 attempts you pay 13. Under 4 attempts you pay either 4 (if 4th succeeds, prob 0.8) or 14 (if 4th also fails, prob 0.2). Expected cost for that branch under 4 attempts = 0.8*4 + 0.2*14 = 6. So expected reduction = 0.008*(13 - 6) = 0.008*7 = 0.056.\n\nThus yes, raising the limit reduces expected cost by 0.056 units (approx 4.2% reduction relative to original expected cost). Actually 0.056/1.32 ≈ 4.24% reduction.\n\nWe can also compute the percent reduction: (1.32-1.264)/1.32 = 0.056/1.32 ≈ 0.0424 = 4.24%.\n\nThus answer.\n\nWe can also discuss that the penalty is large relative to attempt cost, so adding an extra attempt reduces the expected penalty cost.\n\nNow, ensure to show arithmetic clearly, maybe as bullet points or table.\n\nWe can also compute exact rational values: p=1/5, q=4/5, penalty=10. So p^3 = (1/5)^3 = 1/125 = 0.008; p^4 = 1/625 = 0.0016; q = 4/5; p = 1/5.\n\nCompute expected cost exactly:\n\nE[C_3] = 1 * (4/5) + 2 * (1/5)*(4/5) + 3 * (1/5)^2*(4/5) + 13 * (1/5)^3.\n\nCompute fractions: 4/5 + 2*(4/25) + 3*(4/125) + 13*(1/125). Let's compute:\n\n- 4/5 = 0.8\n- 2*(4/25) = 8/25 = 0.32\n- 3*(4/125) = 12/125 = 0.096\n- 13*(1/125) = 13/125 = 0.104\n\nSum: (4/5 = 100/125) + (8/25 = 40/125) + (12/125) + (13/125) = (100+40+12+13)/125 = 165/125 = 33/25 = 1.32. Indeed 33/25 = 1.32.\n\nFor N=4: E[C_4] = 1*(4/5) + 2*(1/5)*(4/5) + 3*(1/5)^2*(4/5) + 4*(1/5)^3*(4/5) + 14*(1/5)^4.\n\nCompute fractions:\n\n- 4/5 = 100/125\n- 8/25 = 40/125\n- 12/125 = 12/125\n- 4*(4/125) = 16/125? Wait compute 4*(1/5)^3*(4/5) = 4*(1/125)*(4/5) = 4*(4/625) = 16/625 = 0.0256. In denominator 625: 16/625. Convert to denominator 125? 16/625 = (16/5)/125 = 3.2/125? Actually 16/625 = (16/5)/125 = 3.2/125 = 0.0256. So we can keep as decimal.\n\n- 14*(1/5)^4 = 14*(1/625) = 14/625 = 0.0224.\n\nSum: Let's compute in denominator 625: 4/5 = 4*125/625 = 500/625; 8/25 = 8*25/625 = 200/625; 12/125 = 12*5/625 = 60/625; 16/625 = 16/625; 14/625 = 14/625. Sum = (500+200+60+16+14)/625 = 790/625 = 1.264. Indeed 790/625 = 1.264.\n\nDifference: 165/125 - 790/625 = (165*5)/625 - 790/625 = (825 - 790)/625 = 35/625 = 0.056. Indeed 35/625 = 0.056.\n\nThus expected cost reduction = 35/625 = 0.056 units.\n\nThus answer.\n\nNow we can answer concisely.\n\nWe need to show arithmetic. Provide steps.\n\nAlso note that the expected cost per call is less than the penalty, obviously.\n\nWe might also discuss the break-even point: The expected cost reduction from adding an extra attempt is p^{N-1} * [q*(penalty) - (N+penalty - N?) Actually we can derive general condition: Adding an extra attempt is beneficial if expected penalty saved > extra attempt cost. The expected saving = p^{N-1} * q * penalty - p^N * (penalty + 1 - (penalty + N? Wait). Actually we can derive incremental benefit: When you increase limit from N to N+1, you add a chance to succeed on attempt N+1 (instead of paying penalty). The expected cost change = p^N * [ (N+1 + penalty) - (N + penalty) ]? Actually need to compute difference.\n\nGeneral: With limit N, if all N attempts fail (prob p^N), you pay N + penalty. With limit N+1, you have chance of success on N+1th attempt (prob p^N * q) and if it fails (prob p^{N+1}) you pay N+1 + penalty. So the expected cost difference = p^N * q * [ (N+1) - (N + penalty) ] + p^{N+1} * [ (N+1 + penalty) - (N + penalty) ] = p^N * q * (1 - penalty) + p^{N+1} * 1? Wait we need to compute correctly.\n\nActually compute expected cost for limit N: E_N = Σ_{k=1}^{N-1} k * p^{k-1} q + N * p^{N-1} q + (N+penalty) * p^N.\n\nSimplify: E_N = Σ_{k=1}^{N} k * p^{k-1} q + (N+penalty) * p^N.\n\nSimilarly E_{N+1} = Σ_{k=1}^{N+1} k * p^{k-1} q + (N+1+penalty) * p^{N+1}.\n\nThus difference Δ = E_{N+1} - E_N = [Σ_{k=1}^{N+1} k p^{k-1} q - Σ_{k=1}^{N} k p^{k-1} q] + (N+1+penalty) p^{N+1} - (N+penalty) p^N.\n\nThe sum difference is just the term for k=N+1: (N+1) p^N q.\n\nThus Δ = (N+1) p^N q + (N+1+penalty) p^{N+1} - (N+penalty) p^N.\n\nFactor p^N: Δ = p^N [ (N+1) q + (N+1+penalty) p - (N+penalty) ].\n\nSimplify inside: (N+1) q + (N+1+penalty) p - N - penalty.\n\nRecall q = 1-p.\n\nCompute (N+1) q = (N+1)(1-p) = N+1 - (N+1)p.\n\nThus inside = N+1 - (N+1)p + (N+1+penalty) p - N - penalty = (N+1 - N) + ( - (N+1)p + (N+1+penalty) p ) - penalty = 1 + [(-N-1 + N+1+penalty) p] - penalty = 1 + (penalty * p) - penalty.\n\nThus Δ = p^N [ 1 + penalty * p - penalty ] = p^N [ 1 - penalty (1 - p) ] = p^N [ 1 - penalty * q ].\n\nThus the condition for adding an extra attempt to reduce expected cost is when 1 - penalty * q < 0, i.e., penalty * q > 1. Since q=0.8, penalty=10, penalty*q=8 > 1, so Δ is negative: expected cost decreases. Indeed the difference we computed is -0.056.\n\nThus the incremental benefit is p^N (penalty * q - 1). For N=3, p^3 = 0.008, penalty*q - 1 = 8 - 1 = 7, product = 0.008 * 7 = 0.056. That matches.\n\nThus we can present this insight as well.\n\nThus answer: Yes, raising limit to 4 attempts lowers expected cost by 0.056 units.\n\nNow we should produce final answer with clear arithmetic.\n\nPotential pitfalls: The user might want the expected total cost per call under current policy (3 attempts). Then ask \"Then: would raising the limit to 4 attempts lower the expected cost, and by how much? Show the arithmetic.\"\n\nThus answer: Expected cost = 1.32. Raising limit to 4 attempts reduces expected cost by 0.056 to 1.264.\n\nWe can also present as a table.\n\nWe can also show the incremental analysis: The only difference is the branch where first three attempts fail (prob 0.008). Under 3 attempts you pay 13. Under 4 attempts you pay 4 if 4th succeeds (prob 0.8) or 14 if 4th fails (prob 0.2). Expected cost for that branch = 6. So expected reduction = 0.008 * (13 - 6) = 0.056.\n\nThus answer.\n\nNow produce final answer.\n\nWe should also perhaps discuss that the expected cost reduction is small relative to the cost of an attempt (1 unit). The extra attempt costs 1 unit but saves on penalty with high probability, so net benefit.\n\nThus final answer: 1.32 units; raising to 4 attempts reduces expected cost by 0.056 units to 1.264 units.\n\nWe can also express as a fraction: 33/25 vs 790/625. The difference 35/625.\n\nThus answer.\n\nNow produce final answer with clear steps.\n",
+ "content": "**1.  Expected cost with a 3‑attempt limit**\n\nLet  \n\n* p = 0.2 = probability an attempt fails,  \n* q = 1‑p = 0.8 = probability an attempt succeeds,  \n* penalty = 10 units.\n\nThe policy stops as soon as a success occurs.  \nThe possible outcomes are:\n\n| Outcome | Probability | Attempts | Penalty | Total cost | Cost × Prob |\n|---------|-----------|----------|-------|------------|------------|\n| Success on 1st | q = 0.8 | 1 | 0 | 1 | 0.8 |\n| Success on 2nd | p·q = 0.2·0.8 = 0.16 | 2 | 0 | 2 | 0.32 |\n| Success on 3rd | p²·q = 0.04·0.8 = 0.032 | 3 | 0 | 3 | 0.096 |\n| All 3 fail | p³ = 0.008 | 3 | 10 | 13 | 0.104 |\n\n\\[\n\\begin{aligned}\nE_3 &= 0.8\\cdot1 + 0.16\\cdot2 + 0.032\\cdot3 + 0.008\\cdot13\\\\\n    &= 0.8 + 0.32 + 0.096 + 0.104\\\\\n    &= \\mathbf{1.32\\ units}.\n\\end{aligned}\n\\]\n\n(Exact fraction: \\(E_3 = \\frac{165}{125}= \\frac{33}{25}=1.32\\).)\n\n---\n\n**2.  Effect of raising the limit to 4 attempts**\n\nNow we add the possibility of a 4th attempt.  \nOnly the branch where the first three attempts failed (probability \\(p^3=0.008\\)) is affected.\n\n* Under the 3‑attempt policy this branch costs \\(3+10 = 13\\).\n* Under the 4‑attempt policy:\n  * 4th attempt succeeds (prob. \\(q=0.8\\)) → cost = 4.\n  * 4th attempt also fails (prob. \\(p=0.2\\)) → cost = 4 + 10 = 14.\n\nExpected cost for this branch with 4 attempts:\n\n\\[\n0.8\\cdot4 + 0.2\\cdot14 = 3.2 + 2.8 = 6.0.\n\\]\n\nThus the reduction for this branch is \\(13 - 6 = 7\\) units, and the overall reduction in expected cost is\n\n\\[\n0.008 \\times 7 = \\mathbf{0.056\\ units}.\n\\]\n\n**Full arithmetic for the 4‑attempt policy**\n\n| Outcome | Probability | Attempts | Penalty | Total cost | Cost × Prob |\n|---------|-----------|----------|-------|------------|------------|\n| Success on 1st | 0.8 | 1 | 0 | 1 | 0.8 |\n| Success on 2nd | 0.16 | 2 | 0 | 2 | 0.32 |\n| Success on 3rd | 0.032 | 3 | 0 | 3 | 0.096 |\n| Success on 4th | p³·q = 0.008·0.8 = 0.0064 | 4 | 0 | 4 | 0.0256 |\n| All 4 fail | p⁴ = 0.0016 | 4 | 10 | 14 | 0.0224 |\n\n\\[\n\\begin{aligned}\nE_4 &= 0.8 + 0.32 + 0.096 + 0.0064\\cdot4 + 0.0016\\cdot14\\\\\n    &= 0.8 + 0.32 + 0.096 + 0.0256 + 0.0224\\\\\n    &= \\mathbf{1.264\\ units}.\n\\end{aligned}\n\\]\n\n(Exact fraction: \\(E_4 = \\frac{790}{625}=1.264\\).)\n\n**Difference**\n\n\\[\nE_3 - E_4 = 1.32 - 1.264 = \\mathbf{0.056\\ units}.\n\\]\n\nSo raising the limit to 4 attempts **does lower the expected total cost**, by **0.056 units** (about a 4.2 % reduction). The extra attempt costs 1 unit, but the high probability of avoiding the 10‑unit penalty more than compensates.",
+ "usage": {
+  "completion_tokens": 5740,
+  "prompt_tokens": 94,
+  "total_tokens": 5834,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 94,
+  "prompt_ms": 2076.393,
+  "prompt_per_token_ms": 22.089287234042555,
+  "prompt_per_second": 45.27081337685111,
+  "predicted_n": 5740,
+  "predicted_ms": 617162.763,
+  "predicted_per_token_ms": 107.53838003136435,
+  "predicted_per_second": 9.299005617420894
+ },
+ "tokens": {
+  "reasoning_tokenized": 4775,
+  "content_tokenized": 962,
+  "completion_tokens_usage": 5740,
+  "prompt_tokens_usage": 94,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 2.079,
+  "to_first_reasoning": 2.079,
+  "to_first_answer_token": 515.732,
+  "to_final_answer": 619.243
+ },
+ "peaks": {
+  "gpu_temp_c": 86,
+  "gpu_mem_mib": 4731,
+  "min_mem_available_mib": 26667
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 86,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26667
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 80,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26693
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26738
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26745
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26735
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26734
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26753
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26741
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26730
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26693
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26708
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26726
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26717
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26723
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26725
+  },
+  {
+   "t_s": 201.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26751
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 231.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26761
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 261.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 271.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 281.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 291.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26713
+  },
+  {
+   "t_s": 301.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26747
+  },
+  {
+   "t_s": 312.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26722
+  },
+  {
+   "t_s": 322.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26725
+  },
+  {
+   "t_s": 332.0,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 342.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 352.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26728
+  },
+  {
+   "t_s": 362.1,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 372.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26746
+  },
+  {
+   "t_s": 382.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 392.2,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26716
+  },
+  {
+   "t_s": 402.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26731
+  },
+  {
+   "t_s": 412.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 422.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26721
+  },
+  {
+   "t_s": 432.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26737
+  },
+  {
+   "t_s": 442.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 452.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 462.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26716
+  },
+  {
+   "t_s": 472.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26736
+  },
+  {
+   "t_s": 482.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 492.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26710
+  },
+  {
+   "t_s": 502.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26721
+  },
+  {
+   "t_s": 512.6,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26780
+  },
+  {
+   "t_s": 522.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26754
+  },
+  {
+   "t_s": 532.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26725
+  },
+  {
+   "t_s": 542.7,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26729
+  },
+  {
+   "t_s": 552.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26739
+  },
+  {
+   "t_s": 562.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26781
+  },
+  {
+   "t_s": 572.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26727
+  },
+  {
+   "t_s": 582.8,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26733
+  },
+  {
+   "t_s": 592.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26724
+  },
+  {
+   "t_s": 602.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26707
+  },
+  {
+   "t_s": 612.9,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 4731,
+   "mem_available_mib": 26759
+  }
+ ]
+}

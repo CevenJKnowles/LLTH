@@ -1,0 +1,124 @@
+{
+ "id": "D4",
+ "title": "Group totals that do not add up (looks easy, is hard)",
+ "prompt_text": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1019,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1019,
+ "started_at": "2026-10-30T22:08:18",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Pandas 2.x\n*   DataFrame: `df = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\", \"a\"], \"v\": [1, 2, 3, 4]})` (Wait, let me re-read the code provided).\n    *   Code provided: `df = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})`\n    *   `k` values: `\"a\"`, `\"b\"`, `None`, `\"a\"`\n    *   `v` values: `1`, `2`, `3`, `4`\n*   Calculation 1: `df.groupby(\"k\")[\"v\"].sum().sum()`\n*   Calculation 2: `df[\"v\"].sum()`\n\n    *   Row 0: `k=\"a\"`, `v=1`\n    *   Row 1: `k=\"b\"`, `v=2`\n    *   Row 2: `k=None`, `v=3`\n    *   Row 3: `k=\"a\"`, `v=4`\n\n    *   `df[\"v\"].sum()`: $1 + 2 + 3 + 4 = 10$.\n\n    *   Groups formed by `groupby(\"k\")`:\n        *   Group `\"a\"`: values `[1, 4]` $\\rightarrow$ sum = $5$\n        *   Group `\"b\"`: values `[2]` $\\rightarrow$ sum = $2$\n        *   Group `None`: (By default, `groupby` drops NaNs/None).\n    *   Intermediate sums: `[5, 2]` (for 'a' and 'b').\n    *   Sum of these sums: $5 + 2 = 7$.\n\n    *   Wait, let's double-check the default behavior of `groupby` regarding `NaN` (or `None`).\n    *   In pandas, `groupby` excludes `NA/NaN` values in the grouping key by default (`dropna=True`).\n    *   Therefore, the row where `k` is `None` is excluded from the group-by result.\n\n    *   Sum 1 (`df.groupby(\"k\")[\"v\"].sum().sum()`): **7**\n    *   Sum 2 (`df[\"v\"].sum()`): **10**\n\n    *   The difference is caused by how `groupby` handles `None` (or `NaN`) in the grouping key.\n    *   By default, `groupby` excludes rows where the grouping key is `NaN`.\n    *   `df[\"v\"].sum()` includes all values in the column.\n    *   `df.groupby(\"k\")[\"v\"].sum()` only sums values for groups that exist, meaning the row where `k` is `None` is ignored in the group sums, leading to a discrepancy.\n\n    *   I want the sum of group totals to equal the column total.\n    *   To include the `None` group, I need to tell `groupby` not to drop the null values.\n    *   The parameter is `dropna`.\n    *   Change: `df.groupby(\"k\", dropna=False)[\"v\"].sum().sum()`\n\n    *   State both numbers.\n    *   Explain why they differ (default `dropna=True` in `groupby`).\n    *   Give the one-argument change (`dropna=False`).\n\n    *   *Sum 1:* `df.groupby(\"k\")[\"v\"].sum()` results in:\n        *   a: 5\n        *   b: 2\n        *   Total: 7\n    *   *Sum 2:* `df[\"v\"].sum()` results in 10.\n    *   *Difference:* 3 (which is the value associated with `None`).\n    *   *Fix:* `dropna=False`.\n\n    *Self-Correction/Refinement:* The prompt asks for \"the one-argument change\". Adding `dropna=False` inside the `groupby` call is the correct way.\n\n    Let's re-read the code one more time to ensure no silly mistakes.\n    `df = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})`\n    k: a, b, None, a\n    v: 1, 2, 3, 4\n    Sum v: 1+2+3+4=10.\n    Grouped by k:\n    a -> 1+4=5\n    b -> 2\n    None -> (dropped by default)\n    Sum of group sums: 5+2=7.\n    Confirmed.",
+ "content": "The two numbers are **7** and **10**.\n\n### Explanation\nThe numbers differ because of how `groupby` handles missing values (`None` or `NaN`) in the grouping key.\n\n1.  **`df[\"v\"].sum()` returns 10**: This is a straightforward sum of every value in column `v` ($1 + 2 + 3 + 4 = 10$).\n2.  **`df.groupby(\"k\")[\"v\"].sum().sum()` returns 7**: By default, pandas' `groupby` operation excludes rows where the grouping key is `NaN` or `None` (`dropna=True` is the default). Therefore, the row where `k` is `None` (which has the value `3`) is excluded from the grouped results. The groups created are `\"a\"` (sum 5) and `\"b\"` (sum 2), which total 7.\n\n### The Fix\nTo make the group totals add up to the column total, you must tell `groupby` to include the null values as a valid group by setting **`dropna=False`**:\n\n```python\ndf.groupby(\"k\", dropna=False)[\"v\"].sum().sum()\n```",
+ "usage": {
+  "completion_tokens": 1319,
+  "prompt_tokens": 127,
+  "total_tokens": 1446,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 127,
+  "prompt_ms": 1493.53,
+  "prompt_per_token_ms": 11.76007874015748,
+  "prompt_per_second": 85.03344425622518,
+  "predicted_n": 1319,
+  "predicted_ms": 76361.229,
+  "predicted_per_token_ms": 57.9371995447648,
+  "predicted_per_second": 17.260067933165402
+ },
+ "tokens": {
+  "reasoning_tokenized": 1056,
+  "content_tokenized": 258,
+  "completion_tokens_usage": 1319,
+  "prompt_tokens_usage": 127,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.733,
+  "to_first_reasoning": 1.733,
+  "to_first_answer_token": 63.175,
+  "to_final_answer": 77.858
+ },
+ "peaks": {
+  "gpu_temp_c": 83,
+  "gpu_mem_mib": 5165,
+  "min_mem_available_mib": 26279
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 83,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 79,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26279
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26290
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26282
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26314
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5165,
+   "mem_available_mib": 26292
+  }
+ ]
+}

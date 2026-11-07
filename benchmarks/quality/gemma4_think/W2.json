@@ -1,0 +1,256 @@
+{
+ "id": "W2",
+ "title": "Cover letter opening paragraph with fixed facts",
+ "prompt_text": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write the opening paragraph of a cover letter, at most 120 words, using only these facts and nothing else. The applicant has four years of experience using pandas and scikit-learn. They built a customer churn model that reduced false-positive alerts by 18 per cent over six months. They led a team of three. The role is Data Analyst at a mid-sized logistics company. The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard. Do not invent any employer name, project name, dates or additional skills, and do not overstate the SQL experience."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1002,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1002,
+ "started_at": "2026-10-30T20:52:05",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Constraint 1: Opening paragraph of a cover letter.\n*   Constraint 2: At most 120 words.\n*   Constraint 3: Use *only* the provided facts and nothing else.\n*   Constraint 4: Facts provided:\n    *   4 years of experience with pandas and scikit-learn.\n    *   Built a customer churn model that reduced false-positive alerts by 18% over six months.\n    *   Led a team of three.\n    *   Role: Data Analyst.\n    *   Company: Mid-sized logistics company.\n    *   Job requirements: SQL and dashboard experience.\n    *   Applicant's SQL skill: Used occasionally.\n    *   Applicant's dashboard skill: Never built a dashboard.\n*   Constraint 5: Do not invent employer name, project name, dates, or additional skills.\n*   Constraint 6: Do not overstate SQL experience.\n\n    *   I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I have led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. Regarding the requirements, I have used SQL occasionally and have never built a dashboard.\n\n    *   \"I am applying for the Data Analyst position at your mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    *   *Only these facts and nothing else:* \"I am applying for the Data Analyst position\" is an implication/standard cover letter intro, but strictly speaking, \"The role is Data Analyst at a mid-sized logistics company\" is a fact. I should frame it as applying for that role.\n    *   *Do not overstate SQL:* \"Used SQL occasionally\" is required.\n    *   *Do not invent:* I shouldn't add \"I am excited to apply\" or \"I am a perfect fit\" because those aren't in the provided facts. The prompt says \"using only these facts and nothing else.\" This is a very strict constraint.\n\n    *Strict Interpretation Check:*\n    Facts:\n    1. 4 years experience (pandas/scikit-learn)\n    2. Built churn model (18% reduction in false-positives over six months)\n    3. Led team of 3\n    4. Role: Data Analyst\n    5. Company: Mid-sized logistics company\n    6. SQL: Used occasionally\n    7. Dashboard: Never built a dashboard\n\n    *Drafting strictly:*\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    *Word Count Check:* 52 words. Well under 120.\n\n    *Content Check:*\n    - 4 years pandas/scikit-learn? Yes.\n    - Churn model 18% reduction/6 months? Yes.\n    - Led team of 3? Yes.\n    - Role: Data Analyst? Yes.\n    - Mid-sized logistics company? Yes.\n    - SQL occasionally? Yes.\n    - Never built dashboard? Yes.\n    - Nothing else? (No \"excited\", no \"passionate\", no \"I'm the best candidate\").\n\n    *Wait, the prompt says \"using only these facts and nothing else.\"*\n    If I say \"I am applying for...\", is \"applying\" a fact? The prompt says \"The role is...\". It doesn't explicitly say \"The applicant is applying.\" However, a cover letter *is* an application. To make it a cover letter, I must state the purpose.\n\n    Let's try to be even more minimal to avoid \"inventing\" intent, although \"I am applying\" is the definition of a cover letter.\n\n    \"I am applying for the Data Analyst position at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    *Let's double-check the \"nothing else\" constraint.*\n    If I say \"I am applying for the Data Analyst position\", is \"position\" a fact? The prompt says \"The role is Data Analyst\". \"Position\" is a synonym.\n    If I say \"at a mid-sized logistics company\", that is a fact.\n\n    Let's check if I missed any facts.\n    - 4 years pandas/scikit-learn (Check)\n    - Churn model / 18% / 6 months (Check)\n    - Led team of 3 (Check)\n    - Data Analyst / mid-sized logistics company (Check)\n    - SQL occasionally (Check)\n    - Never built dashboard (Check)\n\n    *Is \"I am applying for...\" allowed?* Usually, in these \"use only these facts\" prompts, the AI is expected to construct the sentence structure required for the format (cover letter) while only using the provided information for the *content*. If I literally only use the facts, it would be a list. A \"paragraph\" requires connecting words/verbs.\n\n    *Strict Content Check:*\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    *Word count:* 51 words.\n\n    *One final check:* \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\"\n    My draft: \"I have used SQL occasionally and have never built a dashboard.\" This is accurate and doesn't overstate.\n\n    *Wait, did I invent anything?*\n    \"I am applying for\" -> This is the purpose of the document (a cover letter).\n    \"I have\" -> Verb needed for sentence.\n    \"at a\" -> Preposition.\n\n    Let's look at the prompt again: \"using only these facts and nothing else.\"\n    This usually means \"don't add extra skills like Python or leadership skills not mentioned.\"\n\n    Revised Draft:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Total words: 51.\n\n    One detail: \"The job advert asks for SQL and dashboard experience\". I don't need to mention the *advert* specifically, just address the skills.\n\n    Final Polish:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Wait, I should check if I should include the \"Job advert asks for...\" part. The prompt says \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\" This is a set of facts about the applicant's relation to the requirements. I've covered it.\n\n    Let's ensure \"18 per cent\" vs \"18%\". The prompt says \"18 per cent\". I will stick to \"18 per cent\".\n\n    Final text:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Is there a way to make it more \"opening paragraph\" like?\n    \"Regarding the Data Analyst role at a mid-sized logistics company, I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    The first one is more standard. Let's go with a variation that feels like a coherent paragraph but strictly adheres to the \"only these facts\" rule.\n\n    \"I am applying for the Data Analyst position at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    Wait, the prompt says \"The role is Data Analyst at a mid-sized logistics company.\"\n    \"I am applying for the Data Analyst role at a mid-sized logistics company.\" -> This is fine.\n\n    Let's check word count one more time. 50 words. Well under 120.\n\n    Is \"I am applying for...\" an invention?\n    The prompt asks me to *write the opening paragraph of a cover letter*. A cover letter, by definition, is an application. Therefore, the statement of application is the function of the text, not an \"invented fact.\"\n\n    Check:\n    - 4 years pandas/scikit-learn? Yes.\n    - Churn model/18%/6 months? Yes.\n    - Led team of 3? Yes.\n    - Data Analyst/Mid-sized logistics? Yes.\n    - SQL occasionally? Yes.\n    - Never built dashboard? Yes.\n\n    One thought: Should I mention the SQL/dashboard requirement specifically as \"I meet the SQL requirement by having used it occasionally...\"?\n    No, \"do not overstate\" and \"use only these facts\". The facts are that the applicant has used SQL occasionally and never built a dashboard.\n\n    Final Draft:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Actually, the \"I am applying for...\" might be considered adding info. Let's try to frame it using only the facts provided to be extremely safe.\n    \"For the Data Analyst role at a mid-sized logistics company: I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This feels less like a natural \"paragraph\" and more like a summary.\n    Let's look at the instruction \"Write the opening paragraph of a cover letter\". A cover letter paragraph needs to be a sentence.\n\n    \"I am applying for the Data Analyst position at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is the strongest.\n\n    Wait, the prompt says \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\"\n    I should ensure I'm not implying the applicant *has* the skills if they don't.\n    \"I have used SQL occasionally and have never built a dashboard.\" (This is perfect).\n\n    Final check on constraints:\n    - Max 120 words? Yes (50).\n    - Only these facts? Yes.\n    - No invented names/dates/skills? Yes.\n    - No overstated SQL? Yes.\n    - No overstating dashboard? Yes.\n\n    One minor detail: \"The role is Data Analyst at a mid-sized logistics company.\"\n    The text \"I am applying for the Data Analyst role at a mid-sized logistics company\" uses the provided facts.\n\n    Let's try one more version to see if it's more \"paragraph-like\" while staying strictly to facts.\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is a perfect opening paragraph.\n\n    Final Word Count Check:\n    1. I (1)\n    2. am (2)\n    3. applying (3)\n    4. for (4)\n    5. the (5)\n    6. Data (6)\n    7. Analyst (7)\n    8. role (8)\n    9. at (9)\n    10. a (10)\n    11. mid-sized (11)\n    12. logistics (12)\n    13. company. (13)\n    14. I (14)\n    15. have (15)\n    16. four (16)\n    17. years (17)\n    18. of (18)\n    19. experience (19)\n    20. using (20)\n    21. pandas (21)\n    22. and (22)\n    23. scikit-learn. (23)\n    24. I (24)\n    25. led (25)\n    26. a (26)\n    27. team (27)\n    28. of (28)\n    29. three. (29)\n    30. I (30)\n    31. built (31)\n    32. a (32)\n    33. customer (33)\n    34. churn (34)\n    35. model (35)\n    36. that (36)\n    37. reduced (37)\n    38. false-positive (38)\n    39. alerts (39)\n    40. by (40)\n    41. 18 (41)\n    42. per (42)\n    43. cent (43)\n    44. over (44)\n    45. six (45)\n    46. months. (46)\n    47. I (47)\n    48. have (48)\n    49. used (49)\n    50. SQL (50)\n    51. occasionally (51)\n    52. and (52)\n    53. have (53)\n    54. never (54)\n    55. built (55)\n    56. a (56)\n    57. dashboard. (57)\n\n    Total: 57 words.\n\n    Final check: \"Do not invent any employer name...\".\n    I didn't.\n    \"Do not invent any... project name...\".\n    I didn't. \"customer churn model\" was in the facts.\n    \"Do not invent any... additional skills...\".\n    I didn't.\n    \"Do not overstate the SQL experience.\"\n    I said \"used SQL occasionally\". (Matches facts).\n\n    Everything seems to be in order.\n\n    One thought: \"mid-sized\" is hyphenated. \"false-positive\" is hyphenated. I'll keep them as they are common in these contexts. The prompt used \"mid-sized\" (hyphenated) and \"false-positive\" (hyphenated).\n\n    One final consideration: Is \"I am applying for the Data Analyst role...\" adding information? The prompt says \"The role is Data Analyst at a mid-sized logistics company.\" It's a bit of a gray area, but in a cover letter context, the *subject* of the letter is the role. Without stating the intent, it isn't a cover letter.\n\n    However, if I want to be *extremely* strict:\n    \"I am writing regarding the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    \"I am writing regarding\" is slightly more neutral than \"I am applying for\".\n\n    Actually, the simplest version is the best.\n\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is solid.\n\n    Wait, \"per cent\" or \"percent\"? The prompt used \"per cent\". I will use \"per cent\".\n\n    *Self-Correction during final look:*\n    The prompt says \"using only these facts and nothing else.\"\n    If I say \"I am applying for\", am I using a fact?\n    The fact is: \"The role is Data Analyst at a mid-sized logistics company.\"\n    If I strictly follow \"nothing else\", I might have to say:\n    \"I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard. I am applying for the Data Analyst role at a mid-sized logistics company.\"\n\n    This sounds awkward. A \"paragraph\" needs to flow. Usually, \"using only these facts\" in LLM prompting allows for the necessary grammatical glue (conjunctions, pronouns, verbs) to form a coherent sentence/paragraph.\n\n    Let's look at the facts one more time to ensure I didn't miss a nuance.\n    - \"four years of experience using pandas and scikit-learn\" -> check.\n    - \"built a customer churn model that reduced false-positive alerts by 18 per cent over six months\" -> check.\n    - \"led a team of three\" -> check.\n    - \"Data Analyst at a mid-sized logistics company\" -> check.\n    - \"SQL and dashboard experience\" (the requirement) -> check.\n    - \"used SQL occasionally\" -> check.\n    - \"never built a dashboard\" -> check.\n\n    Wait, the prompt says: \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\"\n    The *applicant* has used SQL occasionally.\n    My draft: \"I have used SQL occasionally and have never built a dashboard.\" -> This is perfect.\n\n    One last check: \"mid-sized\" or \"mid sized\"? Prompt uses \"mid-sized\".\n    \"false-positive\" or \"false positive\"? Prompt uses \"false-positive\".\n    \"scikit-learn\" or \"scikit learn\"? Prompt uses \"scikit-learn\".\n\n    Final Polish:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn. I led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Final word count: 51 words.\n\n    Let's see if I can combine some to make it a more \"natural\" paragraph.\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and have led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is better.\n\n    One more check. \"The role is Data Analyst at a mid-sized logistics company.\"\n    Is \"role\" or \"position\" better? \"Role\" is in the prompt.\n    Is \"mid-sized logistics company\" fine? Yes.\n\n    Final version:\n    I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and have led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\n\n    Wait, I'll remove the \"have\" in \"and have led\" to stay closer to the prompt's \"led a team of three\".\n\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is it.\n\n    Final check on \"nothing else\".\n    The prompt is \"using only these facts and nothing else.\"\n    If the user is a strict logic professor, any word that isn't in the prompt is a violation. But the prompt asks for a \"paragraph of a cover letter,\" which *requires* language. \"I am applying for\" is the context of the request.\n\n    Let's try to be as minimal as possible just in case.\n    \"Regarding the Data Analyst role at a mid-sized logistics company: I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This version is very safe. It avoids \"I am applying for\" (which isn't in the facts) and uses \"Regarding... [role]\" (which uses the facts provided).\n\n    Actually, \"I am applying for the Data Analyst role at a mid-sized logistics company\" is a much better *opening paragraph* for a cover letter. I will go with that.\n\n    Wait, one more check: \"The applicant has four years of experience using pandas and scikit-learn.\"\n    My draft: \"I have four years of experience using pandas and scikit-learn...\" -> Good.\n\n    Final verification:\n    - 4 years pandas/scikit-learn? Yes.\n    - Churn model 18% reduction/6 months? Yes.\n    - Led team of 3? Yes.\n    - Data Analyst / mid-sized logistics company? Yes.\n    - SQL occasionally? Yes.\n    - Never built dashboard? Yes.\n    - No invented names? Yes.\n    - No invented skills? Yes.\n    - No overstated SQL? Yes.\n    - Max 120 words? Yes.\n\n    One more thing. The prompt says: \"The job advert asks for SQL and dashboard experience; the applicant has used SQL occasionally and has never built a dashboard.\"\n    Should I mention that the job advert asks for it? No, because the cover letter is addressed *to* the company. You don't say \"I know you want SQL, but I only have some.\" You just state your skills.\n\n    \"I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.\"\n\n    This is the best approach. It meets all requirements and constraints.\n\n    Final Word Count Check:\n    1: I\n    2: am\n    3: applying\n    4: for\n    5: the\n    6: Data\n    7: Analyst\n    8: role\n    9: at\n    10: a\n    11: mid-sized\n    12: logistics\n    13: company.\n    14: I\n    15: have\n    16: four\n    17: years\n    18: of\n    19: experience\n    20: using\n    21: pandas\n    22: and\n    23: scikit-learn\n    24: and\n    25: led\n    26: a\n    27: team\n    28: of\n    29: three.\n    30: I\n    31: built\n    32: a\n    33: customer\n    34: churn\n    35: model\n    36: that\n    37: reduced\n    38: false-positive\n    39: alerts\n    40: by\n    41: 18\n    42: per\n    43: cent\n    44: over\n    45: six\n    46: months.\n    47: I\n    48: have\n    49: used\n    50: SQL\n    51: occasionally\n    52: and\n    53: have\n    54: never\n    55: built\n    56: a\n    57: dashboard.\n\n    Total 57 words. Perfect.",
+ "content": "I am applying for the Data Analyst role at a mid-sized logistics company. I have four years of experience using pandas and scikit-learn and led a team of three. I built a customer churn model that reduced false-positive alerts by 18 per cent over six months. I have used SQL occasionally and have never built a dashboard.",
+ "usage": {
+  "completion_tokens": 5886,
+  "prompt_tokens": 145,
+  "total_tokens": 6031,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 145,
+  "prompt_ms": 1482.151,
+  "prompt_per_token_ms": 10.22173103448276,
+  "prompt_per_second": 97.83078782121389,
+  "predicted_n": 5886,
+  "predicted_ms": 299388.949,
+  "predicted_per_token_ms": 50.87322837723025,
+  "predicted_per_second": 19.656704162450563
+ },
+ "tokens": {
+  "reasoning_tokenized": 5811,
+  "content_tokenized": 70,
+  "completion_tokens_usage": 5886,
+  "prompt_tokens_usage": 145,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.613,
+  "to_first_reasoning": 1.613,
+  "to_first_answer_token": 297.0,
+  "to_final_answer": 300.876
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 5159,
+  "min_mem_available_mib": 26245
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 51,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26245
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 58,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26337
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 60,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26324
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 62,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26321
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 64,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26276
+  },
+  {
+   "t_s": 71.1,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 67,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26293
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 68,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 101.2,
+   "gpu_temp_c": 69,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26329
+  },
+  {
+   "t_s": 111.2,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26328
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 70,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26297
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 141.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26312
+  },
+  {
+   "t_s": 151.3,
+   "gpu_temp_c": 71,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26302
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 171.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26309
+  },
+  {
+   "t_s": 181.4,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26294
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26299
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 74,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26296
+  },
+  {
+   "t_s": 211.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26304
+  },
+  {
+   "t_s": 221.5,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26289
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 75,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26315
+  },
+  {
+   "t_s": 241.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26310
+  },
+  {
+   "t_s": 251.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 261.6,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26316
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26306
+  },
+  {
+   "t_s": 281.7,
+   "gpu_temp_c": 76,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26314
+  },
+  {
+   "t_s": 291.7,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5159,
+   "mem_available_mib": 26305
+  }
+ ]
+}

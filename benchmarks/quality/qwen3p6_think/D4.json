@@ -1,0 +1,321 @@
+{
+ "id": "D4",
+ "title": "Group totals that do not add up (looks easy, is hard)",
+ "prompt_text": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x.\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\nprint(df.groupby(\"k\")[\"v\"].sum().sum())\nprint(df[\"v\"].sum())\n```\n\nThe two printed numbers differ. State both numbers, explain why they differ, and give the one-argument change that makes the group totals add up to the column total."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1019,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1019,
+ "started_at": "2026-10-30T19:44:21",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process:\n\n1.  **Understand User Input:**\n   - pandas version: 2.x\n   - Code snippet:\n     ```python\n     import pandas as pd\n     df = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\n     print(df.groupby(\"k\")[\"v\"].sum().sum())\n     print(df[\"v\"].sum())\n     ```\n   - Questions:\n     - State both printed numbers.\n     - Explain why they differ.\n     - Give the one-argument change that makes the group totals add up to the column total.\n\n2.  **Analyze the Code & Predict Output:**\n   - `df` creation:\n     ```\n        k  v\n     0  a  1\n     1  b  2\n     2 None  3\n     3  a  4\n     ```\n   - `df.groupby(\"k\")[\"v\"].sum()`:\n     - Groups by column \"k\". Note that `None` is treated as a group by default in pandas.\n     - Groups: `\"a\"`, `\"b\"`, `NaN/None`\n     - Sums per group:\n       - `\"a\"`: 1 + 4 = 5\n       - `\"b\"`: 2\n       - `NaN/None`: 3 (by default, `skipna=True` for groupby sum, so it sums non-NA values in each group)\n     - Result: Series with index `[\"a\", \"b\", nan]` and values `[5, 2, 3]`\n   - `.sum().sum()` on that Series: 5 + 2 + 3 = 10\n   - `df[\"v\"].sum()`: By default, `skipna=True`, so it sums non-NA values in the entire column: 1 + 2 + 3 + 4 = 10? Wait, let's check pandas behavior. Actually, `df[\"v\"].sum()` defaults to `skipna=True`, so it should be 10. But wait, the user says \"The two printed numbers differ.\" Let me actually run/verify mentally or recall exact pandas behavior.\n   - Let's double-check `groupby().sum()` default behavior in pandas 2.x:\n     - `skipna` parameter for `DataFrameGroupBy.sum()` defaults to `True`. So `None` row sums to 3.\n     - Wait, does `df.groupby(\"k\")[\"v\"].sum()` drop NaN groups? By default, `dropna=True` in groupby. So the `None` key is kept as a group named `nan` or `NaN`.\n     - Let's verify: In pandas, `groupby(dropna=True)` (default) keeps NaN/None as a group label. So groups are 'a', 'b', nan.\n     - Sums: a=5, b=2, nan=3. Total = 10.\n     - `df[\"v\"].sum()` = 1+2+3+4 = 10.\n     - They should be equal! But the user says they differ. Why?\n     - Wait, maybe `df.groupby(\"k\")[\"v\"].sum()` defaults to `skipna=False` in older versions? No, pandas changed it. Let's check pandas docs: `groupby.sum(skipna=True)` has been default for a while. But actually, in pandas 1.x/2.x, there was a known change: `dropna` parameter vs `skipna`. Wait, maybe the issue is with how `sum().sum()` works on a Series containing NaN? If `groupby().sum()` returns a series with a NaN index value, `.sum()` on that series will skip NA by default. So 5+2+3 = 10.\n     - Let's actually test mentally or recall exact behavior. Wait, maybe `df.groupby(\"k\")[\"v\"].sum()` in pandas 2.x defaults to `dropna=True` but the NaN group is labeled as `nan`, and when we do `.sum()`, it works. But wait! In pandas, `groupby.sum()` actually has a parameter `min_count`. If a group has all NA values, sum returns NA. Not applicable here.\n     - Let's think about another possibility: `df.groupby(\"k\")[\"v\"].sum()` might not include the `None` row in any group if `dropna=False` was needed? No, default is `dropna=True`, meaning NaN keys form their own group.\n     - Wait! I recall a specific pandas behavior change regarding `groupby.sum()` and `skipna`. Actually, `DataFrameGroupBy.sum()` defaults to `skipna=True`. So row with v=3 sums to 3.\n     - Let's check the exact output by simulating or knowing common pitfalls: Actually, in pandas, `df.groupby(\"k\")[\"v\"].sum()` returns:\n       ```\n       k\n       a    5\n       b    2\n       NaN  3\n       Name: v, dtype: int64\n       ```\n       `.sum().sum()` -> 10.\n       `df[\"v\"].sum()` -> 10.\n       They are the same. But the user explicitly says \"The two printed numbers differ.\" This implies I might be missing a subtle default behavior change in pandas 2.x, or maybe `dropna=False` is needed to make them equal? Wait, the question asks for \"the one-argument change that makes the group totals add up to the column total.\" This strongly suggests that by default they *don't* add up. So I need to figure out why they differ.\n     - Let's reconsider: Maybe `groupby().sum()` defaults to `skipna=False` in some contexts? Or maybe `df[\"v\"].sum()` uses `numeric_only=None`? Not relevant for a single column.\n     - Wait! In pandas, `groupby().sum()` has a default `min_count=0`. That's fine.\n     - Let's check pandas documentation for `GroupBy.sum()`: \"By default, sum excludes NA values. If all values in a group are NA, the result will be NA.\"\n     - What about the index of the groupby result? It contains `nan`. When you call `.sum()` on that Series, it skips `nan` by default. So 5+2+3 = 10.\n     - Is it possible that `df.groupby(\"k\")[\"v\"].sum()` actually drops the `None` row entirely by default in some pandas version? No.\n     - Wait! I remember a key change in pandas 1.5/2.0: `dropna` parameter for groupby changed meaning? Actually, `dropna=False` was added to preserve NaN groups as a separate group labeled `nan`. But `dropna=True` (default) also keeps them as a group labeled `nan`. Wait, no. Historically, `dropna=True` meant drop NaN keys from results, but in practice, it kept them as a special `nan` group. In recent pandas, `dropna=False` does the same thing actually? Let's verify: In pandas 2.x, `groupby(dropna=True)` (default) groups NaN values together as a separate group labeled `NaN`. So that's not it.\n     - Let's think differently: Maybe `df.groupby(\"k\")[\"v\"].sum()` uses `skipna=True` by default, but the sum of the series `.sum().sum()` might behave differently? Or maybe `df[\"v\"].sum()` vs `groupby.sum().sum()` differs because of `min_count`? No.\n     - Wait! I recall that `groupby.sum()` actually has a parameter `numeric_only`, but for Series it's ignored.\n     - Let's actually run a mental simulation with exact pandas 2.x behavior. I'll write a quick mental script:\n       ```python\n       import pandas as pd\n       df = pd.DataFrame({\"k\": [\"a\", \"b\", None, \"a\"], \"v\": [1, 2, 3, 4]})\n       g = df.groupby(\"k\")[\"v\"].sum()\n       print(g)\n       # Output:\n       # k\n       # a    5.0\n       # b    2.0\n       # NaN  3.0\n       # Name: v, dtype: float64\n       print(g.sum()) # 10.0\n       print(df[\"v\"].sum()) # 10\n       ```\n       They are equal. Why does the user say they differ? Maybe I'm wrong about default `skipna`. Let's check pandas source/docs mentally: Actually, `GroupBy.sum()` defaults to `skipna=True`. But wait! In pandas 1.x, there was a known behavior where `groupby().sum()` would *drop* NaN groups if `dropna=False` wasn't used? No.\n     - Let's search my knowledge for \"pandas groupby sum skipna default changed\". Actually, in pandas 2.0+, `dropna=False` is the recommended way to keep NaN groups, but default still keeps them.\n     - Wait! Maybe the issue is `min_count`. If `skipna=True`, it's fine.\n     - Let's reconsider the exact code: `df.groupby(\"k\")[\"v\"].sum().sum()` vs `df[\"v\"].sum()`.\n     - Could it be that `groupby().sum()` returns a Series with index containing `nan`, and when you call `.sum()` on it, it skips the `nan` index label but sums the values? Yes.\n     - What if `df[\"v\"].sum()` includes the None? No, v column has no None.\n     - Wait! I remember a specific pandas gotcha: `groupby().sum()` defaults to `skipna=True`, BUT `Series.sum()` also defaults to `skipna=True`. So both skip NA. They should match.\n     - Unless... `df.groupby(\"k\")[\"v\"].sum()` in pandas actually defaults to `dropna=True` which *removes* the NaN group from the result entirely? Let me verify: In older pandas, `dropna=True` meant drop NaN keys from the grouped keys, so the row with `None` would be excluded from the sum! That would make `groupby().sum()` equal to 5+2=7, while `df[\"v\"].sum()` equals 10. This matches \"they differ\". And the fix would be `dropna=False`.\n     - Let's verify this historical behavior: In pandas < 1.5, `dropna=True` (default) actually excluded NaN keys from the groups. Starting in pandas 1.5, `dropna=True` keeps them as a group labeled `nan`, but to fully change behavior, they introduced `dropna=False` explicitly. Wait, the docs say: \"`dropna`: If True, and the groupby key contains NaN values, the NaN values together with the above axis will be dropped. The default value is also False.\" Actually, I need to check the exact pandas 2.x default.\n     - According to pandas 2.0 documentation for `DataFrameGroupBy.dropna`: \"dropna : bool, default True. If True, and the groupby key contains NaN values, the NaN values together with the above axis will be dropped. A value of nan can never be observed in a group as it would have been dropped by default.\" Wait, that says dropped! But other sources say `dropna=True` keeps them as `nan`. There's confusion in my memory.\n     - Let's check actual pandas behavior: I'll simulate mentally or recall exact output. Actually, in pandas 1.5+, `dropna=False` is needed to keep NaN groups if they were dropped? Or was it the opposite? I recall that `df.groupby(\"k\", dropna=True)` (default) *drops* the NaN group entirely in some versions, but in recent versions it keeps it as a separate group labeled `NaN`. Wait, the documentation says: \"Changed in version 1.5.0: Default value is now True. Previously it was False.\" And \"If True, and the groupby key contains NaN values, the NaN values ... will be dropped.\" So default `dropna=True` means NaN keys are *dropped* from the result! That would explain why `groupby().sum()` gives 7, while `df[\"v\"].sum()` gives 10.\n     - Let's verify: If `dropna=True` (default), rows with `k=None` are excluded from grouping. So groups are only 'a' and 'b'. Sums: a=5, b=2. Total = 7.\n     - `df[\"v\"].sum()` sums all non-NA values in v: 1+2+3+4 = 10.\n     - They differ: 7 vs 10.\n     - The one-argument change: `dropna=False` in the groupby call.\n     - Let's double check this against pandas docs/changelog. In pandas 1.5, they changed `dropna` default from False to True for GroupBy. This was a breaking change. So in pandas 2.x, default is `dropna=True`, which drops NaN keys. To keep them, you use `dropna=False`.\n     - Actually, wait. Let's verify the exact wording from pandas docs: \"`dropna` : bool, default True. If True, and the groupby key contains NaN values, the NaN values together with the above axis will be dropped. The default value is also False.\" Hmm, contradictory in my memory.\n     - Let's search logically: I've seen many StackOverflow questions about this exact behavior. The common fix is indeed `dropna=False`. The question says \"give the one-argument change that makes the group totals add up to the column total.\" That strongly points to `dropna=False`.\n     - Let's calculate: With `dropna=False`, groups are 'a', 'b', NaN. Sums: 5, 2, 3. Total = 10. Matches column sum.\n     - So the two printed numbers are 7 and 10.\n     - Wait, is it possible that `df.groupby(\"k\")[\"v\"].sum()` uses `skipna=True` by default, but in pandas 2.x there's a change? Actually, `groupby.sum()` has `skipna=True` as default. So row with v=3 would be summed if included in a group. If the group is dropped due to `dropna=True`, it's excluded entirely -> sum is 7.\n     - Let's verify with an actual mental run or known fact: In pandas 2.0, `df.groupby(\"k\")[\"v\"].sum()` on this data yields:\n       ```\n       k\n       a    5\n       b    2\n       Name: v, dtype: int64\n       ```\n       Sum = 7.\n       `df[\"v\"].sum()` = 10.\n       Difference is exactly the value from the `None` row (3).\n     - This makes perfect sense.\n     - The one-argument change: `dropna=False` inside `groupby(\"k\", dropna=False)`.\n     - I will state: \n       - Printed numbers: 7 and 10\n       - Reason: By default in pandas 2.x, `dropna=True`, which causes rows with `None`/`NaN` in the groupby key to be excluded from grouping entirely. So the row with `v=3` is left out of the group sums, resulting in 5+2=7. Meanwhile, `df[\"v\"].sum()` includes all non-NA values in the column (1+2+3+4=10).\n       - Fix: Change `groupby(\"k\")` to `groupby(\"k\", dropna=False)`.\n\n3.  **Structure the Answer:**\n   - State both numbers clearly.\n   - Explain the difference concisely, referencing `dropna=True` default behavior in pandas groupby vs column-wise sum.\n   - Provide the exact code change.\n   - Verify pandas version context: The question specifies pandas 2.x, where this behavior is active.\n   - Check for any edge cases: What about `min_count` or `skipna`? They are irrelevant here since no group has all NA values, and column sum skips NA anyway. The key is `dropna`.\n   - Confirm exact output format: The question asks to \"State both numbers, explain why they differ, and give the one-argument change\".\n   - I'll write it out clearly.\n\n   Draft:\n   **Printed numbers:** 7 and 10\n   **Why they differ:** In pandas 2.x, `DataFrame.groupby()` has `dropna=True` by default. This means that when the groupby key contains `None`/`NaN`, those rows are entirely excluded from the grouping operation. Consequently, `df.groupby(\"k\")[\"v\"].sum()` only groups the `\"a\"` and `\"b\"` rows (1+4=5 and 2), ignoring the row where `k=None`. Summing these group totals gives 7. In contrast, `df[\"v\"].sum()` operates on the entire column and naturally includes all non-NA values (`1+2+3+4=10`), regardless of the groupby key.\n   **One-argument change:** Pass `dropna=False` to the groupby call: `df.groupby(\"k\", dropna=False)[\"v\"].sum().sum()`. This forces `None`/`NaN` keys to form their own group, ensuring all rows are accounted for and the totals match.\n\n4.  **Self-Correction/Verification:**\n   - Let's quickly verify pandas 2.x default for `dropna`. According to pandas docs: \"`dropna` : bool, default True. If True, and the groupby key contains NaN values, the NaN values together with the above axis will be dropped.\" Yes, this is correct for recent pandas versions (changed in 1.5).\n   - Wait, some sources say `dropna=False` keeps them as a separate group labeled `nan`. But the default `True` drops them. This matches my explanation.\n   - Let's double-check the exact output of `df.groupby(\"k\")[\"v\"].sum().sum()` in pandas 2.x. If `dropna=True`, it drops NaN groups. So groups are just 'a' and 'b'. Sums: 5, 2. Total: 7.\n   - `df[\"v\"].sum()` -> 10.\n   - The difference is exactly 3.\n   - The fix `dropna=False` adds the `nan` group with sum 3, making it 10.\n   - Everything aligns perfectly.\n   - I will structure the answer concisely as requested.\n   - One minor point: In pandas, `None` is treated as `NaN`. I'll mention that.\n   - The question asks for \"the one-argument change\". I'll specify `dropna=False` in the `groupby()` call.\n   - Final check of the code: `df.groupby(\"k\", dropna=False)[\"v\"].sum().sum()` -> 10. Correct.\n   - All good. Output matches requirements.✅\n   - I'll produce the response. \n   - Structure:\n     - Numbers: 7 and 10\n     - Explanation: `dropna=True` default behavior of groupby excludes NaN/None key rows from grouping, while column `.sum()` includes all non-NA values.\n     - Fix: `dropna=False` in `groupby()`.\n   - Ready. \n   - Output matches exactly.✅\n   - Note: I'll make sure to explicitly state the numbers first, then explanation, then fix, as requested. No extra fluff. All accurate for pandas 2.x.✅\n   - Self-Correction/Refinement during thought: Wait, does `groupby().sum()` in pandas 2.x actually drop NaN groups by default? Let me verify with a quick mental check of the changelog. Actually, in pandas 1.5+, `dropna=True` (default) *does* drop NaN keys from the result. Many users hit this exact issue when upgrading. The documentation explicitly says: \"A value of nan can never be observed in a group as it would have been dropped by default.\" So yes, my reasoning is solid.\n   - Another possibility: Could it be `skipna=False`? If `skipna=True` (default), then within the `nan` group (if it existed), it would sum to 3. But since the group is dropped, it's 7. If we use `dropna=False`, the `nan` group exists and sums to 3. Total becomes 10. Matches column sum. So `dropna=False` is definitely the answer.\n   - I'll proceed. \n   - Output generation. \n   - [Done] \n   - *Self-Correction/Verification during generation prep*: Let's quickly consider if `min_count` or other defaults could cause this. No, `dropna` is the well-known culprit for this exact scenario in pandas 2.x. The numbers are definitely 7 and 10. The fix is `dropna=False`. All consistent.✅\n   - Final Answer Formulation:\n     - Numbers: 7 and 10\n     - Reason: Default `dropna=True` in `groupby()` excludes rows with `None`/`NaN` in the grouping key from all groups, so the row with `v=3` is omitted from the group sums (5+2=7). `df[\"v\"].sum()` includes it (1+2+3+4=10).\n     - Change: `dropna=False` in `groupby(\"k\", dropna=False)`\n   - Matches request perfectly. Output matches.✅\n   - Proceeds. \n   - [Output Generation] -> *See response.* \n   - *(Note: I'll format it clearly as requested.)*\n   - All steps verified. No extra fluff. Ready. \n   - [Output] -> *Proceeds.*\n",
+ "content": "**Printed numbers:** `7` and `10`\n\n**Why they differ:** \nIn pandas 2.x, `DataFrame.groupby()` defaults to `dropna=True`. This causes rows where the grouping key is `None`/`NaN` to be **entirely excluded** from the grouping operation. Therefore, `df.groupby(\"k\")[\"v\"].sum()` only forms groups for `\"a\"` and `\"b\"`, summing to `5 + 2 = 7`. \n\nMeanwhile, `df[\"v\"].sum()` operates directly on the Series and naturally includes all non-NA values (`1 + 2 + 3 + 4 = 10`), ignoring the missing key but keeping the value.\n\n**One-argument change:**\nPass `dropna=False` to the groupby call:\n```python\ndf.groupby(\"k\", dropna=False)[\"v\"].sum().sum()\n```\nThis forces `None`/`NaN` keys to form their own group, ensuring every row is included in the aggregation and the group totals match the column total.",
+ "usage": {
+  "completion_tokens": 5064,
+  "prompt_tokens": 118,
+  "total_tokens": 5182,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 118,
+  "prompt_ms": 1428.255,
+  "prompt_per_token_ms": 12.103855932203391,
+  "prompt_per_second": 82.61829995343969,
+  "predicted_n": 5064,
+  "predicted_ms": 408410.83,
+  "predicted_per_token_ms": 80.66577720718942,
+  "predicted_per_second": 12.396830906761215
+ },
+ "tokens": {
+  "reasoning_tokenized": 4835,
+  "content_tokenized": 226,
+  "completion_tokens_usage": 5064,
+  "prompt_tokens_usage": 118,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.431,
+  "to_first_reasoning": 1.431,
+  "to_first_answer_token": 391.488,
+  "to_final_answer": 409.843
+ },
+ "peaks": {
+  "gpu_temp_c": 78,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26048
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 78,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26048
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26191
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26170
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26179
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26170
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26165
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26188
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26216
+  },
+  {
+   "t_s": 81.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26196
+  },
+  {
+   "t_s": 91.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26163
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26195
+  },
+  {
+   "t_s": 111.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26198
+  },
+  {
+   "t_s": 121.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26203
+  },
+  {
+   "t_s": 131.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26180
+  },
+  {
+   "t_s": 141.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26207
+  },
+  {
+   "t_s": 151.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26191
+  },
+  {
+   "t_s": 161.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26195
+  },
+  {
+   "t_s": 171.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26197
+  },
+  {
+   "t_s": 181.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26190
+  },
+  {
+   "t_s": 191.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26190
+  },
+  {
+   "t_s": 201.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26191
+  },
+  {
+   "t_s": 211.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26186
+  },
+  {
+   "t_s": 221.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26189
+  },
+  {
+   "t_s": 231.6,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26187
+  },
+  {
+   "t_s": 241.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26170
+  },
+  {
+   "t_s": 251.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26195
+  },
+  {
+   "t_s": 261.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26183
+  },
+  {
+   "t_s": 271.7,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26159
+  },
+  {
+   "t_s": 281.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26171
+  },
+  {
+   "t_s": 291.8,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26169
+  },
+  {
+   "t_s": 301.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26169
+  },
+  {
+   "t_s": 311.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26177
+  },
+  {
+   "t_s": 321.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26211
+  },
+  {
+   "t_s": 331.9,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26181
+  },
+  {
+   "t_s": 342.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26178
+  },
+  {
+   "t_s": 352.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26191
+  },
+  {
+   "t_s": 362.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26178
+  },
+  {
+   "t_s": 372.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26220
+  },
+  {
+   "t_s": 382.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 392.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26228
+  },
+  {
+   "t_s": 402.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26215
+  }
+ ]
+}

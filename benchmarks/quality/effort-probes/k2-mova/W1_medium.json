@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "gridhop converts CSV timetables into iCalendar (.ics) files. It is intended for people who receive timetables as spreadsheets and want them in a calendar app. Install it with `pip install gridhop`.",
+    "reasoning_content": "We need to write first three sentences of a README for gridhop. Must be plain, no marketing. Sentence 1: what it does. Sentence 2: who it's for. Sentence 3: install command. Provide exactly three sentences. Should be concise. Probably: \"gridhop converts CSV timetables into iCalendar (.ics) files. It is intended for people who receive timetables as spreadsheets and want to import them into a calendar app. Install it with `pip install gridhop`.\" That satisfies. Ensure no marketing.\n"
+   }
+  }
+ ],
+ "created": 1793845290,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 154,
+  "prompt_tokens": 87,
+  "total_tokens": 241,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-JNTb8kz5gjtmXQpedOCe6ekYsevFt106",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 2155.705,
+  "prompt_per_token_ms": 24.778218390804597,
+  "prompt_per_second": 40.35802672443586,
+  "predicted_n": 154,
+  "predicted_ms": 13562.527,
+  "predicted_per_token_ms": 88.64396732026144,
+  "predicted_per_second": 11.281083532589465
+ }
+}

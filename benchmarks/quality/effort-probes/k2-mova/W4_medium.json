@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Run `pip install quillcache` with Python 3.9 or newer. For plotting helpers (matplotlib), run `pip install quillcache[viz]`. By default the cache resides in `~/.quillcache`; to relocate it, set the `QUILLCACHE_HOME` environment variable before importing the library.",
+    "reasoning_content": "We need to rewrite the README section, at most 60 words, imperative mood, no change to facts, nothing added. So we must keep same information: install via pip install quillcache, requires Python 3.9+, optional viz extra pip install quillcache[viz] for plotting helpers (depends on matplotlib), default cache location ~/.quillcache, can change via QUILLCACHE_HOME env var before import. Imperative mood: use commands and instructions.\n\nWe need ≤60 words. Let's craft ~50 words.\n\nCount words: Let's draft:\n\n\"Run `pip install quillcache` with Python 3.9 or newer. For plotting helpers (matplotlib), run `pip install quillcache[viz]`. By default the cache resides in `~/.quillcache`; to relocate it, set the `QUILLCACHE_HOME` environment variable before importing the library.\"\n\nCount words: Run(1) `pip(2) install3 quillcache`4 with5 Python6 3.97 or8 newer.9 For10 plotting11 helpers12 (matplotlib),13 run14 `pip15 install16 quillcache[viz]`.17 By18 default19 the20 cache21 resides22 in23 `~/.quillcache`;24 to25 relocate26 it,27 set28 the29 `QUILLCACHE_HOME`30 environment31 variable32 before33 importing34 the35 library36. That's 36 words. Good. Imperative mood: commands are imperative. Yes.\n\nReturn only the rewritten section.\n"
+   }
+  }
+ ],
+ "created": 1793845832,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 380,
+  "prompt_tokens": 167,
+  "total_tokens": 547,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-8jnztP2HReAp04kkc64YUQDZM8l3kJJ3",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 167,
+  "prompt_ms": 2335.64,
+  "prompt_per_token_ms": 13.985868263473053,
+  "prompt_per_second": 71.50074497782192,
+  "predicted_n": 380,
+  "predicted_ms": 35732.892,
+  "predicted_per_token_ms": 94.28203693931398,
+  "predicted_per_second": 10.606474281454744
+ }
+}

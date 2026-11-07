@@ -1,0 +1,37 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Gridhop converts CSV timetables into ICS calendar files.\n\nIt is for people who receive timetables as spreadsheets and want them in a calendar app.\n\nInstall it with `pip install gridhop`.",
+    "reasoning_content": "The user wants me to write the first three sentences of a README for \"gridhop\", a command-line tool that converts CSV timetables into ICS calendar files.\n\nRequirements:\n1. Sentence one: what it does (converts CSV timetables into ICS calendar files)\n2. Sentence two: who it is for (people who receive timetables as spreadsheets and want them in a calendar app)\n3. Sentence three: how to install it (`pip install gridhop`)\n4. Plain wording, no marketing language\n\nLet me draft this:\n\nSentence 1: Gridhop converts CSV timetables into ICS calendar files.\nSentence 2: It is for people who receive timetables as spreadsheets and want to import them into a calendar app.\nSentence 3: Install it with `pip install gridhop`.\n\nThat looks good. Plain, direct, no marketing fluff. Let me check:\n- Sentence 1 states what it does: yes\n- Sentence 2 states who it's for: yes\n- Sentence 3 has the install command: yes\n- Plain wording: yes, no superlatives or hype\n\nI'll present this clearly.\n"
+   }
+  }
+ ],
+ "created": 1793845317,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 269,
+  "prompt_tokens": 87,
+  "total_tokens": 356,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-2s36G0MrOmskih10PUxiowhhx7ergpib",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 87,
+  "prompt_ms": 1939.807,
+  "prompt_per_token_ms": 22.296632183908045,
+  "prompt_per_second": 44.84982268854582,
+  "predicted_n": 269,
+  "predicted_ms": 24275.552,
+  "predicted_per_token_ms": 90.58041791044776,
+  "predicted_per_second": 11.039913737080004
+ }
+}

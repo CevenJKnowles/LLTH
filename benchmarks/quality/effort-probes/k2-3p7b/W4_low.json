@@ -1,0 +1,36 @@
+{
+ "choices": [
+  {
+   "finish_reason": "stop",
+   "index": 0,
+   "message": {
+    "role": "assistant",
+    "content": "Install quillcache with `pip install quillcache`, ensuring Python 3.9 or newer. For plotting helpers, install the extra with `pip install quillcache[viz]`. By default, the cache resides in `~/.quillcache`; set `QUILLCACHE_HOME` before importing quillcache to change its location."
+   }
+  }
+ ],
+ "created": 1793844452,
+ "model": "$LLTH_HOME/models/IFM/K2-Horizon-3.7B-GGUF/K2-Horizon-4B-Q5_K_M.gguf",
+ "system_fingerprint": "b11839-e1e3b2c40",
+ "object": "chat.completion",
+ "usage": {
+  "completion_tokens": 71,
+  "prompt_tokens": 167,
+  "total_tokens": 238,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "id": "chatcmpl-oPXryEjBuYRDDYfom6zUpxFR0Eqy37aq",
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 167,
+  "prompt_ms": 340.8,
+  "prompt_per_token_ms": 2.0407185628742517,
+  "prompt_per_second": 490.0234741784038,
+  "predicted_n": 71,
+  "predicted_ms": 1198.016,
+  "predicted_per_token_ms": 17.114514285714286,
+  "predicted_per_second": 58.42993749666114
+ }
+}

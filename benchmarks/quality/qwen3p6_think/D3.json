@@ -1,0 +1,255 @@
+{
+ "id": "D3",
+ "title": "Compress a paragraph without losing facts (looks easy, is hard)",
+ "prompt_text": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\"",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\n\n\"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\""
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1018,
+  "cache_prompt": false,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 1.5
+ },
+ "seed": 1018,
+ "started_at": "2026-10-30T19:39:27",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Input Text:** \"tidelog is a small Python library, currently at version 0.4.2, whose purpose is to read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently. It has been tested on files of up to 8 GB in size. It requires Python 3.10 or newer, and its only third-party dependency is pyarrow. The project is released under the MIT licence, and the maintainers currently publish a new release roughly every six weeks.\"\n   - **Constraint 1:** Shorten to at most 40 words.\n   - **Constraint 2:** Every fact must survive.\n   - **Constraint 3:** Do not add anything.\n\n2.  **Extract Facts from Input:**\n   - Library name: tidelog\n   - Language/Type: Python library\n   - Current version: 0.4.2\n   - Purpose: Reads newline-delimited JSON log files, writes them as Parquet files for more efficient querying\n   - Tested on: Files up to 8 GB\n   - Requirement: Python 3.10+\n   - Dependency: pyarrow (only third-party dependency)\n   - License: MIT licence\n   - Release frequency: Roughly every six weeks\n\n3.  **Count Words & Check Constraints:**\n   I need to condense all these facts into ≤40 words without adding new info or dropping any fact.\n\n   Let's draft:\n   tidelog (v0.4.2) is a Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and pyarrow. Licensed under MIT, releases occur roughly every six weeks.\n\n   Word count check:\n   tidelog (1) (v0.4.2) (2) is (3) a (4) Python (5) library (6) converting (7) newline-delimited (8) JSON (9) logs (10) to (11) Parquet (12) for (13) efficient (14) querying. (15) Tested (16) on (17) 8 (18) GB (19) files, (20) it (21) requires (22) Python (23) 3.10+ (24) and (25) pyarrow. (26) Licensed (27) under (28) MIT, (29) releases (30) occur (31) roughly (32) every (33) six (34) weeks. (35)\n   Total: 35 words. (Depending on how hyphenated/numbers count, but generally ≤40).\n\n   Let's verify facts:\n   - tidelog is a small Python library -> \"tidelog ... is a Python library\" (small is minor, but I'll keep it if needed: \"tiny Python library\")\n   - currently at version 0.4.2 -> \"(v0.4.2)\" covers it\n   - purpose: read newline-delimited JSON log files and write them out again as Parquet files so that they can be queried more efficiently -> \"converting newline-delimited JSON logs to Parquet for efficient querying\" (covers reading/writing/query efficiency)\n   - tested on files of up to 8 GB in size -> \"Tested on 8 GB files,\"\n   - requires Python 3.10 or newer -> \"requires Python 3.10+\"\n   - only third-party dependency is pyarrow -> \"and pyarrow.\" (implies only dependency? I should specify \"only dependency: pyarrow\" or similar)\n   - released under MIT licence -> \"Licensed under MIT,\"\n   - publish new release roughly every six weeks -> \"releases occur roughly every six weeks.\"\n\n   Let's refine to ensure all facts are explicit and within limit:\n   tidelog (v0.4.2) is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only needs pyarrow. Released under MIT, updates occur roughly every six weeks.\n\n   Word count:\n   tidelog (1) (v0.4.2) (2) is (3) a (4) small (5) Python (6) library (7) converting (8) newline-delimited (9) JSON (10) logs (11) to (12) Parquet (13) for (14) efficient (15) querying. (16) Tested (17) on (18) 8 (19) GB (20) files, (21) it (22) requires (23) Python (24) 3.10+ (25) and (26) only (27) needs (28) pyarrow. (29) Released (30) under (31) MIT, (32) updates (33) occur (34) roughly (35) every (36) six (37) weeks. (38)\n   Total: 38 words. Good.\n\n   Check facts against original:\n   - tidelog is a small Python library -> ✓\n   - currently at version 0.4.2 -> ✓ (v0.4.2)\n   - purpose: read NDJSON log files and write as Parquet for efficient querying -> ✓ (converting NDJSON logs to Parquet for efficient querying)\n   - tested on files up to 8 GB -> ✓ (Tested on 8 GB files)\n   - requires Python 3.10+ -> ✓\n   - only third-party dependency is pyarrow -> ✓ (only needs pyarrow)\n   - MIT licence -> ✓\n   - releases roughly every six weeks -> ✓\n\n   All facts preserved. No additions. ≤40 words.\n   Let's count carefully: \"tidelog (v0.4.2) is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only needs pyarrow. Released under MIT, updates occur roughly every six weeks.\" -> 37 words if we count punctuation-attached tokens as one. Let's count strictly:\n   tidelog (1) v0.4.2 (2) is (3) a (4) small (5) Python (6) library (7) converting (8) newline-delimited (9) JSON (10) logs (11) to (12) Parquet (13) for (14) efficient (15) querying. (16) Tested (17) on (18) 8 (19) GB (20) files, (21) it (22) requires (23) Python (24) 3.10+ (25) and (26) only (27) needs (28) pyarrow. (29) Released (30) under (31) MIT, (32) updates (33) occur (34) roughly (35) every (36) six (37) weeks. (38)\n   Actually, let's remove parentheses to save word count if needed, but it's fine. I'll adjust slightly to be safe:\n   tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only needs pyarrow. Released under MIT, updates occur roughly every six weeks. \n   Count: 36 words.\n   Facts check:\n   - tidelog v0.4.2 (small Python library) -> yes\n   - converts newline-delimited JSON logs to Parquet for efficient querying -> yes (covers read/write/query efficiency)\n   - tested on 8 GB files -> yes\n   - requires Python 3.10+ -> yes\n   - only needs pyarrow -> yes (implies third-party dependency)\n   - Released under MIT -> yes\n   - updates occur roughly every six weeks -> yes\n   All facts present. No additions. Under 40.\n   One minor thing: \"only needs pyarrow\" might imply it's a requirement rather than a dependency. I'll change to \"only depends on pyarrow\" or keep \"third-party dependency pyarrow\". Let's try: \"...requires Python 3.10+ and has only pyarrow as a third-party dependency.\" That adds words.\n   Better: \"...requires Python 3.10+, uses only pyarrow.\" (still implies dependency)\n   Let's stick to: \"tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks.\"\n   Count: 38 words.\n   Check facts again:\n   - tidelog v0.4.2 (small Python library) -> ✓\n   - converting NDJSON logs to Parquet for efficient querying -> ✓\n   - Tested on 8 GB files -> ✓\n   - requires Python 3.10+ -> ✓\n   - only depends on pyarrow -> ✓\n   - Released under MIT -> ✓\n   - releases occur roughly every six weeks -> ✓\n   All good. Exactly within limits. I will output this. \n   Wait, let's count carefully:\n   tidelog (1) v0.4.2 (2) is (3) a (4) small (5) Python (6) library (7) converting (8) newline-delimited (9) JSON (10) logs (11) to (12) Parquet (13) for (14) efficient (15) querying. (16) Tested (17) on (18) 8 (19) GB (20) files, (21) it (22) requires (23) Python (24) 3.10+ (25) and (26) only (27) depends (28) on (29) pyarrow. (30) Released (31) under (32) MIT, (33) releases (34) occur (35) roughly (36) every (37) six (38) weeks. (39)\n   39 words. Perfect.\n   One detail: \"converting... to Parquet\" implies reading NDJSON and writing Parquet, which matches \"read newline-delimited JSON log files and write them out again as Parquet files\". The \"more efficiently\" part is captured by \"for efficient querying\". All good.\n   Final check of the prompt: \"Every fact in it must survive.\" \n   Facts: \n   1. tidelog is a small Python library\n   2. currently at version 0.4.2\n   3. purpose: read NDJSON log files and write as Parquet for efficient querying\n   4. tested on files up to 8 GB\n   5. requires Python 3.10+\n   6. only third-party dependency is pyarrow\n   7. MIT licence\n   8. releases roughly every six weeks\n   All captured. \n   Text: tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks.\n   Word count: 38 (counting v0.4.2 as one, 3.10+ as one, newline-delimited as one). Well under 40.\n   Ready.✅\n   Output matches response. \n   One minor adjustment to be strictly safe with word count: \"tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, new releases occur roughly every six weeks.\" (39 words). I'll stick with it. All constraints met.✅\n   Output generation. \n   Self-Correction/Verification during thought: \n   Let's count exactly: \n   tidelog (1) v0.4.2 (2) is (3) a (4) small (5) Python (6) library (7) converting (8) newline-delimited (9) JSON (10) logs (11) to (12) Parquet (13) for (14) efficient (15) querying. (16) Tested (17) on (18) 8 (19) GB (20) files, (21) it (22) requires (23) Python (24) 3.10+ (25) and (26) only (27) depends (28) on (29) pyarrow. (30) Released (31) under (32) MIT, (33) releases (34) occur (35) roughly (36) every (37) six (38) weeks. (39)\n   Actually, hyphenated words count as one in most counters. It's fine.\n   All facts preserved. No additions. ≤40 words. Done. \n   Output matches the refined text.✅\n   Final Text: tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks. \n   Word count: 38. Meets all constraints.✅\n   Proceeds. \n   Output Generation. \n   [Done] \n   *Self-Correction/Refinement during processing*: \n   Wait, \"converting... to Parquet for efficient querying\" might slightly compress \"read NDJSON log files and write them out again as Parquet files so that they can be queried more efficiently.\" It's accurate enough. I'll keep it. \n   Check constraint: \"Do not add anything.\" - I haven't added any facts or fluff.\n   Check constraint: \"Every fact in it must survive.\" - All 8 facts are present.\n   Check constraint: \"at most 40 words.\" - 38 words.\n   Perfect.✅\n   Output matches response. \n   [Final Check of the Prompt]: \"Shorten the paragraph below to at most 40 words. Every fact in it must survive. Do not add anything.\"\n   Text: tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks.\n   Words: 38. Facts: All present. No additions. Constraint met.✅\n   Output matches. \n   [Proceeds] -> *Output Generation* (matches the final text)\n   *(Note: I'll count \"v0.4.2\" and \"3.10+\" as one word each, standard. Even if split, it's ~40 max. Safe.)* \n   Final: tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks. (38) -> Ready. \n   Output matches response.✅\n",
+ "content": "tidelog v0.4.2 is a small Python library converting newline-delimited JSON logs to Parquet for efficient querying. Tested on 8 GB files, it requires Python 3.10+ and only depends on pyarrow. Released under MIT, releases occur roughly every six weeks.",
+ "usage": {
+  "completion_tokens": 3551,
+  "prompt_tokens": 143,
+  "total_tokens": 3694,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 143,
+  "prompt_ms": 1416.263,
+  "prompt_per_token_ms": 9.903937062937063,
+  "prompt_per_second": 100.96994696606492,
+  "predicted_n": 3551,
+  "predicted_ms": 293031.527,
+  "predicted_per_token_ms": 82.54409211267605,
+  "predicted_per_second": 12.114737401617539
+ },
+ "tokens": {
+  "reasoning_tokenized": 3488,
+  "content_tokenized": 60,
+  "completion_tokens_usage": 3551,
+  "prompt_tokens_usage": 143,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.419,
+  "to_first_reasoning": 1.419,
+  "to_first_answer_token": 289.603,
+  "to_final_answer": 294.451
+ },
+ "peaks": {
+  "gpu_temp_c": 77,
+  "gpu_mem_mib": 5243,
+  "min_mem_available_mib": 26156
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 77,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26229
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26156
+  },
+  {
+   "t_s": 21.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26200
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26189
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26198
+  },
+  {
+   "t_s": 51.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26191
+  },
+  {
+   "t_s": 61.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26193
+  },
+  {
+   "t_s": 71.2,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26163
+  },
+  {
+   "t_s": 81.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 91.3,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26184
+  },
+  {
+   "t_s": 101.3,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26181
+  },
+  {
+   "t_s": 111.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26239
+  },
+  {
+   "t_s": 121.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 131.4,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26196
+  },
+  {
+   "t_s": 141.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26194
+  },
+  {
+   "t_s": 151.5,
+   "gpu_temp_c": 73,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26209
+  },
+  {
+   "t_s": 161.5,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26184
+  },
+  {
+   "t_s": 171.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26179
+  },
+  {
+   "t_s": 181.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26195
+  },
+  {
+   "t_s": 191.6,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26188
+  },
+  {
+   "t_s": 201.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26171
+  },
+  {
+   "t_s": 211.7,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26195
+  },
+  {
+   "t_s": 221.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26192
+  },
+  {
+   "t_s": 231.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26181
+  },
+  {
+   "t_s": 241.8,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26208
+  },
+  {
+   "t_s": 251.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26194
+  },
+  {
+   "t_s": 261.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26177
+  },
+  {
+   "t_s": 271.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26190
+  },
+  {
+   "t_s": 281.9,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26176
+  },
+  {
+   "t_s": 292.0,
+   "gpu_temp_c": 72,
+   "gpu_mem_mib": 5243,
+   "mem_available_mib": 26201
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "id": "P1",
+ "title": "pandas pivot with zero fill",
+ "prompt_text": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print.",
+ "system_prompt": null,
+ "request": {
+  "model": "local",
+  "messages": [
+   {
+    "role": "user",
+    "content": "pandas 2.x. I have this frame:\n\n```python\nimport pandas as pd\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n```\n\nGive me code that produces a frame with one row per month, one column per city, total sales in each cell and 0 where a city had no sales that month, then adds a column `total` holding the row sum. Show the resulting frame as it would print."
+   }
+  ],
+  "stream": true,
+  "stream_options": {
+   "include_usage": true
+  },
+  "max_tokens": 32768,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "seed": 1006,
+  "cache_prompt": false,
+  "top_k": 64,
+  "chat_template_kwargs": {
+   "enable_thinking": true
+  }
+ },
+ "seed": 1006,
+ "started_at": "2026-10-30T21:29:06",
+ "status": "complete",
+ "error": null,
+ "finish_reason": "stop",
+ "did_not_finish_within_budget": false,
+ "reasoning_split_in_response": true,
+ "reasoning_text": "*   Input DataFrame: Columns `city`, `month`, `sales`.\n*   Target Structure:\n    *   Rows: `month` (one per month).\n    *   Columns: `city` (one per city).\n    *   Values: Sum of `sales` for that city-month combination.\n    *   Missing values: Must be `0` instead of `NaN`.\n    *   New column: `total` which is the sum of the row.\n*   Version: Pandas 2.x.\n\n    *   The task involves transforming long-format data to wide-format data.\n    *   The primary tool for this is `pivot_table`.\n    *   `groupby` + `unstack` is another option.\n\n    *   *Step 1: Pivot the data.*\n        `df.pivot_table(index='month', columns='city', values='sales', aggfunc='sum')`\n    *   *Step 2: Handle missing values (NaN).*\n        `pivot_table` has a `fill_value` parameter. This is cleaner than `.fillna(0)`.\n    *   *Step 3: Add the `total` column.*\n        After pivoting, the index is `month`. We can use `.sum(axis=1)`.\n    *   *Step 4: Cleanup.*\n        The pivot table will have a name for the columns axis. We might want to remove it for a cleaner print.\n\n    ```python\n    import pandas as pd\n    df = pd.DataFrame({\n        \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n        \"month\": [1, 1, 2, 2, 3, 3],\n        \"sales\": [10, 20, 30, 40, 50, 60],\n    })\n\n    # Pivot\n    result = df.pivot_table(index='month', columns='city', values='sales', aggfunc='sum', fill_value=0)\n\n    # Add total\n    result['total'] = result.sum(axis=1)\n\n    # Display result\n    print(result)\n    ```\n\n    *   Input Data:\n        A/1/10, B/1/20, A/2/30, C/2/40, B/3/50, A/3/60\n    *   Pivoted (Initial):\n        Month | A | B | C\n        1     | 10| 20| NaN\n        2     | 30| NaN| 40\n        3     | 60| 50| NaN\n    *   Filled with 0:\n        Month | A | B | C\n        1     | 10| 20| 0\n        2     | 30| 0 | 40\n        3     | 60| 50| 0\n    *   With Total:\n        Month | A | B | C | total\n        1     | 10| 20| 0 | 30\n        2     | 30| 0 | 40| 70\n        3     | 60| 50| 0 | 110\n\n    *   Explain `pivot_table`.\n    *   Highlight `fill_value=0`.\n    *   Explain `sum(axis=1)`.\n\n    *   Pandas 2.x? Yes, `pivot_table` is standard.\n    *   One row per month? Yes.\n    *   One column per city? Yes.\n    *   0 where no sales? Yes (`fill_value=0`).\n    *   Total column included? Yes.\n    *   Resulting frame shown? Yes.",
+ "content": "To achieve this, the most efficient method is to use `pivot_table`. It allows you to specify the index, the columns to expand, and a `fill_value` to handle missing combinations immediately.\n\nHere is the code:\n\n```python\nimport pandas as pd\n\ndf = pd.DataFrame({\n    \"city\": [\"A\", \"B\", \"A\", \"C\", \"B\", \"A\"],\n    \"month\": [1, 1, 2, 2, 3, 3],\n    \"sales\": [10, 20, 30, 40, 50, 60],\n})\n\n# 1. Pivot the table\n# index defines the rows, columns defines the new columns, \n# values defines the cell content, and fill_value handles the 0s\nresult = df.pivot_table(\n    index=\"month\", \n    columns=\"city\", \n    values=\"sales\", \n    aggfunc=\"sum\", \n    fill_value=0\n)\n\n# 2. Add the total column (summing across the rows)\nresult[\"total\"] = result.sum(axis=1)\n\n# Optional: Clean up the axis name for a cleaner print\nresult.columns.name = None\n\nprint(result)\n```\n\n### The Output\n\n```text\ncity     A   B   C  total\nmonth                   \n1       10  20   0     30\n2       30   0  40     70\n3       60  50   0    110\n```\n\n### Explanation:\n1.  **`pivot_table`**: This transforms the \"long\" format data into \"wide\" format.\n    *   `index=\"month\"`: Sets the unique values of 'month' as your rows.\n    *   `columns=\"city\"`: Takes every unique value in 'city' and turns them into individual columns.\n    *   `aggfunc=\"sum\"`: Ensures that if a city appeared twice in one month, the sales would be added together.\n    *   `fill_value=0`: This is the key step that replaces any `NaN` (where a city had no sales for a specific month) with `0`.\n2.  **`result.sum(axis=1)`**: This performs a horizontal sum across the city columns for every row.\n3.  **`result.columns.name = None`**: When pivoting, pandas often attaches the name of the original column (in this case, \"city\") to the header axis. This line removes that metadata to make the printout look exactly like a standard table.",
+ "usage": {
+  "completion_tokens": 1429,
+  "prompt_tokens": 178,
+  "total_tokens": 1607,
+  "prompt_tokens_details": {
+   "cached_tokens": 0
+  }
+ },
+ "timings": {
+  "cache_n": 0,
+  "prompt_n": 178,
+  "prompt_ms": 1783.613,
+  "prompt_per_token_ms": 10.02029775280899,
+  "prompt_per_second": 99.79743363610828,
+  "predicted_n": 1429,
+  "predicted_ms": 64761.02,
+  "predicted_per_token_ms": 45.35085434173669,
+  "predicted_per_second": 22.05030124602732
+ },
+ "tokens": {
+  "reasoning_tokenized": 850,
+  "content_tokenized": 574,
+  "completion_tokens_usage": 1429,
+  "prompt_tokens_usage": 178,
+  "method": "server /tokenize on the streamed text; usage as reported by the server"
+ },
+ "times_s": {
+  "to_first_token": 1.92,
+  "to_first_reasoning": 1.92,
+  "to_first_answer_token": 39.663,
+  "to_final_answer": 66.547
+ },
+ "peaks": {
+  "gpu_temp_c": 66,
+  "gpu_mem_mib": 5161,
+  "min_mem_available_mib": 26171
+ },
+ "samples": [
+  {
+   "t_s": 1.0,
+   "gpu_temp_c": 50,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26171
+  },
+  {
+   "t_s": 11.0,
+   "gpu_temp_c": 56,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26237
+  },
+  {
+   "t_s": 21.0,
+   "gpu_temp_c": 59,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26217
+  },
+  {
+   "t_s": 31.1,
+   "gpu_temp_c": 61,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26247
+  },
+  {
+   "t_s": 41.1,
+   "gpu_temp_c": 63,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26260
+  },
+  {
+   "t_s": 51.1,
+   "gpu_temp_c": 65,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26240
+  },
+  {
+   "t_s": 61.1,
+   "gpu_temp_c": 66,
+   "gpu_mem_mib": 5161,
+   "mem_available_mib": 26265
+  }
+ ]
+}
