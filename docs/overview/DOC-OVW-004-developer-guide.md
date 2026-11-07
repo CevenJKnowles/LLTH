@@ -3,7 +3,7 @@ id: DOC-OVW-004
 title: Developer Guide
 type: overview
 status: active
-version: v1.19
+version: v1.20
 canonical: true
 scope: llth
 audience:
@@ -74,6 +74,7 @@ A local, open-source, open-weight language-model setup on one laptop, built from
 | `$LLTH_HOME/docs/implementation/` | Logs and results: `DOC-IMPL-001` known issues, `-002` build and feature log, `-006` benchmark overview, `-012` to `-016` benchmark results, `-017` quality test protocol |
 | `$LLTH_HOME/llama.cpp/` | llama.cpp source (pinned commit `e1e3b2c40`) and its `build/bin/` programs |
 | `$LLTH_HOME/models/` | Downloaded GGUF model files, one folder per publisher and repository |
+| `$LLTH_HOME/.github/` | The documentation check: `workflows/docs-check.yml` and `scripts/check_docs.py` (ADR-010) |
 | `$LLTH_HOME/benchmarks/` | Raw evidence: `speed/` logs, `quality/` runs and scoring, `swap-time/`, the prompt set, one `MANIFEST.sha256`, and `scripts/` in `speed/`, `quality/` and `models/` |
 | `$LLTH_HOME/scripts/` | Launcher and stop scripts (not written yet) |
 
@@ -135,6 +136,7 @@ Acer ConceptD 7 (CN715-71): i7-9750H (6 cores / 12 threads), RTX 2060 Mobile 6 G
 | `ADR-007` | Storage and memory: one root with `LLTH/` and `user/`, a movable default location, readable settings, expert access by the user's commands or approved proposals, manual, planning and automatic confirmation | amended (v1.13) |
 | `ADR-008` | Document intake: dropping a file onto the window or `/open`; pypdfium2, Pandoc and charset-normalizer, provided inside LLTH's folder; a review before filing; originals kept; OCR for scans is an anticipated update | amended (v1.27) |
 | `ADR-009` | Export: PDF, DOCX, ODT and HTML with Pandoc and Typst, the browser's print as a fallback, templates in `user/preferences/templates/` | amended (v1.3) |
+| `ADR-010` | Documentation checks in continuous integration: one workflow and a standard-library script | accepted (v1.6) |
 
 Files are in `$LLTH_HOME/ADR/`.
 
@@ -201,6 +203,7 @@ Success is judged by evidence, not by features:
 | v1.17 | 2026-11-07 | Folder map lists the requirements documents `DOC-OVW-019` and `DOC-OVW-020`. |
 | v1.18 | 2026-11-07 | `DOC-OVW-001` retired; the folder map says so. |
 | v1.19 | 2026-11-07 | Motivation section moved here from the README. |
+| v1.20 | 2026-11-07 | ADR-010 and the `.github` folder added to the decisions table and the folder map. |
 
 ### History of the README (before this guide existed)
 

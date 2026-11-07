@@ -3,7 +3,7 @@ id: DOC-ARCH-001
 title: LLTH Project Anatomy
 type: architecture
 status: active
-version: v1.23
+version: v1.24
 canonical: true
 scope: llth
 audience:
@@ -98,6 +98,7 @@ $LLTH_HOME/
 ├── LICENSE, LICENSE-DOCS, LICENSE-DATA         Apache-2.0 (code), CC BY-NC 4.0 (documentation), CC BY 4.0 (benchmark data)
 ├── NOTICE                                      copyright, licence summary, third-party credits
 ├── .gitignore                                  keeps models/, llama.cpp/ and docs/local/ out of the repository
+├── .github/                                    the documentation check: workflows/docs-check.yml and scripts/check_docs.py (ADR-010)
 ├── ADR/                                        decisions (the "why")
 │   ├── ADR-000-README.md                       index of all ADRs and their status
 │   ├── ADR-001-llama-cpp-as-local-inference-engine.md
@@ -253,6 +254,7 @@ Decisions so far:
 | ADR-007 | Storage and memory: one root with `LLTH/` and `user/`, readable settings, confirmation modes | amended (v1.13) |
 | ADR-008 | Document intake: a drop onto the window or `/open`, a layered free toolkit, a review before filing, originals kept | amended (v1.27) |
 | ADR-009 | Export: PDF, DOCX, ODT and HTML with Pandoc and Typst | amended (v1.3) |
+| ADR-010 | Documentation checks in continuous integration: one workflow and a standard-library script | accepted (v1.6) |
 
 ---
 
@@ -321,3 +323,4 @@ Removed on 2026-10-23: Ollama (package, manual install, service, models, about 6
 | v1.21 | 2026-11-07 | Editorial revision for publication. |
 | v1.22 | 2026-11-07 | The requirements documents `DOC-OVW-019` and `DOC-OVW-020` added to the folder tree. |
 | v1.23 | 2026-11-07 | Capability tiers show measured speeds; the folder tree lists every ADR and implementation document; the runtime table is brought up to date. |
+| v1.24 | 2026-11-07 | ADR-010 and the `.github` folder added. |

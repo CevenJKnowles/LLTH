@@ -1,5 +1,7 @@
 # LLTH: Liberated Local Thinking Harness
 
+[![Documentation check](https://github.com/CevenJKnowles/LLTH/actions/workflows/docs-check.yml/badge.svg)](https://github.com/CevenJKnowles/LLTH/actions/workflows/docs-check.yml) ![Licences: Apache-2.0, CC BY-NC 4.0, CC BY 4.0](https://img.shields.io/badge/licences-Apache--2.0%20%7C%20CC%20BY--NC%204.0%20%7C%20CC%20BY%204.0-blue) ![Maturity: alpha](https://img.shields.io/badge/maturity-alpha-orange)
+
 LLTH, the **Liberated Local Thinking Harness**, is a free, open-source system for running open-weight language models entirely on the user's own computer, on ordinary consumer hardware. It is private by design: data stays on the machine, there is no cloud service or subscription, and no provider can change, slow down or withdraw it.
 
 ## Status
@@ -49,6 +51,7 @@ The measurements show three things:
 | [`docs/architecture/`](docs/architecture/) | The project anatomy |
 | [`docs/implementation/`](docs/implementation/) | Benchmark results, the quality test protocol, the known issues log and the build log |
 | [`docs/governance/`](docs/governance/) | The ADR policy and the documentation standard |
+| [`.github/`](.github/) | The documentation check that runs on every push and pull request (ADR-010) |
 | [`benchmarks/`](benchmarks/) | Raw logs, per-prompt results, scripts and the checksum manifest |
 
 Start with the [developer guide](docs/overview/DOC-OVW-004-developer-guide.md).
