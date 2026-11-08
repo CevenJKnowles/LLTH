@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - issues
@@ -112,34 +112,3 @@ A running list of known, non-urgent issues found while building and setting up L
 ## Withdrawn ids
 
 KI-011, KI-012 and KI-013 were withdrawn by the designer on 2026-10-23: they concerned the author's tool configuration (global rules file, workspace file names, files left without frontmatter), which is outside the standard (DOC-GOV-002 v1.4, Exemptions). KI-014 and KI-015 were resolved (KI-R05, KI-R06). The ids are retired and are not reused.
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial: 16 open issues, 7 pending decisions and 4 resolved items from the first build session. |
-| v1.1 | 2026-10-23 | Withdrew KI-011 to KI-013 as exempt; resolved KI-014 and KI-015; 11 open issues remain. |
-| v1.2 | 2026-10-23 | Added KI-R07 (default port wording). |
-| v1.4 | 2026-10-23 | Checkpoint 1: updated KI-016; added KI-017 to KI-021, PD-008 to PD-010 and resolved items KI-R08 to KI-R10. |
-| v1.5 | 2026-10-23 | Added PD-011 (publication plan). |
-| v1.6 | 2026-10-23 | Replaced KI-017 (governor) with resolved KI-R11: the performance power profile was active. |
-| v1.7 | 2026-10-24 | Added PD-012 to PD-014 (routing architecture, power-profile A/B test, thinking-control tests). |
-| v1.8 | 2026-10-24 | Added PD-015 (research tracks). |
-| v1.9 | 2026-10-24 | PD-013 (power-profile A/B test) marked done with the result. |
-| v1.10 | 2026-10-24 | Mini-checkpoint: KI-018 resolved as KI-R12 (downloads verified); KI-016 updated (model 6 runs); added PD-016 (combined power-profile A/B); PD-014 extended to model 6. |
-| v1.11 | 2026-10-24 | Added KI-022 (K2 MoVA does not load with `-ncmoe` alone). |
-| v1.12 | 2026-10-24 | Mini-checkpoint 3: KI-022 resolved as KI-R13; added KI-023 (thermal margin of long-context runs). |
-| v1.13 | 2026-10-24 | PD-016 marked done with the result; added KI-024 (unexplained slow repetitions in phase 1 of the combined A/B). |
-| v1.14 | 2026-10-24 | Wrap-up: KI-016 updated (server tried informally); added KI-025 (unsafe `llama-server` defaults). |
-| v1.15 | 2026-11-05 | Added KI-026 (answer split at reduced reasoning effort); PD-014 marked partly done with the first effort probes. |
-| v1.16 | 2026-11-05 | KI-026 resolved as KI-R14 (`quality_blind.py` v1.2 recovers the answer after the end-of-thinking marker); PD-014 updated. |
-| v1.17 | 2026-11-05 | KI-023 updated (89 °C in the steward pass); PD-012 updated (self-routing result; the designer's direction: buttons instead of a router). |
-| v1.18 | 2026-11-05 | PD-012 updated: closed by the ADR-005 draft (expert menu, no routing). |
-| v1.19 | 2026-11-07 | ADR-005 accepted: PD-012 closed; PD-014 records the per-expert effort that ADR-005 fixes and that the steward prompt is not used. |
-| v1.20 | 2026-11-07 | Added PD-017 to PD-021 (probe of way B, trial installs of tesserocr and Typst, the mockup update, the start of the build). |
-| v1.21 | 2026-11-07 | PD-020: the chooser command is named `/open` (ADR-008 v1.23). |
-| v1.22 | 2026-11-07 | PD-020 notes that the mockup v7 is built and awaits the designer; PD-022 added (ADR-006 wording for the ask-first menu; acceptance of the ADR-008 amendment). |
-| v1.23 | 2026-11-07 | Editorial revision for publication. |
-| v1.24 | 2026-11-07 | PD-022: the ADR-008 amendments are accepted (v1.28); the ADR-006 wording remains open. |

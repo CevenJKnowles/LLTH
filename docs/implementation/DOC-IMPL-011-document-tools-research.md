@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - research
@@ -176,13 +176,3 @@ Read on 2026-11-07. The file lists of the PyPI pages were partly summarised ("S"
 Wheel sizes for tesserocr: 5.6 MB (Linux x86-64), 5.3 MB (Linux aarch64), 4.1 MB and 3.6 MB (macOS), 23.1 MB (Windows). Wheel sizes are small, so the bundled Tesseract is lean; which Tesseract version they bundle and whether they include language data are **not stated**.
 
 **Reading.** The document toolkit can run on Linux, macOS and 64-bit Windows, with these gaps: Windows on ARM (for Tesseract), macOS older than 15 (for the `tesserocr` wheel), and Pandoc's arm64 builds (unconfirmed). Whether LLTH as a whole runs on macOS or Windows is a different question; it is built and tested on Linux only.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Initial. Primary pages read for 26 tools on 2026-11-07 (and pdf.js, left out as a viewer); nothing benchmarked. |
-| v1.1 | 2026-11-07 | Section 8 added: a rough size for the default stack, with each figure labelled as read, measured or estimated. |
-| v1.2 | 2026-11-07 | Section 9 added: Tesseract on Linux, the ways to get it onto a machine, from the official documentation, the distribution packaging pages, PyPI and the community builds. |
-| v1.3 | 2026-11-07 | Section 10 added: platform coverage of the default toolkit (Linux, macOS, Windows), with the gaps and the facts that could not be confirmed. |
-| v1.4 | 2026-11-07 | Editorial revision for publication. |

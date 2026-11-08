@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -120,10 +120,3 @@ The two bold reading values in 2.2 (Qwen 32K, 195 ± 91; K2 MoVA 32K, 126 ± 21)
 ### 2.5 Limits
 
 One ABBA sequence of four phases; balanced always sat in the middle of the order; per-test intervals are wide for the CPU-bound models; the effect for the large models is of the same size as the noise. The test says nothing about battery use, runs much longer than about 20 minutes per phase, or models and settings other than those in the table.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Split out of `DOC-IMPL-006` (sections 10 and 17). Measurements unchanged. |
-

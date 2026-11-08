@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-05"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - quality-test
@@ -150,13 +150,3 @@ The designer's original scores, before the Python rescoring, gave the same first
 - **No model routes.** The user chooses a category with a button in the interface: for example, Write (the 3.7B at low effort), Code and Think (K2 MoVA at medium and high).
 - **A web interface on FastAPI** starts the matching `llama-server` profile and streams the answer back. It is decided in ADR-006.
 - **The easy-prompt blind sheet of §5a was not built.**
-
-## Amendment record
-
-| Version | Date | Summary |
-|---|---|---|
-| v1.0 | 2026-11-05 | Initial. Round 1 scored by the designer and revealed; Python verified by running the code at the designer's request; final score set chosen by the designer. |
-| v1.1 | 2026-11-05 | Added section 8: the steward pass for the K2 3.7B (routing 45% and 50%, no better than always answering), its cost and heat, and the designer's direction (buttons instead of a steward router). |
-| v1.2 | 2026-11-05 | Section 2: only the final score set remains in the repository; the other scoring files are kept locally. |
-| v1.3 | 2026-11-05 | Reversed v1.2: the repository is private, so all scoring files stay in `quality/scoring/`; section 2 reads as in v1.1. |
-| v1.4 | 2026-11-07 | Second-scorer comparison removed; sections 6 to 8 renumbered 5 to 7. Editorial revision for publication. |

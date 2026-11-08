@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - build
@@ -136,12 +136,6 @@ If the source commit changes, choose a new `HF_UI_VERSION` first (ADR-003 §8) a
 | Locally built web UI | Supply-chain exposure (ADR-003 option C) |
 | Portable binaries | Tuned for this machine (ADR-003 option E) |
 
-### Planned (not started)
-
-- Launcher and stop scripts in `$LLTH_HOME/scripts/`.
-- Build script (KI-005, KI-006).
-- Fine-tuning research (PD-006).
-
 ---
 
 ## Runtime verification (2026-10-23, after the build)
@@ -166,17 +160,3 @@ The designer started `llama-server` by hand, one model at a time, and used the w
 | K2 Horizon MoVA 36B-A4B | `-m .../models/IFM/K2-Horizon-MoVA-36B-A4B-GGUF/K2-Horizon-MoVA-36B-A4B-Q4_K_M.gguf --host 127.0.0.1 --port 8080 -c 16384 -np 1 -ngl 99 -ncmoe 46 -ot attn_v_exps=CPU -fa on -ctk q8_0 -ctv q8_0 -cram 0 --temp 1.0 --top-p 0.95` |
 
 Defaults of this build that are unsafe on the 6 GB machine (KI-025): `-c 0` loads the model's full context; `-np` is automatic and splits the context between slots; the default port is 9931; `-cram` defaults to 8192 MiB of host RAM. Thinking controls present in `llama-server --help`: `--reasoning-effort`, `--reasoning-budget`, `--reasoning-format`, `--chat-template-kwargs`, `--jinja`. No launcher script exists.
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial: builds 1 and 2, rebuild recipe, feature log. |
-| v1.2 | 2026-10-23 | Added the runtime verification section and updated the feature table after the first benchmarks. |
-| v1.3 | 2026-10-24 | Mini-checkpoint: model 6 runs in this build; large-model benchmark script written. |
-| v1.4 | 2026-10-24 | Mini-checkpoint 3: expert offload verified with the three large MoE models; K2 MoVA override noted. |
-| v1.5 | 2026-10-24 | Wrap-up: first informal `llama-server` session with four models recorded (commands, observations, unsafe defaults); feature table and runtime verification updated. |
-| v1.6 | 2026-10-27 | Build 3: clean rebuild at the new folder path (same source, flags and UI pin). |
-| v1.7 | 2026-11-07 | Editorial revision for publication. |

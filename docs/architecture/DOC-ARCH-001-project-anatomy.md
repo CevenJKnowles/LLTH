@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - architecture
@@ -295,32 +295,3 @@ Removed on 2026-10-23: Ollama (package, manual install, service, models, about 6
 | Routing design | closed: no automatic routing (ADR-005) |
 | Launcher scripts, build script | planned |
 | Fine-tuning | open (PD-006) |
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial anatomy after the first successful build. |
-| v1.1 | 2026-10-23 | Removed references to withdrawn or resolved issues (KI-011, KI-014). |
-| v1.2 | 2026-10-23 | The project README now has the id `README` (DOC-GOV-002 v1.5). |
-| v1.3 | 2026-10-23 | Removed references to another project. |
-| v1.5 | 2026-10-23 | Port wording corrected (build default is 9931). |
-| v1.7 | 2026-10-23 | Governance table now describes `provenance` as a list (DOC-GOV-002 v1.7). |
-| v1.9 | 2026-10-23 | Checkpoint 1: models folder, benchmarks folder and status updated; DOC-IMPL-006 added to the tree. |
-| v1.10 | 2026-10-24 | Documentation update: steward/compound-system direction, thinking and cache controls, ADR-004 v1.3 and ADR-002 v1.1 in the decisions table, VSCode relationship, current status and next steps. |
-| v1.11 | 2026-10-24 | Round 2 reflected in the status table and next steps. |
-| v1.12 | 2026-10-24 | Mini-checkpoint: all six models downloaded and verified, model 6 added (ADR-004 v1.4), A/B result and large-model benchmark script reflected in the tree, status and next steps. |
-| v1.13 | 2026-10-24 | Mini-checkpoint 3: models 3 to 5 benchmarked (K2 MoVA with the value-expert override), expert offload status, next steps. |
-| v1.14 | 2026-10-24 | Added `docs/overview/` and `DOC-OVW-001` (design intention) to the tree. |
-| v1.15 | 2026-10-24 | Combined power-profile A/B done; status and next steps updated. |
-| v1.16 | 2026-10-24 | Wrap-up: `llama-server` status updated. |
-| v1.17 | 2026-10-27 | Project name LLTH applied throughout; `DOC-OVW-001` is now active. |
-| v1.18 | 2026-10-27 | `DOC-OVW-001` is the release-day text and is a draft until release. |
-| v1.19 | 2026-10-27 | The README is now the release-day text (draft); its working content moved to the developer guide `DOC-OVW-004`; `DOC-OVW-001` is a pointer to the README. Tree updated. |
-| v1.20 | 2026-10-27 | Prepared for a public repository: paths shown as `$LLTH_HOME`, section 8 reduced to this project, tree gained the licence files, `NOTICE`, `.gitignore` and the benchmarks README. |
-| v1.21 | 2026-11-07 | Editorial revision for publication. |
-| v1.22 | 2026-11-07 | The requirements documents `DOC-OVW-019` and `DOC-OVW-020` added to the folder tree. |
-| v1.23 | 2026-11-07 | Capability tiers show measured speeds; the folder tree lists every ADR and implementation document; the runtime table is brought up to date. |
-| v1.24 | 2026-11-07 | ADR-010 and the `.github` folder added. |

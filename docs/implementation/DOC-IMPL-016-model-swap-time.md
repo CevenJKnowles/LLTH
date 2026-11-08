@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-05"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -70,10 +70,3 @@ First reply after ready: 3.7B 0.018 s on all four starts; MoVA 0.51, 0.35, 1.07 
 3. **The 3.7B loads about two and a half times slower after MoVA has run (4.1 to 4.7 s against 1.9 s).** A possible cause [E, not tested] is that MoVA's 22.4 GB file pushes the 3.7B's file out of the page cache, so it is read from the disk again. If so, the 3.7B's load time depends on what ran before it, not on the 3.7B.
 4. **MoVA stops in about 1.3 s, the 3.7B in about 0.15 s.** The stop is a small part of every swap.
 5. **Limits:** one session, three and two samples per direction, a page cache in an unknown state, and the round 1 server settings only; final profiles with another context size or cache type may load slightly differently. Not measured: VRAM release timing, swaps that involve Gemma or Qwen, and the load time with the page cache cleared.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Split out of `DOC-IMPL-006` (section 19). Measurements unchanged. |
-

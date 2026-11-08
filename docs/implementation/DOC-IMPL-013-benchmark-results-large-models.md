@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -209,10 +209,3 @@ Best stable setting per model, `q8_0` cache unless stated; generation tokens/s (
 | 3 K2 Horizon MoVA 36B-A4B, with `-ot attn_v_exps=CPU` | 46 of 48 | 11.5 (258) | 9.9 (239) | 8.8 (181) | `q4_0` only: 6.6 (157) | 41% (`q4_0`) | 88 °C |
 
 All three pass the speed gate at 8K (at least 8 tokens/s), stability and, as far as these runs show, thermals. They differ in what they cost: Gemma is the fastest and holds its speed best; Qwen is in between; K2 MoVA is the slowest, has the largest cache and runs hottest, but is the model with the highest independent quality index (ADR-004 section 1) and is fully open. The blind quality test decides the heavy model (ADR-004 section 6); speed does not.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Split out of `DOC-IMPL-006` (sections 11.3, 12 to 16). Measurements unchanged. |
-

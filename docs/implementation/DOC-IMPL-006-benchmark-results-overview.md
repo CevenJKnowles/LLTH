@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -146,10 +146,3 @@ All in `$LLTH_HOME/benchmarks/`. Logs are in `speed/`, scripts in `scripts/speed
 - `scripts/` (helper, sweep, quality-test and download scripts)
 - `quality/effort-probes/` (reasoning-effort probes, `DOC-IMPL-015`: raw responses, `probe.log` per model, `effort_probe.py` as run)
 - `swap-time/` (model swap time, `DOC-IMPL-016`: the watcher's event log, `swap_watch.py` as run)
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial: speed results for the K2 Horizon 7B and 3.7B. |
-| v2.0 | 2026-11-07 | Restructured. The results moved to `DOC-IMPL-012` to `DOC-IMPL-016`; this document keeps the method, conditions, gate verdicts, summary, experiment list and raw-data index. |

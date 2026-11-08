@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -201,10 +201,3 @@ K2 Horizon 7B Q4_K_M, `q4_0` cache, 3 repetitions, **performance power profile**
 - **The 7B generates 40 tokens/s at short context and is limited at depth.** With the `q4_0` cache it clears 8K (23.6 tokens/s); at 16K it drops to 5.9, at 32K to 2.0.
 - **Every layer moved to the CPU costs the 7B roughly 3 to 4 tokens/s at 8K** (23.6, 16.4 and 11.5 tokens/s at 36, 34 and 32 layers).
 - **Prompt reading holds up better than generation:** the 7B still reads 318 to 334 tokens/s at 32K depth.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Split out of `DOC-IMPL-006` (sections 2, 5, 8, 9 and 11.2). Measurements unchanged. Correction carried over: the VRAM growth of model 6 is about 0.03 MiB per cached token (0.04 was a miscalculation). |
-

@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-05"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -94,10 +94,3 @@ Probes of `reasoning_effort` (low, medium, high) on the K2 3.7B and K2 MoVA, 202
 3. **More effort is not uniformly better.** The 3.7B's P1 was right at medium and wrong at high, and MoVA's medium W4 was its most complete. With one sample per cell these are anecdotes, but they show that effort should not be treated as a quality dial.
 4. **The answer split fails in both directions (KI-026):** at medium on the 3.7B (7 of 7 prompts) and at low on MoVA (3 of 7). Any client must check both fields for `</ifm|think>` on every reply. Handled since `quality_blind.py` v1.2 (KI-R14).
 5. **Not covered:** `--reasoning-budget`, the 0.9B, Qwen and Gemma with thinking off, the steward system prompt, the swap time between two models (measured since: `DOC-IMPL-016`), and repeated samples.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Split out of `DOC-IMPL-006` (section 18). Measurements unchanged. |
-

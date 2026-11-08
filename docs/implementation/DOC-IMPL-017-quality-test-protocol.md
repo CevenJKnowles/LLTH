@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-30"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -81,9 +81,3 @@ A launcher or stop script; additional models or quantisations; rebuilding llama.
 ## 8. Exception (2026-11-05)
 
 After the designer had scored all 140 answers and revealed the key, the designer had the round 1 Python answers run to check their correctness (first P4, then all of P1 to P4; P5 could not run, as Keras is not installed). The code ran unchanged with `python3 -I -B` in a temporary folder outside the project, read only the prompt data, and wrote no files in the project. The exception covered that check only; the rule above stands for all other work. The results, and the final score set the designer chose from them, are in `DOC-IMPL-010`.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Moved from ADR-004 §5b. The run order change of 2026-10-30 and the exception of 2026-11-05 are recorded in the ADR-004 amendment record. |
