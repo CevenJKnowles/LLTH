@@ -5,6 +5,7 @@ description = "LLTH: Liberated Local Thinking Harness"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",
+    "httpx",
     "uvicorn",
 ]
 

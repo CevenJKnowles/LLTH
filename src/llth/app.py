@@ -1,8 +1,11 @@
 """The LLTH web app: serves the page and the API behind it."""
+import json
 import subprocess
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import Body, FastAPI, HTTPException
+from fastapi.responses import FileResponse, StreamingResponse
+from llth.chat import stream_reply
 from llth.experts import Expert, load_experts
 from llth.paths import STATIC_DIR
 from llth.servers import (
@@ -66,6 +69,12 @@ def ensure_server(server_key: str) -> None:
         raise
 
 
+async def to_lines(events: AsyncIterator[dict]) -> AsyncIterator[str]:
+    """Turn events into one JSON object per line."""
+    async for event in events:
+        yield json.dumps(event) + "\n"
+
+
 @app.post("/api/mode")
 def set_mode(key: str) -> dict:
     """Switch the expert, swapping the server if it needs a different one."""
@@ -77,3 +86,15 @@ def set_mode(key: str) -> dict:
         raise HTTPException(status_code=503, detail=str(error)) from error
     state.current = key
     return get_state()
+
+
+@app.post("/api/chat")
+def chat(messages: list[dict] = Body(embed=True)) -> StreamingResponse:
+    """Stream the reply to the conversation, one JSON object per line."""
+    if state.process is None or state.process.poll() is not None:
+        raise HTTPException(status_code=503, detail="No model server is running.")
+    instructions = state.experts[state.current].instructions
+    if instructions:
+        messages = [{"role": "system", "content": instructions}, *messages]
+    events = stream_reply(state.settings, messages)
+    return StreamingResponse(to_lines(events), media_type="application/x-ndjson")
