@@ -2,9 +2,9 @@
 id: ADR-011
 title: Python Project Layout, Tooling and Dependencies
 type: adr
-status: draft
-version: v1.0
-canonical: pending
+status: accepted
+version: v1.3
+canonical: true
 scope: llth
 audience:
   - developer
@@ -33,13 +33,13 @@ provenance:
 
 ## Status
 
-Draft (v1.0)
+Accepted (v1.3)
 
 ---
 
 ## 1. Context
 
-ADR-006 decides that the interface is a FastAPI backend with one HTML file, and names FastAPI and an ASGI server as the dependencies it adds. The build began on 2026-11-07. It needs decisions that no accepted ADR makes: where the Python code lives, which tool creates and locks the environment, how dependencies are declared, and which dependencies exist beyond those of ADR-006. The designer took several of these decisions during the first build sessions (2026-11-07 and 2026-11-08). This ADR records them and marks the open ones as Proposed.
+ADR-006 decides that the interface is a FastAPI backend with one HTML file, and names FastAPI and an ASGI server as the dependencies it adds. The build began on 2026-11-07. It needs decisions that no accepted ADR makes: where the Python code lives, which tool creates and locks the environment, how dependencies are declared, and which dependencies exist beyond those of ADR-006. The designer took several of these decisions during the first build sessions (2026-11-07 and 2026-11-08). This ADR records them.
 
 ### Decision drivers
 
@@ -59,7 +59,7 @@ A `src/` layout keeps the package out of the working directory's import path, so
 ### §1 Layout
 
 - The Python package `llth` lives in `src/llth/`. `pyproject.toml` and `uv.lock` are at the repository root.
-- The app starts with `python -m llth` (`src/llth/__main__.py`). The page is `src/llth/static/index.html` (ADR-006 §1).
+- The app starts with the `llth` command (§5) or `python -m llth`; both run `main()` in `src/llth/__main__.py`. The page is `src/llth/static/index.html` (ADR-006 §1).
 - Each module has one job:
 
 | Module | Job |
@@ -86,13 +86,13 @@ A `src/` layout keeps the package out of the working directory's import path, so
   - `httpx`, from this ADR: the asynchronous HTTP client that `chat.py` uses to stream a reply from `llama-server`. When the browser closes its connection, leaving the request block closes the connection to `llama-server`. Whether `llama-server` then stops generating is checked in the first run with the real model (ADR-006 §6).
 - The Python standard library covers everything else.
 
-### §4 Adding a dependency (Proposed, P-1)
+### §4 Adding a dependency
 
 A new direct dependency is added only through an ADR that names it and gives the reason, as ADR-006 §1 and §3 of this ADR do. An ADR that adds one lists it in its own Decision section.
 
-### §5 Entry point (Proposed, P-2)
+### §5 Entry point
 
-The only entry point is `python -m llth`. The package declares no console script. A `llth` command belongs to the installer ADR.
+The package declares a console script, `llth`, in `[project.scripts]` of `pyproject.toml`. It runs `main()` in `src/llth/__main__.py`, and `python -m llth` runs the same function. How the command is found on a user's machine, for example the environment's `bin` folder on the path, belongs to the installer ADR.
 
 ---
 
@@ -113,7 +113,7 @@ The only entry point is `python -m llth`. The package declares no console script
 
 ### Implementation notes
 
-- The repository already follows §1 to §3.
+- The repository already follows §1 to §3. The `[project.scripts]` entry of §5 is added to `pyproject.toml` after this ADR is accepted.
 - ADR-006 §1 is not amended: it lists the dependencies that ADR adds, not every dependency the project may have.
 - Tests and the lint tool are development dependencies, decided in ADR-012.
 
@@ -154,16 +154,16 @@ The only entry point is `python -m llth`. The package declares no console script
 - **Option B — the standard-library client.** Not chosen: it blocks a worker thread, and in a test with a stand-in server the request stayed open after the browser left.
 - **Option C — asyncio streams with a hand-written HTTP/1.1 request and a chunked-reply parser.** Not chosen: more code to maintain than the dependency it replaces.
 
-### P-1 — Adding a dependency
+### Adding a dependency
 
-- **Option A — an ADR names each new dependency (proposed).** Every dependency is traceable to a decision.
+- **Option A — an ADR names each new dependency (chosen).** Every dependency is traceable to a decision.
 - **Option B — a note in the feature's ADR amendment.** Same record, less ceremony.
-- **Option C — no rule.** Not proposed: dependencies could grow unrecorded.
+- **Option C — no rule.** Not chosen: dependencies could grow unrecorded.
 
-### P-2 — Entry point
+### Entry point
 
-- **Option A — `python -m llth` only (proposed).** The installer ADR decides on a command.
-- **Option B — also a `llth` console script now.** The command would exist before the installer defines how it is found.
+- **Option A — `python -m llth` only.** Not chosen: starting LLTH takes the interpreter and the module name, and needs the environment's Python.
+- **Option B — also a `llth` console script (chosen).** One short command starts LLTH. How the command is found on the path is left to the installer ADR.
 
 ---
 
@@ -171,4 +171,4 @@ The only entry point is `python -m llth`. The package declares no console script
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-08 | Initial draft. Records the layout, tooling and dependency decisions of the first build sessions. Two points are marked Proposed (P-1, P-2). |
+| v1.3 | 2026-11-08 | Drafted and reviewed, accepted by the designer. |

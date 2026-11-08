@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.61
+version: v1.64
 canonical: true
 scope: llth
 audience:
@@ -79,7 +79,7 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-011 — Python Project Layout, Tooling and Dependencies**
   Path: `$LLTH_HOME/ADR/ADR-011-python-project-layout-tooling-and-dependencies.md`
-  Status: draft (v1.0 — `src/llth/` layout, uv and `uv.lock`, dependencies without version limits, `httpx` for streaming; two points Proposed)
+  Status: accepted (v1.3 — `src/llth/` layout, uv and `uv.lock`, dependencies without version limits, `httpx` for streaming, a `llth` console script)
 
 - **ADR-012 — Code Checks in Continuous Integration**
   Path: `$LLTH_HOME/ADR/ADR-012-code-checks-in-continuous-integration.md`
