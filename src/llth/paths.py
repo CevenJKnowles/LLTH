@@ -17,3 +17,4 @@ def read_data_root() -> Path:
 DATA_ROOT = read_data_root()
 EXPERTS_DIR = DATA_ROOT / "LLTH" / "experts"
 SETTINGS_DIR = DATA_ROOT / "LLTH" / "settings"
+STATIC_DIR = HOME / "src" / "llth" / "static"
