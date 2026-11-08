@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.64
+version: v1.70
 canonical: true
 scope: llth
 audience:
@@ -83,4 +83,4 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-012 — Code Checks in Continuous Integration**
   Path: `$LLTH_HOME/ADR/ADR-012-code-checks-in-continuous-integration.md`
-  Status: draft (v1.0 — lint, format and tests with stand-ins on every push and pull request, no GPU and no model; five points Proposed)
+  Status: accepted (v1.6 — lint, format and tests with stand-ins on every push and pull request, no GPU and no model; pytest, ruff, every supported Python version, a `code-check.yml` workflow)

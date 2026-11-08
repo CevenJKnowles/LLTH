@@ -2,9 +2,9 @@
 id: ADR-012
 title: Code Checks in Continuous Integration
 type: adr
-status: draft
-version: v1.0
-canonical: pending
+status: accepted
+version: v1.6
+canonical: true
 scope: llth
 audience:
   - developer
@@ -32,7 +32,7 @@ provenance:
 
 ## Status
 
-Draft (v1.0)
+Accepted (v1.6)
 
 ---
 
@@ -67,8 +67,8 @@ The code checks run on a GitHub-hosted Ubuntu runner on every push to `main` and
 A run fails if any step fails:
 
 1. Install the environment from `uv.lock`, including the development dependency group.
-2. Check formatting and lint (P-2).
-3. Run the tests (P-1).
+2. Check formatting and lint with ruff (§6).
+3. Run the tests with pytest (§5).
 
 ### §3 Tests
 
@@ -81,23 +81,23 @@ A run fails if any step fails:
 
 Test and lint tools are listed in a development dependency group in `pyproject.toml`, never under `dependencies`. They are not installed for users.
 
-### §5 Test framework (Proposed, P-1)
+### §5 Test framework
 
-The tests use pytest.
+The tests use pytest, a development dependency (§4).
 
-### §6 Lint and format tool (Proposed, P-2)
+### §6 Lint and format tool
 
-Formatting and lint use ruff, with its default line length of 88.
+Formatting and lint use ruff, a development dependency (§4), with its default line length of 88.
 
-### §7 Python versions (Proposed, P-3)
+### §7 Python versions
 
-The checks run on Python 3.12, the minimum of ADR-011 §2, and on Python 3.14, the version used in development.
+The checks run on every Python minor version from the minimum of ADR-011 §2 up to the newest stable release. The versions are listed in the workflow.
 
-### §8 Installation in the workflow (Proposed, P-4)
+### §8 Installation in the workflow
 
 The workflow installs uv with `pip` into a virtual environment on the runner, then runs `uv sync --locked`. It adds no third-party action beyond `actions/checkout` (ADR-010 §4).
 
-### §9 Workflow file (Proposed, P-5)
+### §9 Workflow file
 
 The code checks are a new workflow, `.github/workflows/code-check.yml`. The documentation check of ADR-010 stays unchanged.
 
@@ -115,7 +115,7 @@ The code checks are a new workflow, `.github/workflows/code-check.yml`. The docu
 
 - Tests with stand-ins check the code's logic, not the real `llama-server`. A stand-in can differ from the real server.
 - The development dependency group adds tools to maintain.
-- The workflow runs on two Python versions, so a run takes longer.
+- The workflow runs once for every supported Python version, so a run takes longer.
 
 ### Implementation notes
 
@@ -143,32 +143,32 @@ The code checks are a new workflow, `.github/workflows/code-check.yml`. The docu
 
 ## 5. Options considered
 
-### P-1 — Test framework
+### Test framework
 
-- **Option A — pytest (proposed).** The common standard; simple fixtures for temporary folders and stand-ins. A development dependency.
-- **Option B — `unittest`.** Standard library, no dependency. More code for the same tests.
+- **Option A — pytest (chosen).** The common standard; simple fixtures for temporary folders and stand-ins. A development dependency.
+- **Option B — `unittest`.** Not chosen: standard library, no dependency. More code for the same tests.
 
-### P-2 — Lint and format tool
+### Lint and format tool
 
-- **Option A — ruff (proposed).** One development dependency for lint and format.
-- **Option B — no tool; a compile check only.** No dependency, and no style enforcement.
+- **Option A — ruff (chosen).** One development dependency for lint and format.
+- **Option B — no tool; a compile check only.** Not chosen: no dependency, and no style enforcement.
 
-### P-3 — Python versions
+### Python versions
 
-- **Option A — 3.12 and 3.14 (proposed).** The minimum and the version in use.
-- **Option B — 3.12 only.** Faster; a break on newer versions goes unnoticed.
-- **Option C — every supported minor version.** The most coverage and the longest run.
+- **Option A — the minimum and the version in use.** Not chosen: a break on a version between them goes unnoticed.
+- **Option B — 3.12 only.** Not chosen: faster; a break on newer versions goes unnoticed.
+- **Option C — every supported minor version (chosen).** The most coverage and the longest run.
 
-### P-4 — Installation in the workflow
+### Installation in the workflow
 
-- **Option A — `pip install uv` in a virtual environment, then `uv sync --locked` (proposed).** Uses the lock file with no extra action.
-- **Option B — the `astral-sh/setup-uv` action, pinned by commit SHA.** One more third-party action (ADR-010 §4).
-- **Option C — `pip install` the development group without uv.** Ignores `uv.lock`.
+- **Option A — `pip install uv` in a virtual environment, then `uv sync --locked` (chosen).** Uses the lock file with no extra action.
+- **Option B — the `astral-sh/setup-uv` action, pinned by commit SHA.** Not chosen: one more third-party action (ADR-010 §4).
+- **Option C — `pip install` the development group without uv.** Not chosen: it ignores `uv.lock`.
 
-### P-5 — Workflow file
+### Workflow file
 
-- **Option A — a new `code-check.yml` (proposed).** Separate status for documentation and code; each can fail alone.
-- **Option B — a second job in `docs-check.yml`.** One file; one status for both.
+- **Option A — a new `code-check.yml` (chosen).** Separate status for documentation and code; each can fail alone.
+- **Option B — a second job in `docs-check.yml`.** Not chosen: one file; one status for both.
 
 ---
 
@@ -176,4 +176,4 @@ The code checks are a new workflow, `.github/workflows/code-check.yml`. The docu
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-08 | Initial draft. Five points are marked Proposed (P-1 to P-5). |
+| v1.6 | 2026-11-08 | Drafted and reviewed, accepted by the designer. |
