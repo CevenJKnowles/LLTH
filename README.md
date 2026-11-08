@@ -6,7 +6,7 @@ LLTH, the **Liberated Local Thinking Harness**, is a free, open-source system fo
 
 ## Status
 
-Built and measured: llama.cpp, six open-weight models, a speed benchmark and a blind quality test. Designed, not built: the interface, storage and memory, document intake and export (ADR-005 to ADR-009). No installer exists.
+Built and measured: llama.cpp, six open-weight models, a speed benchmark and a blind quality test. In progress: the interface (the server code is written; the page is not, and nothing has run with a real model). Designed, not built: storage and memory, document intake and export (ADR-005 to ADR-009). No installer exists.
 
 ## Purpose
 
