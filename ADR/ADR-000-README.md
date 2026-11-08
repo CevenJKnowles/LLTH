@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.58
+version: v1.59
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - governance
   - adr
@@ -77,6 +77,14 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
   Path: `$LLTH_HOME/ADR/ADR-010-documentation-checks-in-continuous-integration.md`
   Status: accepted (v1.6 — one workflow and a standard-library script check the manifest, frontmatter, version agreement, identifiers, ADR structure, links, secrets and local paths)
 
+- **ADR-011 — Python Project Layout, Tooling and Dependencies**
+  Path: `$LLTH_HOME/ADR/ADR-011-python-project-layout-tooling-and-dependencies.md`
+  Status: draft (v1.0 — `src/llth/` layout, uv and `uv.lock`, dependencies without version limits, `httpx` for streaming; two points Proposed)
+
+- **ADR-012 — Code Checks in Continuous Integration**
+  Path: `$LLTH_HOME/ADR/ADR-012-code-checks-in-continuous-integration.md`
+  Status: draft (v1.0 — lint, format and tests with stand-ins on every push and pull request, no GPU and no model; five points Proposed)
+
 ## Amendment record
 
 | Version | Date | Summary |
@@ -92,3 +100,4 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 | v1.56 | 2026-11-07 | Added ADR-010 (draft) to the index. |
 | v1.57 | 2026-11-07 | ADR-010 accepted (v1.6). |
 | v1.58 | 2026-11-07 | ADR-008 amendments accepted (v1.28). |
+| v1.59 | 2026-11-08 | Added ADR-011 and ADR-012 (draft) to the index. |
