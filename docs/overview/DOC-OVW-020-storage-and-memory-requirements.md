@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - storage
@@ -67,11 +67,3 @@ The designer's requirements for LLTH's storage and memory. The decisions taken f
 ## 3. For future versions
 
 - **Native tool calling by a model.** The model calls tools (write, save, delete, move) through the engine's built-in support instead of the fixed-format blocks of way B. Whether the K2 Horizon chat template supports it is unverified. It needs testing on the K2 models and its own ADR (ADR-007, Non-goals).
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Initial. The designer's requirements of 2026-11-07 with the outcome of each. |

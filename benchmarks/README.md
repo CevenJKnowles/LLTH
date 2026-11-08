@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-27"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -84,13 +84,3 @@ Edits made after the runs:
 ## Conditions and licences
 
 Every result was measured on the reference machine described in the project README, with the conditions stated in each block. The scripts are licensed Apache-2.0 (`LICENSE`) and the logs CC BY 4.0 (`LICENSE-DATA`).
-
-## Amendment record
-
-| Version | Date | Summary |
-|---|---|---|
-| v1.0 | 2026-10-27 | Initial. |
-| v1.1 | 2026-11-05 | Added the prompt set, the quality test, the scoring and the effort probes. |
-| v1.2 | 2026-11-05 | Added `swap-time/`. |
-| v1.3 | 2026-11-05 | Run headers of the quality runs sanitised to `$LLTH_HOME`. |
-| v2.0 | 2026-11-07 | Restructured: logs in `speed/`, scripts grouped by purpose, one manifest, prompt verification record, integrity and edits section. |

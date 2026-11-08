@@ -10,7 +10,7 @@ audience:
   - developer
   - maintainer
 created: "2026-10-30"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - benchmarks
@@ -93,10 +93,3 @@ P3, D4 and D5 are tagged *contested*: each could reasonably be labelled the othe
 Routing accuracy (ADR-004 §5a) is reported twice, over all 20 prompts with the designer's labels and over the 17 uncontested prompts, and any conclusion that changes between the two is stated as such. Easy-prompt quality and cost are reported for the designer's easy set.
 
 The two-label scheme has to cover long writing (W3, W5), knowledge gaps (D4), precision tasks (D3) and ambiguity (D5). The contested prompts are where that shows.
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-30 | Initial. Verification of the draft prompt set, the changes made to it and the designer's labels. |
-| v1.1 | 2026-11-07 | Restructured as a verification record: the label table moved to `quality/labels.csv`, the changes merged into section 2, working notes removed. |

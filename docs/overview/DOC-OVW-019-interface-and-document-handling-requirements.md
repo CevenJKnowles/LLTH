@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-05"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - interface
@@ -108,11 +108,3 @@ Exports come from the converted Markdown, not from the original, so they will no
 ## 5. Parked
 
 - Permissions and system actions, such as an administrative assistant that plans and schedules on the system calendar. Out of scope for now.
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-11-07 | Initial. The designer's requirements of 2026-11-05 to 2026-11-07 with the outcome of each. |
