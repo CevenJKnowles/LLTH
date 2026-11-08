@@ -3,7 +3,7 @@ id: DOC-GOV-001
 title: ADR Policy
 type: governance
 status: active
-version: v1.3
+version: v1.4
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - governance
   - adr
@@ -70,13 +70,3 @@ The full template, including the frontmatter, is in DOC-GOV-002. Section order i
 5. `## 4. Non-goals`
 6. `## 5. Options considered` (optional; only when the choice was non-obvious or contested)
 7. `## 6. Amendment record`
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial. |
-| v1.1 | 2026-10-23 | Added `reserved` status (see DOC-GOV-002 v1.2). |
-| v1.3 | 2026-11-07 | The Status section format; Rule 2 allows wording-only corrections in one row. |

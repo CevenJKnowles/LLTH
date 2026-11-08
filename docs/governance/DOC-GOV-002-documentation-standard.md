@@ -3,7 +3,7 @@ id: DOC-GOV-002
 title: Documentation Standard
 type: governance
 status: active
-version: v1.8
+version: v1.9
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - governance
   - frontmatter
@@ -100,10 +100,10 @@ Everything in the project folder (`$LLTH_HOME/`) is fully governed. When unsure 
 
 ## Amendment records
 
-- Every document ends with an amendment record table.
-- A row records new content, a decision, or the correction of a value.
+- An ADR ends with an amendment record table. The ADR index (`ADR-000`) and other documents carry none: `version`, `updated` and the repository history record their changes.
+- An ADR's rows start at its acceptance: one row for the drafting and review ("Drafted and reviewed, accepted by the designer"), then one row for each later change to a decision or correction of a value.
 - Wording-only corrections, including typo fixes, share one "Editorial revision" row per release.
-- The root `README.md` keeps its history in the developer guide (`DOC-OVW-004`).
+- The files covered by `benchmarks/MANIFEST.sha256` keep their tables, because a change to them is evidence.
 
 ---
 
@@ -220,27 +220,4 @@ provenance:
 ## Purpose
 
 (body)
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | YYYY-MM-DD | Initial |
 ```
-
----
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.0 | 2026-10-23 | Initial. Frontmatter required on every document. |
-| v1.1 | 2026-10-23 | `canonical` is `true` once a document is out of draft and `pending` while it is a draft; templates updated. |
-| v1.2 | 2026-10-23 | Optional `maturity` and `relationships` fields and a `reserved` status. Added stable-id/redirect, no-prose-in-frontmatter and no-ad-hoc-field rules. |
-| v1.3 | 2026-10-23 | The ADR index file is named `ADR-000-README.md` (was `README.md`), so every file in `ADR/` follows the `ADR-NNN-` pattern. |
-| v1.4 | 2026-10-23 | Added the Exemptions section (the author's tool configuration is outside the standard) and the root `README.md` exemption from naming and location. |
-| v1.5 | 2026-10-23 | The id of a project's root `README.md` is `README`. `DOC-OVW-001` is no longer used by the README and is free for the first overview document. |
-| v1.7 | 2026-10-23 | `provenance` is now a list. Templates updated. |
-| v1.8 | 2026-11-07 | Added the rules for amendment records. The root `README.md` carries no frontmatter. Editorial revision for publication. |

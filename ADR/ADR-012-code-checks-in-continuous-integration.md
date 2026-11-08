@@ -121,7 +121,6 @@ The code checks are a new workflow, `.github/workflows/code-check.yml`. The docu
 
 - The workflow and the first tests are written after this ADR is accepted.
 - The first run on the current tree must pass.
-- ADR-010 §6 allows no badge for a test run that does not exist. When the workflow exists, the README badges are amended there.
 
 ### Related
 

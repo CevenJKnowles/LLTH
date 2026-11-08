@@ -2,8 +2,8 @@
 id: ADR-010
 title: Documentation Checks in Continuous Integration
 type: adr
-status: accepted
-version: v1.6
+status: amended
+version: v1.7
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -31,7 +31,7 @@ provenance:
 
 ## Status
 
-Accepted (v1.6)
+Amended (v1.7)
 
 ---
 
@@ -65,7 +65,7 @@ A run fails if any check reports a problem. Each problem is printed as `file:lin
 
 1. **Manifest.** `sha256sum -c benchmarks/MANIFEST.sha256` reports no failures.
 2. **Frontmatter.** Every Markdown file has frontmatter, except the root `README.md` and the generated result files in `benchmarks/quality/scoring/`. The required fields of `DOC-GOV-002` are present and appear in its order. `canonical` is `true` when `status` is `active`, `complete`, `accepted` or `amended`.
-3. **Version agreement.** The `version` in the frontmatter equals the last row of the document's amendment record.
+3. **Version agreement.** The `version` in the frontmatter of an ADR equals the last row of its amendment record. The ADR index and other documents carry no amendment record and are not checked.
 4. **Identifiers.** Each filename matches the document id and the naming pattern of `DOC-GOV-002`. Ids are unique. Every `ADR-NNN` and `DOC-<AREA>-NNN` identifier in the text resolves to a file. Retired ids are listed in the script.
 5. **ADR structure.** Each ADR has the sections of `DOC-GOV-001` in order: Status, Context, Decision, Consequences, Non-goals and Amendment record. Options considered is optional. The ADR index is exempt.
 6. **Links.** Every relative Markdown link resolves to a file or folder. External links are not checked.
@@ -84,10 +84,6 @@ The workflow uses one third-party action, `actions/checkout`. It is pinned by co
 - It does not check wording, tone or the writing standard beyond the rules above.
 - It does not scan for specific names, and it does not check commit messages or author addresses. Those checks run on the maintainer's machine before a push, because a list of names would publish what it protects. The generic secret and path patterns of §2 item 7 are public.
 - It does not build llama.cpp, run benchmarks or deploy anything. The build and the benchmarks need the reference GPU.
-
-### §6 README badges
-
-The README shows three badges directly under its title, each stating a verifiable fact: the status of this documentation check (GitHub's native workflow badge), the licences (Apache-2.0, CC BY-NC 4.0 and CC BY 4.0), and the maturity (alpha). It shows no badge for a build, a test run or a metric that does not exist.
 
 ---
 
@@ -149,10 +145,5 @@ Not chosen: it adds a tool for every contributor and still runs only on the cont
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-07 | Initial draft. Five points are marked Proposed (P-1 to P-5). |
-| v1.1 | 2026-11-07 | P-5 decided: the README shows three badges (documentation check, licences, maturity). Four points remain Proposed (P-1 to P-4). |
-| v1.2 | 2026-11-07 | P-1 decided: the script is `.github/scripts/check_docs.py`. Three points remain Proposed (P-2 to P-4). |
-| v1.3 | 2026-11-07 | P-2 decided: the workflow runs on every push to `main` and every pull request. Two points remain Proposed (P-3, P-4). |
-| v1.4 | 2026-11-07 | P-3 decided: `actions/checkout` is pinned by commit SHA. One point remains Proposed (P-4). |
-| v1.5 | 2026-11-07 | P-4 decided: only relative links are checked. No Proposed points remain. |
-| v1.6 | 2026-11-07 | Accepted by the designer after the step-by-step review (v1.0 to v1.5). Status `accepted`, canonical `true`. |
+| v1.6 | 2026-11-07 | Drafted and reviewed, accepted by the designer. |
+| v1.7 | 2026-11-08 | §6 (README badges) removed: the README's presentation is not an architecture decision. §2 item 3: version agreement applies to ADRs only. |

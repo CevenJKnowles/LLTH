@@ -8,7 +8,7 @@ and exits 1 if there is any.
 Checks
   1  manifest         benchmarks/MANIFEST.sha256 verifies
   2  frontmatter      required fields, order, allowed values, canonical against status
-  3  version          frontmatter version equals the last row of the amendment record
+  3  version          an ADR's frontmatter version equals the last row of its amendment record (the index is exempt)
   4  identifiers      filename matches id, ids are unique, referenced ids resolve
   5  ADR structure    the sections of DOC-GOV-001 in order
   6  links            relative Markdown links resolve
@@ -170,15 +170,16 @@ def check_document(rel, text, ids):
         pattern = r"ADR-000-README\.md" if doc_id == "ADR-000" else re.escape(doc_id) + r"-[a-z0-9]+(-[a-z0-9]+)*\.md"
         if not re.fullmatch(pattern, name):
             problem(rel, 1, "filename does not match id %s" % doc_id)
-    # version agreement
+    # version agreement (ADRs only; the index and other documents carry no amendment record)
     lines = strip_code(text)
-    rows = amendment_rows(lines)
-    if rows is None:
-        problem(rel, 1, "no amendment record")
-    elif not rows:
-        problem(rel, 1, "amendment record has no rows")
-    elif rows[-1] != values.get("version"):
-        problem(rel, 1, "version %s differs from the last amendment row %s" % (values.get("version"), rows[-1]))
+    if is_adr and doc_id != "ADR-000":
+        rows = amendment_rows(lines)
+        if rows is None:
+            problem(rel, 1, "no amendment record")
+        elif not rows:
+            problem(rel, 1, "amendment record has no rows")
+        elif rows[-1] != values.get("version"):
+            problem(rel, 1, "version %s differs from the last amendment row %s" % (values.get("version"), rows[-1]))
     # ADR structure
     if is_adr and doc_id != "ADR-000":
         heads = [l[3:].strip() for l in lines if l.startswith("## ")]
