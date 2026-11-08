@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -214,31 +214,10 @@ Not chosen: the designer wants conversion at intake so that the model does not c
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-07 | Initial draft, from `DOC-OVW-019` §3 and `DOC-OVW-020`, with the tools checked on the reference machine. Ten items marked Proposed. |
-| v1.1 | 2026-11-07 | Rewritten around the research of `DOC-IMPL-011`, at the designer's request that the tools suit anyone's machine: the reference-machine facts are removed from the Context; the formats the designer named are stated; the Proposed items now include a layered default toolkit, upgrades that are not defaults, a licence rule, the installer's role and the languages; options B to E are added. Thirteen items are marked Proposed. |
-| v1.2 | 2026-11-07 | Review step 1: the inbox is `user/documents/inbox/`, read when the user asks with `/intake`, and a file dropped onto the window is a second way in (designer, A and C); moved out of Proposed. Twelve Proposed items remain. A note that ADR-007's tree needs the `inbox/` folder. |
-| v1.3 | 2026-11-07 | The designer dropped the inbox: there is no inbox folder and no `/intake` command; a document comes in by dropping it onto the window. §3 rewritten; the Proposed item about moving the original now says LLTH stores a copy in `originals/`; the note about ADR-007's tree is replaced. |
-| v1.4 | 2026-11-07 | Review step 2: pypdfium2 reads PDFs, both text layers and rendering scanned pages for Tesseract; pypdf is dropped (designer). The PDF layer moved out of the Proposed toolkit item into §4. Eleven Proposed items remain. |
-| v1.5 | 2026-11-07 | Review step 3: the default toolkit (Tesseract, pypdfium2, Pandoc, charset-normalizer) accepted by the designer and moved into §4 Reading as plain clauses. Ten Proposed items remain. |
-| v1.6 | 2026-11-07 | Review step 4: the upgrades that are not defaults (Docling as an optional heavier tier; small OCR vision models noted for later) accepted by the designer as written and moved into §4. Nine Proposed items remain. |
-| v1.7 | 2026-11-07 | Review step 5: the licence rule accepted with the addition that the installer ships each GPL program's licence notice and a link to its source (designer); moved into §4. Eight Proposed items remain. |
-| v1.8 | 2026-11-07 | Review step 6: the installer provides the toolkit inside LLTH's own folder (designer, option A), with Tesseract from the `tesserocr` wheel and language data from `tessdata_fast`; moved out of Proposed into §4. Platform gaps and the trial install added to the Consequences and notes. Eight Proposed items remain. |
-| v1.9 | 2026-11-07 | Review step 7: where to file (ask on the review screen: a project or `user/documents/`) accepted as written by the designer and moved into §3. Seven Proposed items remain. |
-| v1.10 | 2026-11-07 | Review step 8: the review screen (doubtful words marked for OCR; every OCR document is reviewed in every Confirm setting; text-layer documents follow the setting) accepted as written by the designer and moved into §6. Six Proposed items remain. |
-| v1.11 | 2026-11-07 | Review step 9: OCR is one pass with the doubtful words marked from Tesseract's own confidence (designer, option B); several passes may come later. Moved into §4. Five Proposed items remain. |
-| v1.12 | 2026-11-07 | Review step 10: the frontmatter and JSON fields accepted by the designer in the corrected form (no table positions; language is the OCR language used, empty otherwise; the quality summary is written by LLTH's code); moved into §5. Four Proposed items remain. |
-| v1.13 | 2026-11-07 | Review step 11: the dropped file is held in memory only during the review and written to `originals/` on confirmation (designer, option A); moved into §7. Three Proposed items remain. |
-| v1.14 | 2026-11-07 | Review step 12: the languages accepted in the corrected form (chosen at installation, English by default, more can be added later in `LLTH/settings/`; the size estimate is dropped); moved into §4. Two Proposed items remain. |
-| v1.15 | 2026-11-07 | Review step 13: reading a document into a model accepted with two changes (a document is read whole if it fits in the free context with room for the reply; the outline is built at intake for any document that does not fit); moved into §5. One Proposed item remains. |
-| v1.16 | 2026-11-07 | Review step 14: the document text is passed to a model inside markers and labelled as a document (designer, option B); moved into §6. §10 removed; no Proposed items remain. Two stale references corrected. |
-| v1.18 | 2026-11-07 | Accepted by the designer after the step-by-step review (v1.1 to v1.17). Status `accepted`, canonical `true`. No text of the decisions changed. Nothing is built, created or installed yet. |
-| v1.19 | 2026-11-07 | Amended (status becomes `amended`): a file chooser opened by a command is added as a second way in, so that intake can be started from the keyboard (designer). The decisions of v1.18 are otherwise unchanged. |
-| v1.20 | 2026-11-07 | Amended: after a drop or `/file`, LLTH asks what to do with the document (File it, Use it in this chat, Cancel), added to §3 (designer, option A in the mockup review). §6 now says the review applies to documents the user files. New §6a holds three Proposed items (what "use in chat" does, how long it stays, OCR without review) for the designer to decide one at a time. Status stays `amended`. Nothing is built. |
-| v1.21 | 2026-11-07 | Review of §6a, P-1: "Use it in this chat" holds the document in memory only and reads it by the rule of §5, with the outline built in memory for a long one (designer, option A); moved out of Proposed. Two Proposed items remain (P-2, P-3). |
-| v1.22 | 2026-11-07 | Review of §6a, P-2: an attached document stays until `/clear` or until LLTH closes, and can be filed from the chat without dropping it again (designer, option B); how the offer is shown is left for the mockup. Moved out of Proposed. One Proposed item remains (P-3). |
-| v1.23 | 2026-11-07 | Naming: the command that opens the file chooser is `/open` (it was `/file`, an example), and `/save` is the way to file a document attached to the chat; this settles the open detail of v1.22 (designer). The history rows above keep the old name as it was written. One Proposed item remains (P-3). |
-| v1.24 | 2026-11-07 | Review of §6a, P-3: a scan used in the chat is read by one OCR pass with no review and a notice that it is unreviewed (designer, option A); moved out of Proposed. No Proposed items remain. §6a is complete; the amendment awaits the designer's acceptance. |
-| v1.25 | 2026-11-07 | Amended at the designer's request: OCR with Tesseract (the `tesserocr` wheel, its language data, the doubtful-word review and the scan-in-chat clause) is removed from the default toolkit of the first version and recorded as an anticipated update in the new §4a. §2, §4, §5, §6, §6a, §8, the Consequences, the notes, the Non-goals and Option A are made consistent. One Proposed item in §4a (decline a scan with a plain message). The acceptance of v1.24 is still pending. |
-| v1.26 | 2026-11-07 | The one Proposed item of v1.25 is decided: a scan, photograph or scanned PDF is declined in the first version with the message "Scanned document reading is unavailable in this current version." (designer's wording). No Proposed items remain. The acceptance of v1.24 and v1.25/v1.26 is pending. |
+| v1.18 | 2026-11-07 | Drafted and reviewed, accepted by the designer. |
+| v1.19 | 2026-11-07 | Amended (status becomes `amended`): a file chooser opened by a command is added as a second way in, so that intake can be started from the keyboard. |
+| v1.20 | 2026-11-07 | After a drop or the file chooser, LLTH asks what to do with the document (File it, Use it in this chat, Cancel) (§3). The review applies to documents the user files (§6). |
+| v1.24 | 2026-11-07 | §6a, using a document in the chat without filing it: the document is held in memory only and read by the rule of §5; it stays until `/clear` or until LLTH closes and can be filed with `/save`; the command that opens the file chooser is `/open`. |
+| v1.26 | 2026-11-07 | OCR with Tesseract is removed from the first version and recorded as an anticipated update (§4a). A scan, photograph or scanned PDF is declined with the message "Scanned document reading is unavailable in this current version." |
 | v1.27 | 2026-11-07 | Editorial revision for publication. |
-| v1.28 | 2026-11-07 | The amendments v1.19 to v1.27 (file chooser, the choice after a drop, §6a, OCR as an anticipated update in §4a) are accepted by the designer as written. Status stays `amended`. No text of the decisions changed. |
+| v1.28 | 2026-11-07 | The amendments v1.19 to v1.27 are accepted by the designer as written. Status stays `amended`. |

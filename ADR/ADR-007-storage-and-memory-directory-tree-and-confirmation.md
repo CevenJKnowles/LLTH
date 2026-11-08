@@ -3,7 +3,7 @@ id: ADR-007
 title: Storage and Memory, Directory Tree, Locations and Confirmation
 type: adr
 status: amended
-version: v1.13
+version: v1.14
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -33,7 +33,7 @@ provenance:
 
 ## Status
 
-Amended (v1.13)
+Amended (v1.14)
 
 ---
 
@@ -145,10 +145,6 @@ The two parts and the four user folders are the designer's; the folders below th
 - A backup of the root is the user's responsibility, or something LLTH may offer in a later ADR. A root moved to another drive has different protection again.
 - Whether any btrfs snapshot exists on the reference machine is unverified.
 
-### §8 Left for the build
-
-The default folder name, the exact fields of the files (the memory files' frontmatter, the index format and the JSON of the settings) and the installer's questions are decided when they are built.
-
 ---
 
 ## 3. Consequences
@@ -216,16 +212,7 @@ Not pursued: the designer asked for a directory tree and readable files, and a d
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-07 | Initial draft, from `DOC-OVW-020` and the designer's decisions of 2026-11-07. Five items are marked Proposed for the designer to accept or change: what planning means, the bottom-line wording, the screen-reader announcement, the approval instruction in the prompt, and that the installation choice sets the starting Confirm setting (plus the trash location `LLTH/trash/`). Not in the ADR-000 index. |
-| v1.1 | 2026-11-07 | Review step 1: anything LLTH replaces or deletes goes to the trash first (designer), not only deletes; the trash location stays Proposed. Wording corrected where the log was called an undo. |
-| v1.2 | 2026-11-07 | Review step 2: the trash is `LLTH/trash/` (designer) and is added to the tree. |
-| v1.3 | 2026-11-07 | Review step 3: planning is decided, with the user choosing at approval whether to execute the whole plan or go step by step (designer). The first Proposed item is now what happens when a step fails and after a plan has run. |
-| v1.4 | 2026-11-07 | Review step 4: what happens when a step fails, and that the setting stays "plan" after a plan has run, accepted by the designer and moved out of Proposed. Four Proposed items remain. |
-| v1.5 | 2026-11-07 | Review step 5: the bottom-line wording `Confirm: ask`, `Confirm: auto`, `Confirm: plan` chosen by the designer and moved out of Proposed. Three Proposed items remain. |
-| v1.6 | 2026-11-07 | Review step 6: a change of setting is announced to screen readers in full words and also shown as a short line in the chat (designer, A and B together), as one line so it is announced once. Two Proposed items remain. |
-| v1.7 | 2026-11-07 | Review step 7: the approval instruction in the prompt, in three wordings (a single change, a plan, and each step of a plan), chosen by the designer and moved out of Proposed. One Proposed item remains. |
-| v1.8 | 2026-11-07 | Review step 8: every session starts in manual, whatever was chosen at installation, and a switch lasts only for the session (designer). No Proposed items remain. One Open point added: how the installation choices and the tiers relate to the three session settings, and what "automatic" covers. |
-| v1.9 | 2026-11-07 | The Open point settled (designer): the three tiers become three kinds of change; manual asks before all, planning shows a plan, and automatic acts without asking for the kinds the user allowed at installation (default: new files and notes only; widen up to all three); the installation choice sets that reach, not the starting setting. §5 and §6 reworded to match. No Open or Proposed items remain. |
-| v1.11 | 2026-11-07 | Accepted by the designer after the step-by-step review (v1.1 to v1.10). Status `accepted`, canonical `true`. No text of the decisions changed. Nothing is built or created yet. |
+| v1.11 | 2026-11-07 | Drafted and reviewed, accepted by the designer. |
 | v1.12 | 2026-11-07 | Amended after ADR-009 (export): the tree gains `user/preferences/templates/`, for the user's export styles and other templates, wherever a template helps (designer). Its subfolders are decided when it is built. No other decision changed. |
 | v1.13 | 2026-11-07 | Editorial revision for publication. |
+| v1.14 | 2026-11-08 | §8 (left for the build) removed: it listed details not yet decided, which is not a decision. |

@@ -3,7 +3,7 @@ id: ADR-003
 title: llama.cpp Build Configuration
 type: adr
 status: amended
-version: v1.3
+version: v1.4
 canonical: true
 scope: llth
 audience:
@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-10-23"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -27,7 +27,7 @@ provenance:
 
 ## Status
 
-Amended (v1.3)
+Amended (v1.4)
 
 ---
 
@@ -113,12 +113,6 @@ Use the default prebuilt UI download (`LLAMA_USE_PREBUILT_UI=ON`, `LLAMA_BUILD_U
 
 **Pin rule:** the UI archive bucket only holds archives for builds that changed UI inputs, so `b<build number>` often does not exist (it did not for b11839) and `latest` moves over time. Therefore configure with the environment variable `HF_UI_VERSION` set to the newest existing archive at or below the build number (check with `curl -s -o /dev/null -w '%{http_code}' -L 'https://huggingface.co/buckets/ggml-org/llama-ui/resolve/b<N>/dist.tar.gz.sha256?download=true'`, which returns 200 when it exists). The variable must be set on every configure, because CMake reads it from the environment. For commit `e1e3b2c40` (b11839) the pin is `b11838`. Finding: the archive downloaded as `latest` and the `b11838` archive were byte-identical (SHA-256 `8714ff36…`), and b11839 changed only `tools/ui/package.json` and `package-lock.json`.
 
-### §9 Verification after the build
-
-- `llama-server --version` reports the build number and commit.
-- `llama-cli --list-devices` lists the RTX 2060 as CUDA0 with about 6 GB.
-- The configure output shows CUDA found, architecture 75, OpenSSL enabled and the UI source (prebuilt version used).
-
 ---
 
 ## 3. Consequences
@@ -145,7 +139,7 @@ Use the default prebuilt UI download (`LLAMA_USE_PREBUILT_UI=ON`, `LLAMA_BUILD_U
 - Updating later: `git -C $LLTH_HOME/llama.cpp pull`, then re-run the build command in §1 (an update to the pinned commit is recorded in this ADR).
 - **Configure result (2026-10-23):** clone converted to full history (11,839 commits, pack 392 MiB) at commit `e1e3b2c40`, which is one commit behind upstream and deliberately pinned. Configure succeeded in 4.5 s with GNU 15.3.0 (C, C++, CUDA host), NVIDIA CUDA compiler 13.3.73, `CMAKE_CUDA_ARCHITECTURES=75`, OpenSSL 3.6.4, CPU backend `-march=native`, FlashAttention combinations `f16-f16;q4_0-q4_0;q8_0-q8_0;bf16-bf16`. Defaults confirmed in the cache: `GGML_CUDA_GRAPHS=ON`, `GGML_CUDA_COMPRESSION_MODE=size`, `BUILD_SHARED_LIBS=ON`, `LLAMA_USE_PREBUILT_UI=ON`, `LLAMA_BUILD_UI=OFF`. Build targets present: `llama-server`, `llama-cli`, `llama-bench`, `llama-quantize`. 
 - **Build result (2026-10-23):** compile finished with exit code 0 (433 steps; wall-clock time not measured). `llama-server --version` reports `0.7.0-dev (build 11839, commit e1e3b2c40)`, built with GNU 15.3.0. `llama-cli --list-devices` reports `CUDA0: NVIDIA GeForce RTX 2060 (5746 MiB, 5583 MiB free)`. Binaries are in `$LLTH_HOME/llama.cpp/build/bin/`. Build log: kept only in a temporary location.
-- **Web UI fallback (§9 requirement):** the UI archive for `b11839` does not exist in the `ggml-org/llama-ui` bucket (HTTP error on its checksum file), so the build fell back to `latest`, verified its checksum, extracted and embedded 70 assets. The UI is therefore not guaranteed to match this server build.
+- **Web UI fallback:** the UI archive for `b11839` does not exist in the `ggml-org/llama-ui` bucket (HTTP error on its checksum file), so the build fell back to `latest`, verified its checksum, extracted and embedded 70 assets. The UI is therefore not guaranteed to match this server build.
 
 ### Related
 
@@ -199,3 +193,4 @@ Adds build time with no use for this project. Rejected.
 | v1.1 | 2026-10-23 | Recorded the build result. Correction to §7/§8 reasoning: the unshallow step gave a real build number (11839) but did not make the UI download match, because the bucket has no `b11839` archive and the build used `latest`. §7 remains justified by traceability of the server build; the UI match benefit does not apply. |
 | v1.2 | 2026-10-23 | Added the web UI pin rule (§8): configure with `HF_UI_VERSION=b11838`. Reconfigure and incremental rebuild approved by the designer. |
 | v1.3 | 2026-11-07 | Editorial revision for publication. |
+| v1.4 | 2026-11-08 | §9 (verification after the build) removed: the build number, commit and GPU target are recorded in the build log (`DOC-IMPL-002`). |

@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -162,7 +162,5 @@ Not chosen: left out by the designer (2026-11-05) as heavy.
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-07 | Initial draft, from `DOC-OVW-019` §4 (the designer's decision of 2026-11-05) and the tools checked on 2026-11-07. Nine items are marked Proposed (§2 §5) for the designer to accept or change. |
-| v1.1 | 2026-11-07 | The designer decided all nine items on 2026-11-07: `/export` also offers the full chat (item 2); templates live in `user/preferences/templates/` wherever a template helps (item 4); the others as written. No Proposed items remain. |
-| v1.2 | 2026-11-07 | Accepted by the designer after the review (v1.0 and v1.1). Status `accepted`, canonical `true`. No text of the decisions changed. Nothing is built, created or installed yet. |
+| v1.2 | 2026-11-07 | Drafted and reviewed, accepted by the designer. |
 | v1.3 | 2026-11-07 | Editorial revision for publication. |

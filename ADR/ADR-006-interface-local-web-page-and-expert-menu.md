@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-07"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -218,17 +218,7 @@ Not pursued: it talks to a single server and has no expert menu, no swapping bet
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-07 | Initial draft, from the approved mockup (`DOC-OVW-019`). Not in the ADR-000 index. Decisions marked Proposed are for the designer to accept or change. |
-| v1.1 | 2026-11-07 | Added to the ADR-000 index (v1.7). No change to the decisions. |
-| v1.3 | 2026-11-07 | §6: the unsupported statement "the machine cannot hold both models" is replaced by the measured VRAM figures and the fact that running both was not tested; an open item for a possible test is added to the Implementation notes. No decision changed. |
-| v1.4 | 2026-11-07 | §6: the starting and stopping of servers is no longer ambiguous or dependent on a saved setting. Servers start on demand (the first message loads the current expert), nothing is saved between sessions, and quitting the program stops both servers (designer's choice, option B). A Consequences line added for the first-reply wait. |
-| v1.5 | 2026-11-07 | §6: the designer reversed the server start-up choice: servers start with LLTH, with the last-used expert (a saved setting), not on demand. Because the designer wants projects and session notes saved, Consequences and Non-goals now name a separate storage ADR as wanted and as a dependency of this one. Nothing else changed. |
-| v1.6 | 2026-11-07 | §3 and §6: a waiting line ("Thinking… 42 s (Esc to stop)") while the model works, and Esc to stop a reply, both accepted by the designer (item 3 of the review). Cancellation by `llama-server` to be verified at build time. |
-| v1.7 | 2026-11-07 | §6: the waiting line is Garnet and one size smaller than the chat text (designer). |
-| v1.9 | 2026-11-07 | Five Proposed items settled by the designer: the port is chosen at installation; `/palette` is not part of the product; the overview figures come from the server; the prompt stays read-only and shows "Press Esc to interrupt" in Garnet while a reply is generated; an `/accessibility` command with a user-chosen setting is added (contents not yet designed). These are now the designer's decisions, not Proposed. |
-| v1.10 | 2026-11-07 | §1: the port chosen at installation comes with a default option (designer). The default number is open. |
-| v1.11 | 2026-11-07 | Item 6 of the review: Writing is the first expert when none is saved; a `llama-server` already running is reused if it is the right one and otherwise LLTH warns and touches nothing; the prompt and the waiting line both say "(Esc to stop)". All the designer's decisions; three Proposed items remain: the default port is checked as free, a model load cannot be interrupted, and the first `/accessibility` option is to always show the highlight box. |
-| v1.12 | 2026-11-07 | Accepted by the designer after the step-by-step review (v1.3 to v1.11). Status `accepted`, canonical `true`. The three items still marked Proposed (default port checked as free; a model load cannot be interrupted; first `/accessibility` option) are accepted with the ADR. Parts that need the storage ADR (the saved last-used expert, the saved accessibility setting) cannot be built until that ADR is accepted. |
+| v1.12 | 2026-11-07 | Drafted and reviewed, accepted by the designer. Three items still marked Proposed (the default port is checked as free; a model load cannot be interrupted; the first `/accessibility` option) were accepted with it. |
 | v1.13 | 2026-11-07 | Amended after the acceptance of ADR-007: the `Confirm:` segment on the bottom line, the `/confirm` command, the short chat line when the setting changes, and the saved settings in `LLTH/settings/` are added; the dependency on a storage ADR is replaced by ADR-007. Status `amended`. The approval instructions in the prompt are added to §6 in this version. |
 | v1.14 | 2026-11-07 | Amended after the acceptance of ADR-008: §7a (Documents) adds the drop onto the window and the review screen; the Non-goals line that named the inbox folder now points to ADR-008; a Consequences line records that a drop cannot be done from the keyboard. Status stays `amended`. |
 | v1.15 | 2026-11-07 | Amended after ADR-008 v1.19: a file chooser opened by a command (for example `/file`) is a second way in beside the drop, so that intake can be started from the keyboard; §3 and §7a updated; the Consequences line that recorded the keyboard gap is removed because the gap is closed. |

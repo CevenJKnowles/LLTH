@@ -11,7 +11,7 @@ audience:
   - maintainer
   - operator
 created: "2026-11-05"
-updated: "2026-11-07"
+updated: "2026-11-08"
 tags:
   - llth
   - adr
@@ -213,8 +213,5 @@ Rejected: code would always wait for MoVA at high effort, the slowest setting, a
 
 | Version | Date | Summary |
 |---------|------|---------|
-| v1.0 | 2026-11-05 | Initial draft. The designer chose on 2026-11-05: separate ADRs for the selection (this one) and the interface (ADR-006); three profiles, Write, Code and Think; the round 1 server settings. |
-| v1.1 | 2026-11-05 | Draft revised after the interface brainstorm (`DOC-OVW-019`): category buttons become an expert menu; the experts are Writing (3.7B, low), Administration (3.7B, medium), Coding (MoVA, medium) and Think (MoVA, high), decided by the designer on 2026-11-05; the list is extensible and the experts are data; instructions are an optional, empty field with no use for now; Option G adopted. The server configurations, fleet and routing decisions are unchanged. |
-| v1.3 | 2026-11-07 | The four acceptance checks. (1) Removed the sentence "Deleting any of them is the designer's decision and needs no ADR" from §2. It set a rule about when an ADR is needed, which belongs in the ADR policy; deleting models stays a non-goal of this ADR. (2) In the 0.9B paragraph of §2, replaced the "floor" rule ("a fleet model must be usable on its own category"), which was applied as if decided, with the facts: its scores, and that it is not used by any expert. (3) In the §3 table, the evidence cell for the Coding expert now says what it rests on (only P1 and D4 are code, one sample each; the round 1 Python score was at high effort; medium has no scored round) and ends "Thin evidence", as the Administration row does. (4) In the Implementation notes, the line prescribing new README wording for checklist items 3 to 5 now states only what is true for each item and leaves the wording to the designer, as the README is the designer's text. No decision changed by any of the four. |
-| v1.4 | 2026-11-07 | Accepted by the designer after the four acceptance checks (see v1.3). Status `accepted`, canonical `true`. No text of the decisions changed. |
+| v1.4 | 2026-11-07 | Drafted and reviewed, accepted by the designer. Four acceptance checks were made first. |
 | v1.5 | 2026-11-07 | Editorial revision for publication. |
