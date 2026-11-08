@@ -1,7 +1,10 @@
 """Starts the LLTH web app: python -m llth."""
+
 import json
 import sys
+
 import uvicorn
+
 from llth.app import app
 from llth.paths import SETTINGS_DIR
 from llth.servers import port_is_free

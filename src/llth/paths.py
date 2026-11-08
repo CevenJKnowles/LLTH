@@ -1,4 +1,5 @@
 """Locations of LLTH's code and data; the only module that builds paths."""
+
 from pathlib import Path
 
 HOME = Path(__file__).resolve().parents[2]

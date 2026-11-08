@@ -1,10 +1,12 @@
 """Reads the server settings and runs llama-server."""
+
 import json
 import socket
 import subprocess
 import time
 import urllib.request
 from dataclasses import dataclass
+
 from llth.paths import HOME, SETTINGS_DIR
 
 
@@ -57,8 +59,10 @@ def start_server(settings: ServerSettings, key: str) -> subprocess.Popen:
     command = [
         settings.binary,
         *settings.servers[key].args,
-        "--host", "127.0.0.1",
-        "--port", str(settings.port),
+        "--host",
+        "127.0.0.1",
+        "--port",
+        str(settings.port),
     ]
     return subprocess.Popen(
         command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL

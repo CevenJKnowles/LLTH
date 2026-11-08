@@ -1,4 +1,5 @@
 """The LLTH web app: serves the page and the API behind it."""
+
 import json
 import subprocess
 import threading
@@ -6,8 +7,11 @@ import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from typing import Annotated
+
 from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
+
 from llth.chat import stream_reply
 from llth.experts import Expert, load_experts
 from llth.paths import STATIC_DIR
@@ -133,7 +137,7 @@ def set_mode(key: str) -> dict:
 
 
 @app.post("/api/chat")
-def chat(messages: list[dict] = Body(embed=True)) -> StreamingResponse:
+def chat(messages: Annotated[list[dict], Body(embed=True)]) -> StreamingResponse:
     """Stream the reply to the conversation, one JSON object per line."""
     if state.loading_since is not None:
         raise HTTPException(status_code=503, detail="The model is loading.")
