@@ -3,7 +3,7 @@ id: ADR-000
 title: README | ADR
 type: adr
 status: accepted
-version: v1.59
+version: v1.61
 canonical: true
 scope: llth
 audience:
@@ -47,7 +47,7 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-003 — llama.cpp Build Configuration**
   Path: `$LLTH_HOME/ADR/ADR-003-llama-cpp-build-configuration.md`
-  Status: amended (v1.3 — build completed; UI fell back to `latest`)
+  Status: amended (v1.4 — build completed; UI fell back to `latest`)
 
 - **ADR-004 — First-Round Model Selection and Benchmark Protocol**
   Path: `$LLTH_HOME/ADR/ADR-004-first-round-model-selection-and-benchmark-protocol.md`
@@ -63,7 +63,7 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-007 — Storage and Memory, Directory Tree, Locations and Confirmation**
   Path: `$LLTH_HOME/ADR/ADR-007-storage-and-memory-directory-tree-and-confirmation.md`
-  Status: amended (v1.13 — one root with `LLTH/` and `user/`, a movable default location, readable settings, expert access by the user's commands or approved proposals, manual, planning and automatic confirmation; depends on ADR-006)
+  Status: amended (v1.14 — one root with `LLTH/` and `user/`, a movable default location, readable settings, expert access by the user's commands or approved proposals, manual, planning and automatic confirmation; depends on ADR-006)
 
 - **ADR-008 — Document Intake, Conversion and Filing**
   Path: `$LLTH_HOME/ADR/ADR-008-document-intake-conversion-and-filing.md`
@@ -75,7 +75,7 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 
 - **ADR-010 — Documentation Checks in Continuous Integration**
   Path: `$LLTH_HOME/ADR/ADR-010-documentation-checks-in-continuous-integration.md`
-  Status: accepted (v1.6 — one workflow and a standard-library script check the manifest, frontmatter, version agreement, identifiers, ADR structure, links, secrets and local paths)
+  Status: amended (v1.7 — one workflow and a standard-library script check the manifest, frontmatter, version agreement, identifiers, ADR structure, links, secrets and local paths)
 
 - **ADR-011 — Python Project Layout, Tooling and Dependencies**
   Path: `$LLTH_HOME/ADR/ADR-011-python-project-layout-tooling-and-dependencies.md`
@@ -84,20 +84,3 @@ ADRs capture why a decision was made, so a sub-optimal decision can always be tr
 - **ADR-012 — Code Checks in Continuous Integration**
   Path: `$LLTH_HOME/ADR/ADR-012-code-checks-in-continuous-integration.md`
   Status: draft (v1.0 — lint, format and tests with stand-ins on every push and pull request, no GPU and no model; five points Proposed)
-
-## Amendment record
-
-| Version | Date | Summary |
-|---------|------|---------|
-| v1.6 | 2026-11-05 | Added ADR-005 (draft) to the index. |
-| v1.19 | 2026-11-07 | ADR-006 accepted (v1.12). |
-| v1.20 | 2026-11-07 | Added ADR-007 (draft) to the index. |
-| v1.31 | 2026-11-07 | ADR-007 accepted (v1.11). |
-| v1.33 | 2026-11-07 | Added ADR-008 (draft) to the index. |
-| v1.51 | 2026-11-07 | ADR-008 accepted (v1.18). |
-| v1.54 | 2026-11-07 | Added ADR-009 (draft) to the index. |
-| v1.55 | 2026-11-07 | Editorial revision for publication. |
-| v1.56 | 2026-11-07 | Added ADR-010 (draft) to the index. |
-| v1.57 | 2026-11-07 | ADR-010 accepted (v1.6). |
-| v1.58 | 2026-11-07 | ADR-008 amendments accepted (v1.28). |
-| v1.59 | 2026-11-08 | Added ADR-011 and ADR-012 (draft) to the index. |
